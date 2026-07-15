@@ -21,9 +21,6 @@ export async function loginUser(email, password) {
   return res.json();
 }
 
-export async function loginWithGoogle() {
-  throw new Error('تسجيل الدخول بجوجل غير مدعوم في النسخة الحالية بسبب الترقية للخادم المحلي');
-}
 
 export async function registerUser(name, email, password, role) {
   const res = await fetch(`${API_URL}/auth/register`, {

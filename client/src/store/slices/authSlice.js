@@ -1,4 +1,4 @@
-import { loginUser, loginWithGoogle, logoutUser, onAuthChange } from '../firebaseService';
+import { loginUser, logoutUser, onAuthChange } from '../firebaseService';
 
 export const createAuthSlice = (set, get) => ({
   token: null,
@@ -25,28 +25,6 @@ export const createAuthSlice = (set, get) => ({
       get().initRealtimeListeners();
     } catch (err) {
       set({ isLoading: false, error: err.message || 'خطأ في تسجيل الدخول' });
-      throw err;
-    }
-  },
-
-  loginGoogle: async () => {
-    set({ isLoading: true, error: null });
-    try {
-      const user = await loginWithGoogle();
-      localStorage.setItem('auth_token', user.token);
-      const userData = { id: user.id, name: user.name, email: user.email, role: user.role, avatar: user.avatar };
-      localStorage.setItem('offline_user', JSON.stringify(userData));
-      set({
-        token: user.token,
-        currentUser: userData,
-        isAuthenticated: true,
-        isLoading: false
-      });
-      get().addToast(`مرحباً بك، ${user.name}!`);
-      await get().fetchInitialData();
-      get().initRealtimeListeners();
-    } catch (err) {
-      set({ isLoading: false, error: err.message || 'خطأ في تسجيل الدخول بجوجل' });
       throw err;
     }
   },
