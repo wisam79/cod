@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import NotificationItem from '../molecules/NotificationItem';
 import { Bell, Trash2, X } from 'lucide-react';
 
@@ -190,3 +191,10 @@ export default function NotificationDrawer({ isOpen, onClose, notifications, onC
     </div>
   );
 }
+
+NotificationDrawer.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  notifications: PropTypes.array,
+  onClear: PropTypes.func.isRequired
+};

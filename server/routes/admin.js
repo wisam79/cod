@@ -7,6 +7,8 @@ const logger = require('../utils/logger');
 const messages = require('../utils/messages');
 const bcrypt = require('bcryptjs');
 
+const VALID_ROLES = ['مصمم واجهات UI/UX', 'مطور فرونت-إند', 'مطور باك-إند', 'مديرة المنتج', 'الادمن المطور'];
+
 // All routes here require being logged in and being a Super Admin (الادمن المطور)
 router.use(authenticate, isSuperAdmin);
 
@@ -42,7 +44,12 @@ router.put('/members/:id', async (req, res) => {
 
     if (name) member.name = name;
     if (email) member.email = email;
-    if (role) member.role = role;
+    if (role) {
+      if (!VALID_ROLES.includes(role)) {
+        return res.status(400).json({ error: 'الدور المحدد غير صالح. الأدوار المسموح بها: ' + VALID_ROLES.join('، ') });
+      }
+      member.role = role;
+    }
     if (avatar !== undefined) member.avatar = avatar;
 
     if (password && password.trim() !== '') {

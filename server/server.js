@@ -121,7 +121,9 @@ app.use(async (req, res, next) => {
       if (regSetting && regSetting.value === 'false') {
         return res.status(403).json({ error: 'التسجيل مغلق حالياً من قِبل إدارة النظام.' });
       }
-    } catch (e) {}
+    } catch (e) {
+      logger.error('Failed to check registration setting: %o', e);
+    }
   }
 
   // Check Maintenance Mode
@@ -141,14 +143,18 @@ app.use(async (req, res, next) => {
           if (role.includes('الادمن المطور') || role.includes('Super Admin')) {
             return next();
           }
-        } catch (e) {}
+        } catch (e) {
+          logger.warn('Maintenance mode auth bypass attempt failed: %o', e);
+        }
       }
       return res.status(503).json({ 
         error: 'System Maintenance', 
         message: 'التطبيق تحت الصيانة حالياً لترقية النظام. يرجى المحاولة لاحقاً.' 
       });
     }
-  } catch (err) {}
+  } catch (err) {
+    logger.error('Failed to check maintenance mode: %o', err);
+  }
   next();
 });
 

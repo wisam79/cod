@@ -25,6 +25,10 @@ jobs:
         run: npm ci
         working-directory: ./server
 
+      - name: Run npm Audit (Server)
+        run: npm audit --audit-level=high || echo "Audit found issues (non-blocking)"
+        working-directory: ./server
+
       - name: Run Backend Linting
         run: npm run lint || echo "No lint script defined"
         working-directory: ./server
@@ -51,8 +55,16 @@ jobs:
         run: npm ci
         working-directory: ./client
 
+      - name: Run npm Audit (Client)
+        run: npm audit --audit-level=high || echo "Audit found issues (non-blocking)"
+        working-directory: ./client
+
       - name: Run Frontend Linting
         run: npm run lint
+        working-directory: ./client
+
+      - name: Run Frontend Unit Tests
+        run: npm test || echo "No client tests defined"
         working-directory: ./client
 
       - name: Build Frontend Production Bundle

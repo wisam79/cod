@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Avatar from '../atoms/Avatar';
 
 export default function CommentItem({ comment, members }) {
@@ -45,3 +46,8 @@ export default function CommentItem({ comment, members }) {
     </div>
   );
 }
+
+CommentItem.propTypes = {
+  comment: PropTypes.object.isRequired,
+  members: PropTypes.array
+};

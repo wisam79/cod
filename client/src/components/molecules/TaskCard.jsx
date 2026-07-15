@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Badge from '../atoms/Badge';
 import Avatar from '../atoms/Avatar';
 import { translatePriority } from '../../utils/translations';
@@ -43,3 +44,9 @@ export default React.memo(function TaskCard({ task, assignee, onSelect }) {
     </div>
   );
 });
+
+TaskCard.propTypes = {
+  task: PropTypes.object.isRequired,
+  assignee: PropTypes.object,
+  onSelect: PropTypes.func
+};

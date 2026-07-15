@@ -1,7 +1,9 @@
 import React, { useState, useRef, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { triggerHaptic } from '../../utils/haptics';
 
-function ToastItem({ toast, onDismiss }) {
+function ToastItem({ toast, onDismiss: onDismissProp }) {
+  const onDismiss = onDismissProp;
   const [dismissStyle, setDismissStyle] = useState({});
   const touchStartX = useRef(null);
 
@@ -120,3 +122,12 @@ export default function ToastContainer({ activeToasts }) {
     </div>
   );
 }
+
+ToastItem.propTypes = {
+  toast: PropTypes.object.isRequired,
+  onDismiss: PropTypes.func.isRequired
+};
+
+ToastContainer.propTypes = {
+  activeToasts: PropTypes.array.isRequired
+};

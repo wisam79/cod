@@ -33,7 +33,8 @@
     "sequelize": "^6.37.3",
     "sqlite3": "^5.1.7",
     "winston": "^3.13.0",
-    "ws": "^8.16.0"
+    "ws": "^8.16.0",
+    "xss": "^1.0.15"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",

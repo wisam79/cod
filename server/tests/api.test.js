@@ -180,7 +180,7 @@ describe('مُهِمَّتِي - اختبارات واجهة البرمجة (API
 
       // User 2 (Saleh) tries to delete Jassem's comment -> Should fail with 403 Forbidden
       const deleteRes = await request(app)
-        .delete(`/api/tasks/comments/${commentId}`)
+        .delete(`/api/tasks/${taskId}/comments/${commentId}`)
         .set('Authorization', `Bearer ${salehToken}`);
       
       expect(deleteRes.statusCode).toEqual(403);
@@ -188,7 +188,7 @@ describe('مُهِمَّتِي - اختبارات واجهة البرمجة (API
 
       // User 1 (Jassem) deletes own comment -> Should succeed
       const deleteSuccessRes = await request(app)
-        .delete(`/api/tasks/comments/${commentId}`)
+        .delete(`/api/tasks/${taskId}/comments/${commentId}`)
         .set('Authorization', `Bearer ${authToken}`);
       
       expect(deleteSuccessRes.statusCode).toEqual(200);

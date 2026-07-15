@@ -1,3 +1,9 @@
+/**
+ * WebSocket server for real-time communication.
+ * Handles connection auth, message broadcasting with per-user filtering,
+ * and periodic token validation.
+ * @module websocket
+ */
 const { WebSocketServer, WebSocket } = require('ws');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../middleware/auth');

@@ -31,6 +31,11 @@ const Comment = sequelize.define('Comment', {
     type: DataTypes.STRING,
     allowNull: true
   }
+}, {
+  indexes: [
+    { fields: ['taskId'] },
+    { fields: ['senderId'] }
+  ]
 });
 
 module.exports = Comment;

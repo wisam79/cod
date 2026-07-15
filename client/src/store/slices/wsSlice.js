@@ -1,4 +1,4 @@
-import { onTasksChange, onMessagesChange, onNotificationsChange } from '../firebaseService';
+import { onTasksChange, onMessagesChange, onNotificationsChange } from '../apiClient';
 
 export const createWSSlice = (set, get) => ({
   wsStatus: 'disconnected',
@@ -11,7 +11,7 @@ export const createWSSlice = (set, get) => ({
     get().cleanupRealtimeListeners();
     set({ wsStatus: 'connecting' });
 
-    const unsub1 = onTasksChange(async (event) => {
+    const unsub1 = onTasksChange(async () => {
       // For tasks, it's safer to refetch the whole list to maintain order and relations
       await get().fetchInitialData();
     });

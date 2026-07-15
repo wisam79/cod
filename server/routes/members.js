@@ -1,8 +1,11 @@
 const express = require('express');
 const { Member } = require('../models');
 const { authenticate } = require('../middleware/auth');
+const { isSuperAdmin } = require('../middleware/superAdmin');
 const logger = require('../utils/logger');
 const messages = require('../utils/messages');
+
+const VALID_ROLES = ['مصمم واجهات UI/UX', 'مطور فرونت-إند', 'مطور باك-إند', 'مديرة المنتج', 'الادمن المطور'];
 
 const router = express.Router();
 
@@ -21,18 +24,21 @@ router.get('/', async (req, res) => {
   }
 });
 
-// PUT /api/members/:id/role - Edit a member's role (with audit logging)
-router.put('/:id/role', async (req, res) => {
+// PUT /api/members/:id/role - Edit a member's role (Super Admin only, with audit logging)
+router.put('/:id/role', isSuperAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { role } = req.body;
+    if (!role || !VALID_ROLES.includes(role)) {
+      return res.status(400).json({ error: 'الدور المحدد غير صالح.' });
+    }
     const member = await Member.findByPk(id);
     if (!member) {
       return res.status(404).json({ error: 'العضو غير موجود.' });
     }
     const oldRole = member.role;
     await member.update({ role });
-    logger.info(`[AUDIT] User ${req.user.name} (ID: ${req.user.id}) changed role of member ${member.name} (ID: ${member.id}) from "${oldRole}" to "${role}"`);
+    logger.info(`[AUDIT] Super Admin ${req.user.name} (ID: ${req.user.id}) changed role of member ${member.name} (ID: ${member.id}) from "${oldRole}" to "${role}"`);
     return res.json({ message: 'تم تحديث الدور بنجاح.', member });
   } catch (error) {
     logger.error('Error updating member role: %o', error);

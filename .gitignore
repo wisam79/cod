@@ -13,9 +13,7 @@ client/dist/
 # Environment configurations
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*.local
 
 # IDEs and System files
 .vscode/
@@ -36,4 +34,3 @@ media__*
 walkthrough.md.data*
 
 .vercel
-.env*

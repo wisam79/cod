@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from './store/useAppStore';
 import Navbar from './components/organisms/Navbar';
 import NotificationDrawer from './components/organisms/NotificationDrawer';
@@ -45,10 +46,13 @@ function App() {
     logout
   } = useAppStore();
 
-  const [activeTab, setActiveTab] = useState(() => {
-    const hash = window.location.hash.replace('#/', '');
-    return ['dashboard', 'tasks', 'chat', 'team', 'admin'].includes(hash) ? hash : 'dashboard';
-  });
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const activeTab = ['dashboard', 'tasks', 'chat', 'team', 'admin'].includes(location.pathname.slice(1)) 
+    ? location.pathname.slice(1) 
+    : 'dashboard';
+
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState(null);
@@ -68,42 +72,24 @@ function App() {
            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
   });
 
-
-
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace('#/', '');
-      if (['dashboard', 'tasks', 'chat', 'team', 'admin'].includes(hash)) {
-        setActiveTab(hash);
+    if (isAuthenticated) {
+      const cleanPath = location.pathname.slice(1);
+      if (location.pathname === '/' || !['dashboard', 'tasks', 'chat', 'team', 'admin'].includes(cleanPath)) {
+        navigate('/dashboard', { replace: true });
       }
-    };
-
-    window.addEventListener('hashchange', handleHashChange);
-    
-    const currentHash = window.location.hash.replace('#/', '');
-    if (!['dashboard', 'tasks', 'chat', 'team', 'admin'].includes(currentHash)) {
-      window.location.hash = '#/dashboard';
     }
-
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  }, [isAuthenticated, location.pathname, navigate]);
 
   useEffect(() => {
-    const handlePopState = () => {
-      const hash = window.location.hash.replace('#/', '');
-      if (!isAuthenticated) {
-        return;
-      }
-      if (['dashboard', 'tasks', 'chat', 'team', 'admin'].includes(hash)) {
-        setActiveTab(hash);
-      } else if (drawerOpen) {
+    if (drawerOpen) {
+      const handlePopState = () => {
         setDrawerOpen(false);
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [isAuthenticated, drawerOpen]);
+      };
+      window.addEventListener('popstate', handlePopState);
+      return () => window.removeEventListener('popstate', handlePopState);
+    }
+  }, [drawerOpen]);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {

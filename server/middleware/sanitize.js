@@ -1,7 +1,19 @@
+/**
+ * XSS sanitization middleware using the `xss` library.
+ * Deeply sanitizes req.body, req.query, and req.params.
+ * @module sanitize
+ */
+const xss = require('xss');
+
+const xssFilter = new xss.FilterXSS({
+  whiteList: {},
+  stripIgnoreTag: true,
+  stripIgnoreTagBody: ['script', 'style']
+});
+
 const sanitizeHtml = (str) => {
   if (typeof str !== 'string') return str;
-  // Strip HTML tags to prevent simple XSS injections
-  return str.replace(/<[^>]*>/g, '');
+  return xssFilter.process(str);
 };
 
 const deepSanitize = (val, seen = new WeakSet()) => {

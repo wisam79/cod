@@ -4,6 +4,7 @@ const { authenticate } = require('../middleware/auth');
 const { broadcast } = require('../services/websocket');
 const { sanitizeBody } = require('../middleware/sanitize');
 const { validateMessage } = require('../middleware/validation');
+const { getPagination } = require('../utils/pagination');
 const logger = require('../utils/logger');
 const messages = require('../utils/messages');
 
@@ -15,9 +16,7 @@ router.use(sanitizeBody);
 // GET /api/messages - Retrieve message history
 router.get('/', async (req, res) => {
   try {
-    const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
-    const offset = page && limit ? (page - 1) * limit : null;
+    const { limit, offset } = getPagination(req.query);
 
     const queryOptions = {
       include: [
@@ -30,12 +29,8 @@ router.get('/', async (req, res) => {
       order: [['createdAt', 'DESC']]
     };
 
-    if (limit) {
-      queryOptions.limit = limit;
-    }
-    if (offset !== null) {
-      queryOptions.offset = offset;
-    }
+    if (limit) queryOptions.limit = limit;
+    if (offset !== null) queryOptions.offset = offset;
 
     const messagesData = await Message.findAll(queryOptions);
     // Reverse to chronological order after fetching the most recent
@@ -48,8 +43,9 @@ router.get('/', async (req, res) => {
 
 // POST /api/messages - Post a new message and broadcast it (transaction-safe)
 router.post('/', validateMessage, async (req, res) => {
-  const transaction = await sequelize.transaction();
+  let transaction;
   try {
+    transaction = await sequelize.transaction();
     const { text } = req.body;
 
     const isoTime = new Date().toISOString();
@@ -89,7 +85,7 @@ router.post('/', validateMessage, async (req, res) => {
 
     return res.status(201).json(fullMessage);
   } catch (error) {
-    await transaction.rollback();
+    if (transaction) await transaction.rollback();
     logger.error('Error saving message: %o', error);
     return res.status(500).json({ error: messages.messages.sendError });
   }

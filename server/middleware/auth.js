@@ -1,11 +1,20 @@
+/**
+ * JWT authentication middleware.
+ * Verifies Bearer tokens and attaches the authenticated user to req.user.
+ * @module auth
+ */
 const jwt = require('jsonwebtoken');
 const { Member } = require('../models');
 const logger = require('../utils/logger');
 const messages = require('../utils/messages');
 
 const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'test' ? 'test_jwt_secret_key_123!' : null);
-if (!JWT_SECRET) {
-  logger.warn('WARNING: JWT_SECRET environment variable is not set yet!');
+if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
+  logger.error('FATAL: JWT_SECRET environment variable is not set. Refusing to start.');
+  process.exit(1);
+}
+if (!JWT_SECRET && process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
+  logger.warn('WARNING: JWT_SECRET environment variable is not set. Using insecure default for development.');
 }
 
 

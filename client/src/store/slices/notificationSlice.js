@@ -1,4 +1,4 @@
-import { clearNotifications as fbClearNotifications } from '../firebaseService';
+import { clearNotifications as fbClearNotifications } from '../apiClient';
 
 export const createNotificationSlice = (set, get) => ({
   notifications: [],

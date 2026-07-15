@@ -1,3 +1,9 @@
+/**
+ * Winston logger configuration.
+ * Logs to console in all environments and to files (error.log + combined.log)
+ * except on Vercel (read-only filesystem).
+ * @module logger
+ */
 const winston = require('winston');
 const path = require('path');
 

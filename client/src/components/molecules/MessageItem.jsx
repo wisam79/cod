@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Avatar from '../atoms/Avatar';
 
 export default function MessageItem({ message, members, isCurrentUser }) {
@@ -53,3 +54,9 @@ export default function MessageItem({ message, members, isCurrentUser }) {
     </div>
   );
 }
+
+MessageItem.propTypes = {
+  message: PropTypes.object.isRequired,
+  members: PropTypes.array,
+  isCurrentUser: PropTypes.bool
+};

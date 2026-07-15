@@ -5,10 +5,35 @@ const { broadcast } = require('../services/websocket');
 const { sanitizeBody } = require('../middleware/sanitize');
 const { validateTask, validateComment } = require('../middleware/validation');
 const { canModifyTask } = require('../middleware/authorize');
+const { getPagination } = require('../utils/pagination');
 const logger = require('../utils/logger');
 const messages = require('../utils/messages');
 
 const router = express.Router();
+
+const MEMBER_ATTRS = ['id', 'name', 'role', 'avatar'];
+
+const taskIncludes = () => [
+  {
+    model: Member,
+    as: 'assignee',
+    attributes: MEMBER_ATTRS
+  },
+  {
+    model: Member,
+    as: 'creator',
+    attributes: MEMBER_ATTRS
+  },
+  {
+    model: Comment,
+    as: 'comments',
+    include: [{
+      model: Member,
+      as: 'sender',
+      attributes: MEMBER_ATTRS
+    }]
+  }
+];
 
 const checkMaxTasksLimit = async (memberId, targetStatus, taskIdToIgnore = null) => {
   if (!memberId || targetStatus === 'done') return true;
@@ -43,43 +68,15 @@ router.use(sanitizeBody);
 // GET /api/tasks - Retrieve all tasks with assignees and comments (including comment senders)
 router.get('/', async (req, res) => {
   try {
-    const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
-    const offset = page && limit ? (page - 1) * limit : null;
+    const { limit, offset } = getPagination(req.query);
 
     const queryOptions = {
-      include: [
-        {
-          model: Member,
-          as: 'assignee',
-          attributes: ['id', 'name', 'role', 'avatar']
-        },
-        {
-          model: Member,
-          as: 'creator',
-          attributes: ['id', 'name', 'role', 'avatar']
-        },
-        {
-          model: Comment,
-          as: 'comments',
-          include: [
-            {
-              model: Member,
-              as: 'sender',
-              attributes: ['id', 'name', 'role', 'avatar']
-            }
-          ]
-        }
-      ],
+      include: taskIncludes(),
       order: [['createdAt', 'DESC']]
     };
 
-    if (limit) {
-      queryOptions.limit = limit;
-    }
-    if (offset !== null) {
-      queryOptions.offset = offset;
-    }
+    if (limit) queryOptions.limit = limit;
+    if (offset !== null) queryOptions.offset = offset;
 
     const tasks = await Task.findAll(queryOptions);
     return res.json(tasks);
@@ -93,29 +90,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const task = await Task.findByPk(req.params.id, {
-      include: [
-        {
-          model: Member,
-          as: 'assignee',
-          attributes: ['id', 'name', 'role', 'avatar']
-        },
-        {
-          model: Member,
-          as: 'creator',
-          attributes: ['id', 'name', 'role', 'avatar']
-        },
-        {
-          model: Comment,
-          as: 'comments',
-          include: [
-            {
-              model: Member,
-              as: 'sender',
-              attributes: ['id', 'name', 'role', 'avatar']
-            }
-          ]
-        }
-      ]
+      include: taskIncludes()
     });
 
     if (!task) {
@@ -148,8 +123,12 @@ router.post('/', validateTask, async (req, res) => {
     }
   }
 
-  const transaction = await sequelize.transaction();
+  let transaction;
   try {
+    transaction = await sequelize.transaction();
+    if (!transaction) {
+      return res.status(500).json({ error: messages.tasks.createError });
+    }
     const task = await Task.create({
       title,
       description,
@@ -176,23 +155,7 @@ router.post('/', validateTask, async (req, res) => {
 
     // Fetch the task again with assignee info to send via websocket
     const fullTask = await Task.findByPk(task.id, {
-      include: [
-        {
-          model: Member,
-          as: 'assignee',
-          attributes: ['id', 'name', 'role', 'avatar']
-        },
-        {
-          model: Member,
-          as: 'creator',
-          attributes: ['id', 'name', 'role', 'avatar']
-        },
-        {
-          model: Comment,
-          as: 'comments',
-          defaultValue: []
-        }
-      ]
+      include: taskIncludes()
     });
 
     logger.info(`[AUDIT] User ${req.user.name} (ID: ${req.user.id}) created task "${title}" (ID: ${task.id})`);
@@ -203,7 +166,7 @@ router.post('/', validateTask, async (req, res) => {
 
     return res.status(201).json(fullTask);
   } catch (error) {
-    await transaction.rollback();
+    if (transaction) await transaction.rollback();
     logger.error('Error creating task: %o', error);
     return res.status(500).json({ error: messages.tasks.createError });
   }
@@ -239,8 +202,9 @@ router.put('/:id', canModifyTask, validateTask, async (req, res) => {
     }
   }
 
-  const transaction = await sequelize.transaction();
+  let transaction;
   try {
+    transaction = await sequelize.transaction();
     const previousStatus = task.status;
     const previousAssigneeId = task.assigneeId;
 
@@ -288,29 +252,7 @@ router.put('/:id', canModifyTask, validateTask, async (req, res) => {
 
     // Fetch the updated task with relationships for broadcasting
     const updatedTask = await Task.findByPk(task.id, {
-      include: [
-        {
-          model: Member,
-          as: 'assignee',
-          attributes: ['id', 'name', 'role', 'avatar']
-        },
-        {
-          model: Member,
-          as: 'creator',
-          attributes: ['id', 'name', 'role', 'avatar']
-        },
-        {
-          model: Comment,
-          as: 'comments',
-          include: [
-            {
-              model: Member,
-              as: 'sender',
-              attributes: ['id', 'name', 'role', 'avatar']
-            }
-          ]
-        }
-      ]
+      include: taskIncludes()
     });
 
     logger.info(`Task updated: ID ${task.id} by ${req.user.name}`);
@@ -322,7 +264,7 @@ router.put('/:id', canModifyTask, validateTask, async (req, res) => {
 
     return res.json(updatedTask);
   } catch (error) {
-    await transaction.rollback();
+    if (transaction) await transaction.rollback();
     logger.error('Error updating task: %o', error);
     return res.status(500).json({ error: messages.tasks.updateError });
   }
@@ -330,8 +272,9 @@ router.put('/:id', canModifyTask, validateTask, async (req, res) => {
 
 // DELETE /api/tasks/:id - Delete a task (transaction-safe)
 router.delete('/:id', canModifyTask, async (req, res) => {
-  const transaction = await sequelize.transaction();
+  let transaction;
   try {
+    transaction = await sequelize.transaction();
     const task = req.task; // Already loaded by canModifyTask middleware
     const title = task.title;
     const assigneeId = task.assigneeId;
@@ -358,7 +301,7 @@ router.delete('/:id', canModifyTask, async (req, res) => {
 
     return res.json({ message: messages.tasks.deleteSuccess });
   } catch (error) {
-    await transaction.rollback();
+    if (transaction) await transaction.rollback();
     logger.error('Error deleting task: %o', error);
     return res.status(500).json({ error: messages.tasks.deleteError });
   }
@@ -366,8 +309,9 @@ router.delete('/:id', canModifyTask, async (req, res) => {
 
 // POST /api/tasks/:id/comments - Add comment to task (transaction-safe)
 router.post('/:id/comments', validateComment, async (req, res) => {
-  const transaction = await sequelize.transaction();
+  let transaction;
   try {
+    transaction = await sequelize.transaction();
     const { text } = req.body;
     const taskId = req.params.id;
 
@@ -415,34 +359,13 @@ router.post('/:id/comments', validateComment, async (req, res) => {
 
     return res.status(201).json(fullComment);
   } catch (error) {
-    await transaction.rollback();
+    if (transaction) await transaction.rollback();
     logger.error('Error adding comment: %o', error);
     return res.status(500).json({ error: messages.tasks.commentAddError });
   }
 });
 
-// DELETE /api/tasks/comments/:commentId - Delete comment (with ownership check)
-router.delete('/comments/:commentId', async (req, res) => {
-  try {
-    const { commentId } = req.params;
-    const comment = await Comment.findByPk(commentId);
-    if (!comment) {
-      return res.status(404).json({ error: messages.tasks.commentNotFound });
-    }
-    // Check ownership: ensure senderId matches req.user.id
-    if (comment.senderId !== req.user.id) {
-      return res.status(403).json({ error: messages.tasks.commentDeleteUnauthorized });
-    }
-    await comment.destroy();
-    broadcast('comment_deleted', { commentId: parseInt(commentId) });
-    return res.json({ message: messages.tasks.commentDeleteSuccess });
-  } catch (error) {
-    logger.error('Error deleting comment: %o', error);
-    return res.status(500).json({ error: messages.tasks.commentDeleteError });
-  }
-});
-
-// DELETE /api/tasks/:id/comments/:commentId - Delete comment (alternative route format, with ownership check)
+// DELETE /api/tasks/:id/comments/:commentId - Delete comment (with ownership check)
 router.delete('/:id/comments/:commentId', async (req, res) => {
   try {
     const { commentId } = req.params;

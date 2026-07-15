@@ -3,6 +3,7 @@ const { Notification } = require('../models');
 const { authenticate } = require('../middleware/auth');
 const { broadcast } = require('../services/websocket');
 const { Op } = require('sequelize');
+const { getPagination } = require('../utils/pagination');
 const logger = require('../utils/logger');
 const messages = require('../utils/messages');
 
@@ -13,9 +14,7 @@ router.use(authenticate);
 // GET /api/notifications - Get user-specific and global notifications
 router.get('/', async (req, res) => {
   try {
-    const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
-    const offset = page && limit ? (page - 1) * limit : null;
+    const { limit, offset } = getPagination(req.query);
 
     const queryOptions = {
       where: {
@@ -27,12 +26,8 @@ router.get('/', async (req, res) => {
       order: [['createdAt', 'DESC']]
     };
 
-    if (limit) {
-      queryOptions.limit = limit;
-    }
-    if (offset !== null) {
-      queryOptions.offset = offset;
-    }
+    if (limit) queryOptions.limit = limit;
+    if (offset !== null) queryOptions.offset = offset;
 
     const notifications = await Notification.findAll(queryOptions);
     return res.json(notifications);

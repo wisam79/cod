@@ -45,6 +45,12 @@ const Task = sequelize.define('Task', {
       key: 'id'
     }
   }
+}, {
+  indexes: [
+    { fields: ['assigneeId'] },
+    { fields: ['creatorId'] },
+    { fields: ['status'] }
+  ]
 });
 
 module.exports = Task;

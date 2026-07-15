@@ -1,4 +1,4 @@
-import { loginUser, logoutUser, onAuthChange } from '../firebaseService';
+import { loginUser, logoutUser, onAuthChange } from '../apiClient';
 
 export const createAuthSlice = (set, get) => ({
   token: null,
@@ -78,7 +78,7 @@ export const createAuthSlice = (set, get) => ({
           } catch (err) {
             console.error('Failed to restore session:', err);
             let offlineUser = null;
-            try { offlineUser = JSON.parse(localStorage.getItem('offline_user')); } catch (e) {}
+            try { offlineUser = JSON.parse(localStorage.getItem('offline_user')); } catch (_) {}
             if (offlineUser) {
               set({
                 token: null,

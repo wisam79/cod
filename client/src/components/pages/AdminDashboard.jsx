@@ -79,8 +79,7 @@ export default function AdminDashboard() {
     if (window.confirm('هل أنت متأكد من رغبتك في حذف هذا العضو؟ سيتم سحب المهام المسندة إليه وإلغاء تعليقاته.')) {
       try {
         await deleteMember(memberId);
-      } catch (err) {
-        // Handled by store toasts
+      } catch (_) {
       }
     }
   };
@@ -94,8 +93,7 @@ export default function AdminDashboard() {
         maintenanceMode: settingsForm.maintenanceMode,
         maxTasksPerUser: parseInt(settingsForm.maxTasksPerUser, 10)
       });
-    } catch (err) {
-      // Handled by store
+    } catch (_) {
     } finally {
       setIsSubmitting(false);
     }

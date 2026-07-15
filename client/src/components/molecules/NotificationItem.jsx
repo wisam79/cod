@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { MessageSquare, RefreshCw, UserPlus, AlertCircle } from 'lucide-react';
 
 export default function NotificationItem({ notification }) {
@@ -31,3 +32,7 @@ export default function NotificationItem({ notification }) {
     </div>
   );
 }
+
+NotificationItem.propTypes = {
+  notification: PropTypes.object.isRequired
+};

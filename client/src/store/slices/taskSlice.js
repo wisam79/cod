@@ -1,4 +1,4 @@
-import { fetchTasks, addTask as fbAddTask, updateTask as fbUpdateTask, deleteTask as fbDeleteTask, addComment as fbAddComment, fetchMembers } from '../firebaseService';
+import { fetchTasks, addTask as fbAddTask, updateTask as fbUpdateTask, deleteTask as fbDeleteTask, addComment as fbAddComment, fetchMembers } from '../apiClient';
 
 export const createTaskSlice = (set, get) => ({
   tasks: [],
@@ -23,8 +23,8 @@ export const createTaskSlice = (set, get) => ({
       if (cachedTasks || cachedMembers) {
         let parsedTasks = [];
         let parsedMembers = [];
-        try { parsedTasks = cachedTasks ? JSON.parse(cachedTasks) : []; } catch (e) {}
-        try { parsedMembers = cachedMembers ? JSON.parse(cachedMembers) : []; } catch (e) {}
+        try { parsedTasks = cachedTasks ? JSON.parse(cachedTasks) : []; } catch (_) {}
+        try { parsedMembers = cachedMembers ? JSON.parse(cachedMembers) : []; } catch (_) {}
 
         set({
           tasks: parsedTasks,

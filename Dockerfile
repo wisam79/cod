@@ -1,5 +1,5 @@
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package descriptors
@@ -12,7 +12,7 @@ COPY . .
 RUN npm run postinstall
 
 # Production stage
-FROM node:18-alpine
+FROM node:20-alpine
 WORKDIR /app
 
 # Copy only built client files and server source with its node_modules

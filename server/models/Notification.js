@@ -28,6 +28,10 @@ const Notification = sequelize.define('Notification', {
       key: 'id'
     }
   }
+}, {
+  indexes: [
+    { fields: ['memberId'] }
+  ]
 });
 
 module.exports = Notification;

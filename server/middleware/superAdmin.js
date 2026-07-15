@@ -1,3 +1,7 @@
+/**
+ * Middleware to restrict access to Super Admin role only.
+ * Must be used after the `authenticate` middleware.
+ */
 const isSuperAdmin = (req, res, next) => {
   const user = req.user;
   if (!user) {

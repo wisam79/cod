@@ -4,7 +4,7 @@ import {
   deleteAdminMember,
   fetchAdminSettings,
   updateAdminSettings
-} from '../firebaseService';
+} from '../apiClient';
 
 export const createAdminSlice = (set, get) => ({
   adminMembers: [],

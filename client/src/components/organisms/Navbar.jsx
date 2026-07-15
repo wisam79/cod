@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useCallback, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { Home, CheckSquare, MessageSquare, Users, ShieldAlert } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 
@@ -43,13 +44,6 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
   const touchStartX = useRef(null);
 
   const currentIndex = useMemo(() => tabs.findIndex(t => t.id === activeTab), [activeTab, tabs]);
-
-  const handleTabChange = useCallback((tabId) => {
-    if (tabId !== activeTab) {
-      triggerHaptic('light');
-      setActiveTab(tabId);
-    }
-  }, [activeTab, setActiveTab]);
 
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX;
@@ -198,3 +192,9 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
     </div>
   );
 }
+
+Navbar.propTypes = {
+  activeTab: PropTypes.string.isRequired,
+  setActiveTab: PropTypes.func.isRequired,
+  currentUser: PropTypes.object
+};

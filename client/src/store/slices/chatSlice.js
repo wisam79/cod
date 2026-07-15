@@ -1,4 +1,4 @@
-import { addMessage as fbSendMessage } from '../firebaseService';
+import { addMessage as fbSendMessage } from '../apiClient';
 
 export const createChatSlice = (set, get) => ({
   messages: [],

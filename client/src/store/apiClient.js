@@ -1,27 +1,19 @@
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
-// Global Fetch Interceptor for Maintenance Mode
-const originalFetch = window.fetch;
-window.fetch = async (...args) => {
-  const res = await originalFetch(...args);
-  if (res.status === 503) {
-    const clone = res.clone();
-    try {
-      const data = await clone.json();
-      if (data.error === 'System Maintenance') {
-        window.dispatchEvent(new CustomEvent('system-maintenance'));
-      }
-    } catch (e) {}
-  }
-  return res;
-};
-
 const getHeaders = () => {
   const token = localStorage.getItem('auth_token');
   return {
     'Content-Type': 'application/json',
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    ...(token ? { Authorization: `Bearer ${token}` } : {})
   };
+};
+
+const handleResponse = async (res) => {
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ error: 'Request failed' }));
+    throw new Error(error.error || 'Request failed');
+  }
+  return res.json();
 };
 
 export async function loginUser(email, password) {
@@ -30,13 +22,8 @@ export async function loginUser(email, password) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
   });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error || 'خطأ في تسجيل الدخول');
-  }
-  return res.json();
+  return handleResponse(res);
 }
-
 
 export async function registerUser(name, email, password, role) {
   const res = await fetch(`${API_URL}/auth/register`, {
@@ -44,11 +31,7 @@ export async function registerUser(name, email, password, role) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, email, password, role })
   });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error || 'خطأ في التسجيل');
-  }
-  return res.json();
+  return handleResponse(res);
 }
 
 export async function logoutUser() {
@@ -71,19 +54,17 @@ export function onAuthChange(callback) {
   } else {
     setTimeout(() => callback(null), 100);
   }
-  return () => {}; 
+  return () => {};
 }
 
 export async function fetchMembers() {
   const res = await fetch(`${API_URL}/members`, { headers: getHeaders() });
-  if (!res.ok) throw new Error('فشل جلب الأعضاء');
-  return res.json();
+  return handleResponse(res);
 }
 
 export async function fetchTasks() {
   const res = await fetch(`${API_URL}/tasks`, { headers: getHeaders() });
-  if (!res.ok) throw new Error('فشل جلب المهام');
-  return res.json();
+  return handleResponse(res);
 }
 
 export async function addTask(taskData) {
@@ -92,8 +73,7 @@ export async function addTask(taskData) {
     headers: getHeaders(),
     body: JSON.stringify(taskData)
   });
-  if (!res.ok) throw new Error('فشل إضافة المهمة');
-  return res.json();
+  return handleResponse(res);
 }
 
 export async function updateTask(taskId, updates) {
@@ -102,8 +82,7 @@ export async function updateTask(taskId, updates) {
     headers: getHeaders(),
     body: JSON.stringify(updates)
   });
-  if (!res.ok) throw new Error('فشل تحديث المهمة');
-  return res.json();
+  return handleResponse(res);
 }
 
 export async function deleteTask(taskId) {
@@ -111,42 +90,41 @@ export async function deleteTask(taskId) {
     method: 'DELETE',
     headers: getHeaders()
   });
-  if (!res.ok) throw new Error('فشل حذف المهمة');
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ error: 'فشل حذف المهمة' }));
+    throw new Error(error.error || 'فشل حذف المهمة');
+  }
 }
 
-export async function addComment(taskId, text, authorId) {
+export async function addComment(taskId, text) {
   const res = await fetch(`${API_URL}/tasks/${taskId}/comments`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({ text })
   });
-  if (!res.ok) throw new Error('فشل إضافة التعليق');
-  return res.json();
+  return handleResponse(res);
 }
 
 export async function fetchMessages(page = 1, limit = 50) {
   const res = await fetch(`${API_URL}/messages?page=${page}&limit=${limit}`, { headers: getHeaders() });
-  if (!res.ok) throw new Error('فشل جلب الرسائل');
-  return res.json();
+  return handleResponse(res);
 }
 
-export async function addMessage(text, senderId) {
+export async function addMessage(text) {
   const res = await fetch(`${API_URL}/messages`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({ text })
   });
-  if (!res.ok) throw new Error('فشل إرسال الرسالة');
-  return res.json();
+  return handleResponse(res);
 }
 
 export async function fetchNotifications(page = 1, limit = 50) {
   const res = await fetch(`${API_URL}/notifications?page=${page}&limit=${limit}`, { headers: getHeaders() });
-  if (!res.ok) throw new Error('فشل جلب الإشعارات');
-  return res.json();
+  return handleResponse(res);
 }
 
-export async function clearNotifications(userId) {
+export async function clearNotifications() {
   const res = await fetch(`${API_URL}/notifications`, {
     method: 'DELETE',
     headers: getHeaders()
@@ -154,8 +132,47 @@ export async function clearNotifications(userId) {
   if (!res.ok) throw new Error('فشل مسح الإشعارات');
 }
 
-// WebSocket logic
+// Admin API calls
+export async function fetchAdminMembers() {
+  const res = await fetch(`${API_URL}/admin/members`, { headers: getHeaders() });
+  return handleResponse(res);
+}
+
+export async function updateAdminMember(id, memberData) {
+  const res = await fetch(`${API_URL}/admin/members/${id}`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify(memberData)
+  });
+  return handleResponse(res);
+}
+
+export async function deleteAdminMember(id) {
+  const res = await fetch(`${API_URL}/admin/members/${id}`, {
+    method: 'DELETE',
+    headers: getHeaders()
+  });
+  return handleResponse(res);
+}
+
+export async function fetchAdminSettings() {
+  const res = await fetch(`${API_URL}/admin/settings`, { headers: getHeaders() });
+  return handleResponse(res);
+}
+
+export async function updateAdminSettings(settings) {
+  const res = await fetch(`${API_URL}/admin/settings`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify(settings)
+  });
+  return handleResponse(res);
+}
+
+// WebSocket layer
 let ws = null;
+let reconnectAttempts = 0;
+const MAX_RECONNECT_DELAY = 30000;
 let taskSubscribers = [];
 let messageSubscribers = [];
 let notificationSubscribers = [];
@@ -174,25 +191,22 @@ let pollingTimer = null;
 let lastMsgId = 0;
 let lastNotifId = 0;
 
-function startPollingFallback() {
-  if (pollingTimer) return;
-  
-  // Fetch initial IDs
+function fetchLatestIds() {
   fetchMessages(1, 1).then(msgs => {
     if (msgs && msgs.length > 0) lastMsgId = msgs[0].id;
   }).catch(() => {});
-  
   fetchNotifications(1, 1).then(notifs => {
     if (notifs && notifs.length > 0) lastNotifId = notifs[0].id;
   }).catch(() => {});
+}
 
+function startPollingFallback() {
+  if (pollingTimer) return;
+  fetchLatestIds();
   pollingTimer = setInterval(async () => {
-    // Only poll if tab is active and WebSocket is NOT open
     if (document.hidden) return;
     if (ws && ws.readyState === WebSocket.OPEN) return;
-    
     try {
-      // Poll new messages
       if (messageSubscribers.length > 0) {
         const msgs = await fetchMessages(1, 20);
         if (msgs && msgs.length > 0) {
@@ -205,13 +219,9 @@ function startPollingFallback() {
           });
         }
       }
-      
-      // Poll new tasks (triggers a refetch of all tasks to maintain order)
       if (taskSubscribers.length > 0) {
         taskSubscribers.forEach(cb => cb({ type: 'task_updated' }));
       }
-
-      // Poll new notifications
       if (notificationSubscribers.length > 0) {
         const notifs = await fetchNotifications(1, 20);
         if (notifs && notifs.length > 0) {
@@ -227,7 +237,13 @@ function startPollingFallback() {
     } catch (e) {
       console.warn('Polling fallback warning:', e);
     }
-  }, 6000); // Check every 6 seconds
+  }, 6000);
+}
+
+function getBackoffDelay() {
+  const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), MAX_RECONNECT_DELAY);
+  const jitter = Math.random() * 1000;
+  return delay + jitter;
 }
 
 function connectWS() {
@@ -235,14 +251,15 @@ function connectWS() {
   if (ws && (ws.readyState === WebSocket.CONNECTING || ws.readyState === WebSocket.OPEN)) return;
   const token = localStorage.getItem('auth_token');
   if (!token) return;
-  
+
   notifyWsStatus('connecting');
   const wsUrl = import.meta.env.VITE_WS_URL || (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host;
   ws = new WebSocket(wsUrl);
-  
+
   ws.onopen = () => {
     ws.send(JSON.stringify({ type: 'auth', token }));
     notifyWsStatus('connected');
+    reconnectAttempts = 0;
   };
 
   ws.onmessage = (event) => {
@@ -255,10 +272,12 @@ function connectWS() {
       notificationSubscribers.forEach(cb => cb(data.payload));
     }
   };
-  
+
   ws.onclose = () => {
     notifyWsStatus('disconnected');
-    setTimeout(connectWS, 5000);
+    const delay = getBackoffDelay();
+    reconnectAttempts++;
+    setTimeout(connectWS, delay);
   };
 }
 
@@ -274,65 +293,8 @@ export function onMessagesChange(callback) {
   return () => { messageSubscribers = messageSubscribers.filter(cb => cb !== callback); };
 }
 
-export function onNotificationsChange(userId, callback) {
+export function onNotificationsChange(callback) {
   notificationSubscribers.push(callback);
   connectWS();
   return () => { notificationSubscribers = notificationSubscribers.filter(cb => cb !== callback); };
-}
-
-// Admin API calls
-export async function fetchAdminMembers() {
-  const res = await fetch(`${API_URL}/admin/members`, { headers: getHeaders() });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error || 'فشل جلب الأعضاء للمسؤول');
-  }
-  return res.json();
-}
-
-export async function updateAdminMember(id, memberData) {
-  const res = await fetch(`${API_URL}/admin/members/${id}`, {
-    method: 'PUT',
-    headers: getHeaders(),
-    body: JSON.stringify(memberData)
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error || 'فشل تحديث بيانات العضو');
-  }
-  return res.json();
-}
-
-export async function deleteAdminMember(id) {
-  const res = await fetch(`${API_URL}/admin/members/${id}`, {
-    method: 'DELETE',
-    headers: getHeaders()
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error || 'فشل حذف العضو');
-  }
-  return res.json();
-}
-
-export async function fetchAdminSettings() {
-  const res = await fetch(`${API_URL}/admin/settings`, { headers: getHeaders() });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error || 'فشل جلب الإعدادات');
-  }
-  return res.json();
-}
-
-export async function updateAdminSettings(settings) {
-  const res = await fetch(`${API_URL}/admin/settings`, {
-    method: 'PUT',
-    headers: getHeaders(),
-    body: JSON.stringify(settings)
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error || 'فشل حفظ الإعدادات');
-  }
-  return res.json();
 }

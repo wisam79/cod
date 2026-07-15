@@ -14,7 +14,7 @@ if (hasDbUrl && !isTest) {
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false
+        rejectUnauthorized: process.env.NODE_ENV === 'production'
       }
     },
     logging: (msg) => logger.debug(msg),

@@ -1,3 +1,7 @@
+/**
+ * Request validation middleware for auth, task, message, and comment endpoints.
+ * @module validation
+ */
 const messages = require('../utils/messages');
 
 const isString = (val) => typeof val === 'string';
