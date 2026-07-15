@@ -5,8 +5,7 @@ const messages = require('../utils/messages');
 
 const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'test' ? 'test_jwt_secret_key_123!' : null);
 if (!JWT_SECRET) {
-  logger.error('CRITICAL ERROR: JWT_SECRET environment variable is not set!');
-  process.exit(1);
+  logger.warn('WARNING: JWT_SECRET environment variable is not set yet!');
 }
 
 
