@@ -74,6 +74,22 @@ app.use((req, res, next) => {
   next();
 });
 
+// Database sync middleware for Vercel / serverless environment
+let dbSynced = false;
+app.use(async (req, res, next) => {
+  if (!dbSynced) {
+    try {
+      await sequelize.authenticate();
+      await sequelize.sync();
+      dbSynced = true;
+    } catch (err) {
+      logger.error('Failed to sync DB in middleware: %o', err);
+      return res.status(500).json({ error: 'حدث خطأ أثناء الاتصال بقاعدة البيانات.' });
+    }
+  }
+  next();
+});
+
 // Mount Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
@@ -145,7 +161,8 @@ const startServer = async () => {
   }
 };
 
-if (process.env.NODE_ENV !== 'test') {
+const isVercel = !!process.env.VERCEL;
+if (process.env.NODE_ENV !== 'test' && !isVercel) {
   startServer();
 }
 
