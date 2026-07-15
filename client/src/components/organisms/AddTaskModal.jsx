@@ -92,15 +92,16 @@ export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
   };
 
   return (
-    <div className={`modal-overlay ${isClosing ? 'modal-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
+    <div className={`sheet-modal-overlay ${isClosing ? 'modal-fade-out' : ''}`} onClick={handleClose}>
       <div 
         ref={modalRef}
-        className={`modal-content card ${isClosing ? 'modal-slide-down' : ''}`} 
+        className={`sheet-modal ${isClosing ? 'modal-slide-down' : ''}`} 
         onClick={(e) => e.stopPropagation()}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
+        <div className="sheet-modal-handle" />
         <div className="modal-header">
           <h2>إضافة مهمة جديدة</h2>
           <button className="close-btn" onClick={handleClose} aria-label="إغلاق">

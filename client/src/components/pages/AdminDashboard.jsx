@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import Button from '../atoms/Button';
 import Input from '../atoms/Input';
+import { triggerHaptic } from '../../utils/haptics';
 
 export default function AdminDashboard() {
   const {
@@ -119,13 +120,13 @@ export default function AdminDashboard() {
       <div className="admin-tabs">
         <button
           className={`admin-tab-btn ${activeTab === 'members' ? 'active' : ''}`}
-          onClick={() => setActiveTab('members')}
+          onClick={() => { triggerHaptic('light'); setActiveTab('members'); }}
         >
           👥 إدارة حسابات الأعضاء
         </button>
         <button
           className={`admin-tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
-          onClick={() => setActiveTab('settings')}
+          onClick={() => { triggerHaptic('light'); setActiveTab('settings'); }}
         >
           🔧 إعدادات التطبيق العامة
         </button>
@@ -166,14 +167,14 @@ export default function AdminDashboard() {
                     <td>{new Date(member.createdAt).toLocaleDateString('ar-EG')}</td>
                     <td>
                       <div className="actions-cell">
-                        <Button variant="secondary" size="sm" onClick={() => handleEditClick(member)}>
+                        <Button variant="secondary" size="sm" onClick={() => { triggerHaptic('light'); handleEditClick(member); }}>
                           تعديل 📝
                         </Button>
                         <Button
                           variant="danger"
                           size="sm"
                           disabled={member.id === currentUser.id}
-                          onClick={() => handleDeleteClick(member.id)}
+                          onClick={() => { triggerHaptic('error'); handleDeleteClick(member.id); }}
                         >
                           حذف 🗑️
                         </Button>
@@ -195,29 +196,39 @@ export default function AdminDashboard() {
 
           <form onSubmit={handleSettingsSubmit} className="admin-settings-form">
             <div className="settings-group">
-              <label className="toggle-label">
-                <span className="label-title">السماح بتسجيل الحسابات الجديدة:</span>
-                <span className="label-desc">تمكين الأعضاء من إنشاء حسابات ذاتية من الخارج.</span>
-                <input
-                  type="checkbox"
-                  checked={settingsForm.allowUserRegistration}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, allowUserRegistration: e.target.checked })}
-                  className="settings-checkbox"
-                />
-              </label>
+              <div className="toggle-row">
+                <div className="toggle-info">
+                  <span className="label-title">السماح بتسجيل الحسابات الجديدة:</span>
+                  <span className="label-desc">تمكين الأعضاء من إنشاء حسابات ذاتية من الخارج.</span>
+                </div>
+                <div
+                  className={`toggle-switch ${settingsForm.allowUserRegistration ? 'active' : ''}`}
+                  onClick={() => { triggerHaptic('light'); setSettingsForm({ ...settingsForm, allowUserRegistration: !settingsForm.allowUserRegistration }); }}
+                  role="switch"
+                  aria-checked={settingsForm.allowUserRegistration}
+                  tabIndex={0}
+                >
+                  <div className="toggle-switch-knob" />
+                </div>
+              </div>
             </div>
 
             <div className="settings-group">
-              <label className="toggle-label warning-toggle">
-                <span className="label-title">تفعيل وضع الصيانة ⚠️:</span>
-                <span className="label-desc">حظر دخول المستخدمين العاديين والمدراء والسماح للأدمن المطور فقط.</span>
-                <input
-                  type="checkbox"
-                  checked={settingsForm.maintenanceMode}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, maintenanceMode: e.target.checked })}
-                  className="settings-checkbox"
-                />
-              </label>
+              <div className="toggle-row">
+                <div className="toggle-info">
+                  <span className="label-title">تفعيل وضع الصيانة ⚠️:</span>
+                  <span className="label-desc">حظر دخول المستخدمين العاديين والمدراء والسماح للأدمن المطور فقط.</span>
+                </div>
+                <div
+                  className={`toggle-switch ${settingsForm.maintenanceMode ? 'active' : ''}`}
+                  onClick={() => { triggerHaptic('light'); setSettingsForm({ ...settingsForm, maintenanceMode: !settingsForm.maintenanceMode }); }}
+                  role="switch"
+                  aria-checked={settingsForm.maintenanceMode}
+                  tabIndex={0}
+                >
+                  <div className="toggle-switch-knob" />
+                </div>
+              </div>
             </div>
 
             <div className="settings-group">

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useAppStore } from '../../store/useAppStore';
+import PullToRefresh from '../atoms/PullToRefresh';
 import { 
   BarChart3, 
   Clock, 
@@ -13,7 +14,15 @@ import {
 } from 'lucide-react';
 
 export default function Dashboard() {
-  const { tasks, members, currentUser, addTask, notifications } = useAppStore();
+  const store = useAppStore();
+  const { tasks, members, currentUser, addTask, notifications, fetchInitialData } = store;
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchInitialData().catch(() => {});
+    setRefreshing(false);
+  }, [fetchInitialData]);
   const [quickTitle, setQuickTitle] = useState('');
   const [quickAssignee, setQuickAssignee] = useState(members[0]?.id || 1);
 
@@ -60,7 +69,8 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="dashboard-view animate-fade-in">
+    <PullToRefresh onRefresh={handleRefresh} isRefreshing={refreshing}>
+    <div className="dashboard-view">
       {/* Welcome Banner */}
       <div className="welcome-banner card">
         <div className="banner-content">
@@ -423,5 +433,6 @@ export default function Dashboard() {
         }
       `}</style>
     </div>
+    </PullToRefresh>
   );
 }

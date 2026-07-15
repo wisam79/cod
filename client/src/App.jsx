@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from './store/useAppStore';
 import Navbar from './components/organisms/Navbar';
 import NotificationDrawer from './components/organisms/NotificationDrawer';
 import ToastContainer from './components/organisms/ToastContainer';
 import Avatar from './components/atoms/Avatar';
+import { SkeletonPage, SkeletonChat } from './components/atoms/Skeleton';
 import { triggerHaptic } from './utils/haptics';
 
 import { 
@@ -58,6 +59,9 @@ function App() {
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [isMaintenance, setIsMaintenance] = useState(false);
+  const [pageDirection, setPageDirection] = useState('right');
+  const prevTabRef = useRef('dashboard');
+  const touchStartX = useRef(null);
 
   useEffect(() => {
     const handleMaintenance = () => {
@@ -72,6 +76,14 @@ function App() {
            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
   });
 
+  // Dynamic theme-color meta tag
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) {
+      meta.setAttribute('content', isDarkMode ? '#0f172a' : '#1e40af');
+    }
+  }, [isDarkMode]);
+
   useEffect(() => {
     if (isAuthenticated) {
       const cleanPath = location.pathname.slice(1);
@@ -80,6 +92,39 @@ function App() {
       }
     }
   }, [isAuthenticated, location.pathname, navigate]);
+
+  // Track navigation direction for page transitions
+  const tabOrder = ['dashboard', 'tasks', 'chat', 'team', 'admin'];
+  useEffect(() => {
+    if (prevTabRef.current !== activeTab) {
+      const prevIdx = tabOrder.indexOf(prevTabRef.current);
+      const currIdx = tabOrder.indexOf(activeTab);
+      setPageDirection(currIdx > prevIdx ? 'right' : 'left');
+      prevTabRef.current = activeTab;
+    }
+  }, [activeTab]);
+
+  // Swipe-to-go-back / swipe navigation gesture
+  const handleTouchStart = useCallback((e) => {
+    if (e.touches[0].clientX < 40) {
+      touchStartX.current = e.touches[0].clientX;
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback((e) => {
+    if (touchStartX.current !== null) {
+      const diff = e.changedTouches[0].clientX - touchStartX.current;
+      if (diff > 80) {
+        triggerHaptic('light');
+        const currIdx = tabOrder.indexOf(activeTab);
+        if (currIdx > 0) {
+          const prevTab = tabOrder[currIdx - 1];
+          window.location.hash = `#/${prevTab}`;
+        }
+      }
+      touchStartX.current = null;
+    }
+  }, [activeTab]);
 
   useEffect(() => {
     if (drawerOpen) {
@@ -168,14 +213,21 @@ function App() {
     fetchCurrentUser();
   }, [fetchCurrentUser]);
 
+  const getSkeleton = () => {
+    switch (activeTab) {
+      case 'dashboard': return <SkeletonPage cards={4} />;
+      case 'tasks': return <SkeletonPage cards={5} />;
+      case 'chat': return <SkeletonChat />;
+      case 'team': return <SkeletonPage cards={6} lines={1} />;
+      case 'admin': return <SkeletonPage cards={4} />;
+      default: return <SkeletonPage cards={3} />;
+    }
+  };
+
   const renderTabContent = () => {
     return (
-      <React.Suspense fallback={
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-          <div className="loader"></div>
-        </div>
-      }>
-        <div className={`animate-page-in`} key={activeTab}>
+      <React.Suspense fallback={getSkeleton()}>
+        <div className={pageDirection === 'right' ? 'animate-slide-right' : 'animate-slide-left'} key={activeTab}>
           {(() => {
             switch (activeTab) {
               case 'dashboard':
@@ -240,7 +292,10 @@ function App() {
     <div className={`phone-mockup-wrapper ${fullscreen ? 'fullscreen' : ''}`}>
       {!fullscreen && <div className="phone-notch"></div>}
       
-      <div className={`app-container ${isDarkMode ? 'dark-theme' : ''}`}>
+      <div className={`app-container ${isDarkMode ? 'dark-theme' : ''}`}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <ToastContainer activeToasts={activeToasts} />
 
         <div className="connection-status-bars">

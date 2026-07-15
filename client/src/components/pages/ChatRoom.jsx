@@ -1,18 +1,40 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAppStore } from '../../store/useAppStore';
+import PullToRefresh from '../atoms/PullToRefresh';
 import MessageItem from '../molecules/MessageItem';
 import { MessageSquare, Send } from 'lucide-react';
 
 export default function ChatRoom() {
-  const { messages, members, currentUser, sendMessage } = useAppStore();
+  const store = useAppStore();
+  const { messages, members, currentUser, sendMessage, fetchMessages } = store;
   const [inputText, setInputText] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
   const chatEndRef = useRef(null);
+  const inputRef = useRef(null);
+
+  // Keyboard-aware: scroll to bottom when keyboard opens
+  useEffect(() => {
+    const handleResize = () => {
+      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize);
+      return () => window.visualViewport.removeEventListener('resize', handleResize);
+    }
+  }, []);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchMessages().catch(() => {});
+    setRefreshing(false);
+  }, [fetchMessages]);
 
   const handleSend = (e) => {
     e.preventDefault();
     if (!inputText.trim()) return;
     sendMessage(inputText);
     setInputText('');
+    inputRef.current?.focus();
   };
 
   // Scroll to bottom when messages load/update
@@ -21,7 +43,8 @@ export default function ChatRoom() {
   }, [messages]);
 
   return (
-    <div className="chat-room-view animate-fade-in">
+    <PullToRefresh onRefresh={handleRefresh} isRefreshing={refreshing}>
+    <div className="chat-room-view">
       {/* Group Chat Banner Info */}
       <div className="chat-banner card">
         <div className="chat-banner-info">
@@ -52,11 +75,13 @@ export default function ChatRoom() {
       {/* Input Message Form */}
       <form onSubmit={handleSend} className="chat-input-form">
         <input 
+          ref={inputRef}
           type="text" 
           placeholder="اكتب رسالتك هنا..." 
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           required
+          autoComplete="off"
         />
         <button type="submit" className="btn btn-primary btn-chat-send" aria-label="إرسال رسالة">
           <Send size={18} style={{ transform: 'rotate(180deg)' }} />
@@ -149,5 +174,6 @@ export default function ChatRoom() {
         }
       `}</style>
     </div>
+    </PullToRefresh>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import CommentItem from '../molecules/CommentItem';
+import ActionSheet from '../atoms/ActionSheet';
 import { X, Send, Trash2, Calendar, User, Info } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 import { translatePriority } from '../../utils/translations';
@@ -16,6 +17,7 @@ export default function TaskDetailsModal({
 }) {
   const [commentText, setCommentText] = useState('');
   const [isClosing, setIsClosing] = useState(false);
+  const [showActionSheet, setShowActionSheet] = useState(false);
   const touchStartY = useRef(null);
   const modalRef = useRef(null);
 
@@ -83,15 +85,16 @@ export default function TaskDetailsModal({
   };
 
   return (
-    <div className={`modal-overlay ${isClosing ? 'modal-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
+    <div className={`sheet-modal-overlay ${isClosing ? 'modal-fade-out' : ''}`} onClick={handleClose}>
       <div 
         ref={modalRef}
-        className={`modal-content card ${isClosing ? 'modal-slide-down' : ''}`} 
+        className={`sheet-modal ${isClosing ? 'modal-slide-down' : ''}`} 
         onClick={(e) => e.stopPropagation()}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
+        <div className="sheet-modal-handle" />
         <div className="modal-header">
           <h2>تفاصيل المهمة</h2>
           <button className="close-btn" onClick={handleClose} aria-label="إغلاق">
@@ -184,14 +187,8 @@ export default function TaskDetailsModal({
 
           <div className="modal-footer-actions">
             <button 
-              className="btn btn-delete-task" 
-              onClick={() => {
-                if (window.confirm('هل أنت متأكد من رغبتك في حذف هذه المهمة؟')) {
-                  triggerHaptic([20, 50, 20]);
-                  deleteTask(task.id);
-                  onClose();
-                }
-              }}
+              className="btn btn-delete-task pressable" 
+              onClick={() => setShowActionSheet(true)}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
             >
               <Trash2 size={16} />
@@ -200,6 +197,23 @@ export default function TaskDetailsModal({
           </div>
         </div>
       </div>
+      <ActionSheet
+        isOpen={showActionSheet}
+        onClose={() => setShowActionSheet(false)}
+        title="هل أنت متأكد من حذف هذه المهمة؟"
+        actions={[
+          {
+            label: 'حذف المهمة',
+            onClick: () => {
+              triggerHaptic('error');
+              deleteTask(task.id);
+              onClose();
+            },
+            destructive: true,
+            icon: <Trash2 size={18} style={{ marginLeft: 6 }} />,
+          }
+        ]}
+      />
     </div>
   );
 }

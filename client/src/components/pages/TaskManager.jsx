@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useAppStore } from '../../store/useAppStore';
+import PullToRefresh from '../atoms/PullToRefresh';
 import TaskCard from '../molecules/TaskCard';
 import TaskFilter from '../organisms/TaskFilter';
 import AddTaskModal from '../organisms/AddTaskModal';
 import TaskDetailsModal from '../organisms/TaskDetailsModal';
 
 export default function TaskManager() {
+  const store = useAppStore();
   const { 
     tasks, 
     members, 
@@ -13,8 +15,16 @@ export default function TaskManager() {
     addTask, 
     updateTaskStatus, 
     addCommentToTask, 
-    deleteTask 
-  } = useAppStore();
+    deleteTask,
+    fetchInitialData 
+  } = store;
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchInitialData().catch(() => {});
+    setRefreshing(false);
+  }, [fetchInitialData]);
 
   const [activeFilterStatus, setActiveFilterStatus] = useState('all');
   const [activeAssigneeFilter, setActiveAssigneeFilter] = useState('all');
@@ -49,7 +59,8 @@ export default function TaskManager() {
   };
 
   return (
-    <div className="task-manager-view animate-fade-in">
+    <PullToRefresh onRefresh={handleRefresh} isRefreshing={refreshing}>
+    <div className="task-manager-view">
       <TaskFilter 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -594,5 +605,6 @@ export default function TaskManager() {
         }
       `}</style>
     </div>
+    </PullToRefresh>
   );
 }
