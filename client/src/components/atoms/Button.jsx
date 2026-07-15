@@ -13,7 +13,7 @@ export default function Button({
   const getStyles = () => {
     const base = {
       padding: '10px 20px',
-      borderRadius: '25px',
+      borderRadius: '16px',
       fontSize: '0.9rem',
       fontWeight: '600',
       cursor: disabled ? 'not-allowed' : 'pointer',

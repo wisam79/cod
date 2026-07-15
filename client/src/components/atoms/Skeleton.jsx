@@ -5,7 +5,7 @@ export function SkeletonLine({ width = '100%', height = 14, style = {} }) {
   return (
     <div style={{
       width, height, borderRadius: 8,
-      background: 'linear-gradient(90deg, var(--border) 25%, rgba(200,200,200,0.3) 50%, var(--border) 75%)',
+      background: 'linear-gradient(90deg, var(--border) 25%, var(--bg-app) 50%, var(--border) 75%)',
       backgroundSize: '200% 100%',
       animation: 'shimmer 1.5s ease-in-out infinite',
       ...style,
@@ -25,7 +25,7 @@ export function SkeletonCard({ lines = 3 }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <div style={{
           width: 40, height: 40, borderRadius: '50%',
-          background: 'linear-gradient(90deg, var(--border) 25%, rgba(200,200,200,0.3) 50%, var(--border) 75%)',
+          background: 'linear-gradient(90deg, var(--border) 25%, var(--bg-app) 50%, var(--border) 75%)',
           backgroundSize: '200% 100%',
           animation: 'shimmer 1.5s ease-in-out infinite',
           flexShrink: 0,

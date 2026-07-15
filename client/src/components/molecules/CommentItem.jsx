@@ -15,10 +15,10 @@ export default function CommentItem({ comment, members }) {
         display: 'flex',
         gap: '12px',
         padding: '12px',
-        backgroundColor: '#fffcfb',
+        backgroundColor: 'var(--bg-card)',
         borderRadius: '15px',
         marginBottom: '10px',
-        border: '1px solid #fff0eb'
+        border: '1px solid var(--border)'
       }}
       className="comment-item"
     >
@@ -32,14 +32,14 @@ export default function CommentItem({ comment, members }) {
             marginBottom: '4px' 
           }}
         >
-          <span style={{ fontWeight: '600', fontSize: '0.85rem', color: '#444444' }}>
+          <span style={{ fontWeight: '600', fontSize: '0.85rem', color: 'var(--text-main)' }}>
             {sender.name}
           </span>
-          <span style={{ fontSize: '0.75rem', color: '#999999' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
             {comment.time || (comment.createdAt?.toDate ? comment.createdAt.toDate() : new Date(comment.createdAt)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
         </div>
-        <p style={{ fontSize: '0.85rem', color: '#666666', margin: 0, lineHeight: 1.4 }}>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
           {comment.text}
         </p>
       </div>

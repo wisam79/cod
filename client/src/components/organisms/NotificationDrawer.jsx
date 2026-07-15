@@ -104,11 +104,6 @@ export default function NotificationDrawer({ isOpen, onClose, notifications, onC
           border-right: 1px solid var(--border);
         }
 
-        @keyframes slideFromLeft {
-          from { transform: translateX(-100%); }
-          to { transform: translateX(0); }
-        }
-
         .drawer-header {
           display: flex;
           justify-content: space-between;

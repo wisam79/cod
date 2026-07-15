@@ -206,7 +206,7 @@ export default function TaskManager() {
 
         .task-manager-view .status-tabs-container {
           display: flex;
-          background-color: #f7ede9;
+          background-color: var(--primary-light);
           padding: 4px;
           border-radius: 14px;
           gap: 2px;
@@ -351,106 +351,6 @@ export default function TaskManager() {
           padding: 40px 20px;
           color: var(--text-muted);
           font-size: 0.85rem;
-        }
-
-        /* MODAL STYLES */
-        .task-manager-view .modal-overlay {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          background: rgba(0, 0, 0, 0.45);
-          backdrop-filter: blur(4px);
-          -webkit-backdrop-filter: blur(4px);
-          z-index: 1000;
-          display: flex;
-          align-items: flex-end;
-          cursor: pointer;
-        }
-
-        .task-manager-view .modal-content {
-          width: 100%;
-          max-height: 85%;
-          border-radius: 24px 24px 0 0;
-          background-color: var(--bg-card);
-          padding: 12px 20px 24px 20px;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          text-align: right;
-          animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08), 0 -2px 8px rgba(0, 0, 0, 0.04);
-          position: relative;
-          touch-action: pan-y;
-        }
-
-        .task-manager-view .modal-content::before {
-          content: '';
-          width: 36px;
-          height: 5px;
-          background-color: var(--border);
-          border-radius: 2.5px;
-          align-self: center;
-          margin-bottom: 4px;
-        }
-
-        @keyframes slideUpModal {
-          from { transform: translateY(100%); }
-          to { transform: translateY(0); }
-        }
-
-        .task-manager-view .modal-fade-out {
-          animation: modalFadeOut 0.2s ease-out forwards;
-        }
-
-        @keyframes modalFadeOut {
-          from { opacity: 1; }
-          to { opacity: 0; }
-        }
-
-        .task-manager-view .modal-slide-down {
-          animation: modalSlideDown 0.2s ease-out forwards;
-        }
-
-        @keyframes modalSlideDown {
-          from { transform: translateY(0); opacity: 1; }
-          to { transform: translateY(40px); opacity: 0; }
-        }
-
-        .task-manager-view .modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-bottom: 1px solid var(--border);
-          padding-bottom: 12px;
-        }
-
-        .task-manager-view .modal-header h2 {
-          font-size: 1.1rem;
-          font-weight: 800;
-          color: var(--text-main);
-        }
-
-        .task-manager-view .close-btn {
-          background: var(--bg-app);
-          border: 1px solid var(--border);
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-          font-size: 1.1rem;
-          cursor: pointer;
-          color: var(--text-muted);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .task-manager-view .modal-form {
-          display: flex;
-          flex-direction: column;
-          overflow-y: auto;
-          flex: 1;
         }
 
         .task-manager-view .task-detail-body {

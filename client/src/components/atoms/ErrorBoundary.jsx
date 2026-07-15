@@ -47,8 +47,8 @@ export default class ErrorBoundary extends React.Component {
           alignItems: 'center',
           justifyContent: 'center',
           height: '100vh',
-          backgroundColor: '#f1f5f9',
-          color: '#0f172a',
+          backgroundColor: 'var(--bg-app)',
+          color: 'var(--text-main)',
           padding: '24px',
           textAlign: 'center',
           fontFamily: 'system-ui, sans-serif'
@@ -60,7 +60,7 @@ export default class ErrorBoundary extends React.Component {
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           </div>
           <h2 style={{ marginBottom: '12px', fontWeight: '800' }}>حدث خطأ غير متوقع</h2>
-          <p style={{ color: '#475569', marginBottom: '24px', fontSize: '0.95rem' }}>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '24px', fontSize: '0.95rem' }}>
             نعتذر عن ذلك! تعطل التطبيق بسبب خطأ داخلي.
           </p>
           <button 
@@ -89,8 +89,8 @@ export default class ErrorBoundary extends React.Component {
             <pre style={{
               marginTop: '24px',
               padding: '12px',
-              backgroundColor: '#ffebe6',
-              color: '#ff3300',
+              backgroundColor: 'var(--danger-light, #ffebe6)',
+              color: 'var(--danger, #ff3300)',
               borderRadius: '12px',
               fontSize: '0.8rem',
               textAlign: 'left',

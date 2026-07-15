@@ -26,8 +26,8 @@ export default function Avatar({ src, alt, size = 'md', className = '' }) {
     <div 
       style={{
         ...style[size],
-        backgroundColor: '#ffd8cc',
-        color: '#ff6633',
+        backgroundColor: 'var(--primary-light)',
+        color: 'var(--primary)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

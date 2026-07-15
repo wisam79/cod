@@ -12,10 +12,10 @@ export default function MessageItem({ message, members, isCurrentUser }) {
     maxWidth: '75%',
     padding: '12px 16px',
     borderRadius: isCurrentUser ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-    backgroundColor: isCurrentUser ? '#ffefe6' : '#ffffff',
-    border: isCurrentUser ? 'none' : '1px solid #ffe5db',
-    color: '#333333',
-    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.02)',
+    backgroundColor: isCurrentUser ? 'var(--accent-light)' : 'var(--bg-card)',
+    border: isCurrentUser ? 'none' : '1px solid var(--border)',
+    color: 'var(--text-main)',
+    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.04)',
   };
 
   return (
@@ -32,7 +32,7 @@ export default function MessageItem({ message, members, isCurrentUser }) {
       <Avatar src={sender.avatar} alt={sender.name} size="sm" />
       <div style={bubbleStyle}>
         {!isCurrentUser && (
-          <div style={{ fontWeight: '700', fontSize: '0.8rem', color: '#ff5500', marginBottom: '4px' }}>
+          <div style={{ fontWeight: '700', fontSize: '0.8rem', color: 'var(--primary)', marginBottom: '4px' }}>
             {sender.name}
           </div>
         )}
@@ -42,7 +42,7 @@ export default function MessageItem({ message, members, isCurrentUser }) {
         <div 
           style={{ 
             fontSize: '0.7rem', 
-            color: '#999999', 
+            color: 'var(--text-muted)', 
             textAlign: 'left', 
             marginTop: '4px',
             direction: 'ltr'

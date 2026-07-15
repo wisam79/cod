@@ -4,6 +4,9 @@
   --primary: #1e40af;
   --primary-hover: #1d4ed8;
   --primary-light: rgba(30, 64, 175, 0.08);
+  --accent-light: rgba(30, 64, 175, 0.06);
+  --danger: #dc2626;
+  --danger-light: rgba(220, 38, 38, 0.08);
   --bg-app: #f1f5f9;
   --bg-card: #ffffff;
   --text-main: #0f172a;
@@ -132,6 +135,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   position: relative;
   padding-top: var(--safe-top);
   padding-bottom: var(--safe-bottom);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .scrollable-content {
@@ -277,7 +281,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 .badge-progress { background-color: #e6f3ff; color: #0066cc; }
 .badge-review { background-color: #fff7e6; color: #cc8800; }
 .badge-done { background-color: #e6ffe6; color: #009933; }
-.badge-default { background-color: #fff0eb; color: #ff5500; }
+.badge-default { background-color: var(--primary-light); color: var(--primary); }
 
 .header-bar {
   padding: 40px 20px 10px 20px;
@@ -669,6 +673,8 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.25);
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.35);
   --primary-light: rgba(59, 130, 246, 0.15);
+  --accent-light: rgba(59, 130, 246, 0.12);
+  --danger-light: rgba(220, 38, 38, 0.15);
   background-color: var(--bg-app);
 }
 
@@ -707,6 +713,15 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 
 .app-container.dark-theme .empty-state-card {
   color: var(--text-muted);
+}
+
+.app-container.dark-theme .badge-default {
+  background-color: var(--primary-light);
+  color: #60a5fa;
+}
+
+.app-container.dark-theme .status-tabs-container {
+  background-color: var(--primary-light);
 }
 
 .install-banner {
@@ -796,22 +811,23 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   margin-bottom: 6px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #555555;
+  color: var(--text-muted);
 }
 
 .custom-input-element {
   width: 100%;
   padding: 12px 16px;
   border-radius: 15px;
-  border: 1.5px solid #ffe5db;
-  background-color: #fffdfc;
+  border: 1.5px solid var(--border);
+  background-color: var(--bg-card);
   font-size: 0.9rem;
   outline: none;
   transition: border-color 0.2s;
   box-sizing: border-box;
+  color: var(--text-main);
 }
 
 .custom-input-element:focus {
-  border-color: #ff7733;
+  border-color: var(--primary);
 }
 
