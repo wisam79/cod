@@ -24,6 +24,7 @@ const adminRoutes = require('./routes/admin');
 const { Settings } = require('./models');
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 
 // Security Middleware
@@ -45,7 +46,12 @@ const isLocalhost = (url) => {
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
-    if (process.env.NODE_ENV !== 'production' || isLocalhost(origin) || allowedOrigins.includes(origin)) {
+    if (
+      process.env.NODE_ENV !== 'production' || 
+      isLocalhost(origin) || 
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app')
+    ) {
       return callback(null, true);
     } else {
       return callback(new Error('Not allowed by CORS'));

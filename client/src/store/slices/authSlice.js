@@ -12,7 +12,7 @@ export const createAuthSlice = (set, get) => ({
     try {
       const user = await loginUser(email, password);
       localStorage.setItem('auth_token', user.token);
-      const userData = { id: user.id, name: user.name, email: user.email, role: user.role, avatar: user.avatar };
+      const userData = { id: user.member.id, name: user.member.name, email: user.member.email, role: user.member.role, avatar: user.member.avatar };
       localStorage.setItem('offline_user', JSON.stringify(userData));
       set({
         token: user.token,
@@ -20,7 +20,7 @@ export const createAuthSlice = (set, get) => ({
         isAuthenticated: true,
         isLoading: false
       });
-      get().addToast(`مرحباً بك مجدداً، ${user.name}!`);
+      get().addToast(`مرحباً بك مجدداً، ${user.member.name}!`);
       await get().fetchInitialData();
       get().initRealtimeListeners();
     } catch (err) {
