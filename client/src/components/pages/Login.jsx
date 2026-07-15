@@ -47,7 +47,7 @@ export default function Login() {
         )}
 
         <div className="login-hint">
-          للأدمن: استخدم <strong>wisam</strong> / <strong>77862@@</strong>
+          للأدمن: <strong>wisam@mohemmaty.com</strong>
         </div>
 
         <form onSubmit={handleSubmit}>
