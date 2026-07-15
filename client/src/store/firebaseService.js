@@ -157,7 +157,68 @@ export function onWsStatusChange(cb) {
   return () => { wsStatusSubscribers = wsStatusSubscribers.filter(fn => fn !== cb); };
 }
 
+let pollingTimer = null;
+let lastMsgId = 0;
+let lastNotifId = 0;
+
+function startPollingFallback() {
+  if (pollingTimer) return;
+  
+  // Fetch initial IDs
+  fetchMessages(1, 1).then(msgs => {
+    if (msgs && msgs.length > 0) lastMsgId = msgs[0].id;
+  }).catch(() => {});
+  
+  fetchNotifications(1, 1).then(notifs => {
+    if (notifs && notifs.length > 0) lastNotifId = notifs[0].id;
+  }).catch(() => {});
+
+  pollingTimer = setInterval(async () => {
+    // Only poll if tab is active and WebSocket is NOT open
+    if (document.hidden) return;
+    if (ws && ws.readyState === WebSocket.OPEN) return;
+    
+    try {
+      // Poll new messages
+      if (messageSubscribers.length > 0) {
+        const msgs = await fetchMessages(1, 20);
+        if (msgs && msgs.length > 0) {
+          const sorted = [...msgs].sort((a, b) => a.id - b.id);
+          sorted.forEach(msg => {
+            if (msg.id > lastMsgId) {
+              lastMsgId = msg.id;
+              messageSubscribers.forEach(cb => cb(msg));
+            }
+          });
+        }
+      }
+      
+      // Poll new tasks (triggers a refetch of all tasks to maintain order)
+      if (taskSubscribers.length > 0) {
+        taskSubscribers.forEach(cb => cb({ type: 'task_updated' }));
+      }
+
+      // Poll new notifications
+      if (notificationSubscribers.length > 0) {
+        const notifs = await fetchNotifications(1, 20);
+        if (notifs && notifs.length > 0) {
+          const sorted = [...notifs].sort((a, b) => a.id - b.id);
+          sorted.forEach(notif => {
+            if (notif.id > lastNotifId) {
+              lastNotifId = notif.id;
+              notificationSubscribers.forEach(cb => cb(notif));
+            }
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('Polling fallback warning:', e);
+    }
+  }, 6000); // Check every 6 seconds
+}
+
 function connectWS() {
+  startPollingFallback();
   if (ws && (ws.readyState === WebSocket.CONNECTING || ws.readyState === WebSocket.OPEN)) return;
   const token = localStorage.getItem('auth_token');
   if (!token) return;
