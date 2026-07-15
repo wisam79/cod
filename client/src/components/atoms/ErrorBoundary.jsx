@@ -12,6 +12,25 @@ export default class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error("ErrorBoundary caught an error:", error, errorInfo);
+    
+    // Check if it's a chunk loading failure (standard Vite chunk caching issue)
+    const isChunkError = 
+      /Failed to fetch dynamically imported module/i.test(error.message) ||
+      /Loading chunk \d+ failed/i.test(error.message) ||
+      /error loading dynamically imported module/i.test(error.message);
+      
+    if (isChunkError) {
+      console.warn("Chunk load error detected, forcing app reload to retrieve latest assets...");
+      const reloadKey = 'chunk-error-reload-timestamp';
+      const lastReload = sessionStorage.getItem(reloadKey);
+      const now = Date.now();
+      
+      // Limit automatic reload to once every 10 seconds to prevent infinite reload loops
+      if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+        sessionStorage.setItem(reloadKey, now.toString());
+        window.location.reload();
+      }
+    }
   }
 
   render() {
