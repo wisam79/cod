@@ -1,4 +1,8 @@
 require('dotenv').config();
+// Force Vercel to bundle pg and pg-hstore for Sequelize postgres dialect
+require('pg');
+require('pg-hstore');
+
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
