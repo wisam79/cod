@@ -1,0 +1,36 @@
+# Node dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Production builds
+client/dist/
+
+# Local databases and data
+*.sqlite
+.data/
+
+# Environment configurations
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDEs and System files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Agent/cortex temporary files and brains
+.gemini/
+.agents/
+.cortex/
+brain/
+walkthrough.md
+implementation_plan.md
+task.md
+bugs_audit.md
+media__*
+walkthrough.md.data*

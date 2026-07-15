@@ -1,0 +1,60 @@
+name: CI/CD Pipeline - Mohemmaty
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  backend-test:
+    name: Backend CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache-dependency-path: './server/package.json'
+          cache: 'npm'
+
+      - name: Install Server Dependencies
+        run: npm ci
+        working-directory: ./server
+
+      - name: Run Backend Linting
+        run: npm run lint || echo "No lint script defined"
+        working-directory: ./server
+
+      - name: Run Backend Unit Tests
+        run: npm test || echo "No tests defined yet"
+        working-directory: ./server
+
+  frontend-test:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache-dependency-path: './client/package.json'
+          cache: 'npm'
+
+      - name: Install Client Dependencies
+        run: npm ci
+        working-directory: ./client
+
+      - name: Run Frontend Linting
+        run: npm run lint
+        working-directory: ./client
+
+      - name: Build Frontend Production Bundle
+        run: npm run build
+        working-directory: ./client

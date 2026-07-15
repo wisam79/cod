@@ -1,0 +1,47 @@
+{
+  "short_name": "مُهِمَّتِي",
+  "name": "مُهِمَّتِي - إدارة مهام الفريق",
+  "description": "تطبيق إدارة المهام التفاعلي للفريق",
+  "categories": ["productivity", "business"],
+  "lang": "ar",
+  "dir": "rtl",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "background_color": "#f1f5f9",
+  "theme_color": "#1e40af",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "app-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "app-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "إضافة مهمة جديدة",
+      "short_name": "مهمة",
+      "description": "إضافة مهمة جديدة بسرعة",
+      "url": "/#/tasks",
+      "icons": [{ "src": "app-icon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "الدردشة",
+      "short_name": "شات",
+      "description": "فتح الدردشة الجماعية",
+      "url": "/#/chat",
+      "icons": [{ "src": "app-icon.png", "sizes": "192x192" }]
+    }
+  ]
+}

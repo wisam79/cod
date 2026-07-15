@@ -1,0 +1,14 @@
+{
+  "name": "mohemmaty",
+  "version": "1.0.0",
+  "description": "Task Management App - Optimized for Glitch",
+  "scripts": {
+    "postinstall": "cd server && npm install && cd ../client && npm install && npm run build",
+    "start": "node server/server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isManager() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/members/$(request.auth.uid)).data.role in ['مدير', 'مديرة', 'Manager'];
+    }
+
+    match /members/{memberId} {
+      allow read: if isAuthenticated();
+      allow create: if true;
+      allow update: if isOwner(memberId);
+      allow delete: if false;
+    }
+
+    match /tasks/{taskId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isManager() || 
+        resource.data.creatorId == request.auth.uid;
+      
+      match /comments/{commentId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update: if isOwner(resource.data.senderId);
+        allow delete: if isManager() || isOwner(resource.data.senderId);
+      }
+    }
+
+    match /messages/{messageId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if false;
+      allow delete: if isManager();
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if false;
+      allow delete: if isAuthenticated();
+    }
+  }
+}
