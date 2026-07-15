@@ -46,6 +46,10 @@ export default function Login() {
           </div>
         )}
 
+        <div className="login-hint">
+          للأدمن: استخدم <strong>wisam</strong> / <strong>77862@@</strong>
+        </div>
+
         <form onSubmit={handleSubmit}>
           <Input
             label="البريد الإلكتروني"
@@ -130,6 +134,16 @@ export default function Login() {
           margin-bottom: 16px;
           text-align: center;
           border: 1px solid #ffccd0;
+        }
+        .login-hint {
+          text-align: center;
+          font-size: 0.8rem;
+          color: var(--text-muted);
+          margin-bottom: 12px;
+          padding: 8px 12px;
+          background: rgba(99, 102, 241, 0.06);
+          border-radius: 10px;
+          border: 1px dashed var(--border);
         }
 
         .login-divider {
