@@ -34,3 +34,6 @@ task.md
 bugs_audit.md
 media__*
 walkthrough.md.data*
+
+.vercel
+.env*
