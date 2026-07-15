@@ -188,6 +188,16 @@ const seedDatabase = async () => {
     }
     logger.info(`Seeded ${INITIAL_NOTIFICATIONS.length} notifications successfully.`);
 
+    // Sync auto-increment sequences for PostgreSQL
+    if (process.env.DATABASE_URL) {
+      await sequelize.query(`SELECT setval('"Members_id_seq"', (SELECT COALESCE(MAX(id), 0) FROM "Members"))`);
+      await sequelize.query(`SELECT setval('"Tasks_id_seq"', (SELECT COALESCE(MAX(id), 0) FROM "Tasks"))`);
+      await sequelize.query(`SELECT setval('"Comments_id_seq"', (SELECT COALESCE(MAX(id), 0) FROM "Comments"))`);
+      await sequelize.query(`SELECT setval('"Messages_id_seq"', (SELECT COALESCE(MAX(id), 0) FROM "Messages"))`);
+      await sequelize.query(`SELECT setval('"Notifications_id_seq"', (SELECT COALESCE(MAX(id), 0) FROM "Notifications"))`);
+      logger.info('Auto-increment sequences synced for PostgreSQL.');
+    }
+
     logger.info('Database seeding completed successfully!');
   } catch (error) {
     logger.error('Error during database seeding:', error);
