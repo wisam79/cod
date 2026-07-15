@@ -20,6 +20,8 @@ const taskRoutes = require('./routes/tasks');
 const memberRoutes = require('./routes/members');
 const messageRoutes = require('./routes/messages');
 const notificationRoutes = require('./routes/notifications');
+const adminRoutes = require('./routes/admin');
+const { Settings } = require('./models');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -94,12 +96,63 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// Maintenance Mode & Registration restrictions middleware
+app.use(async (req, res, next) => {
+  // Allow health checks, admin routes, static pages, and auth login
+  if (
+    req.path.startsWith('/api/health') ||
+    req.path.startsWith('/api/auth/login') ||
+    req.path.startsWith('/api/admin/') || 
+    !req.path.startsWith('/api/') // static files
+  ) {
+    return next();
+  }
+
+  // Check Registration restriction
+  if (req.path === '/api/auth/register' && req.method === 'POST') {
+    try {
+      const regSetting = await Settings.findByPk('allowUserRegistration');
+      if (regSetting && regSetting.value === 'false') {
+        return res.status(403).json({ error: 'التسجيل مغلق حالياً من قِبل إدارة النظام.' });
+      }
+    } catch (e) {}
+  }
+
+  // Check Maintenance Mode
+  try {
+    const maintenanceSetting = await Settings.findByPk('maintenanceMode');
+    if (maintenanceSetting && maintenanceSetting.value === 'true') {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.split(' ')[1];
+        const jwt = require('jsonwebtoken');
+        const { JWT_SECRET } = require('./middleware/auth');
+        try {
+          const decoded = jwt.verify(token, JWT_SECRET);
+          const { Member } = require('./models');
+          const user = await Member.findByPk(decoded.id);
+          const role = user ? (user.role || '') : '';
+          if (role.includes('الادمن المطور') || role.includes('Super Admin')) {
+            return next();
+          }
+        } catch (e) {}
+      }
+      return res.status(503).json({ 
+        error: 'System Maintenance', 
+        message: 'التطبيق تحت الصيانة حالياً لترقية النظام. يرجى المحاولة لاحقاً.' 
+      });
+    }
+  } catch (err) {}
+  next();
+});
+
 // Mount Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/members', memberRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Base / Health Check route
 app.get('/api/health', (req, res) => {

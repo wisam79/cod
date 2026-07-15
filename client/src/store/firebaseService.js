@@ -1,5 +1,21 @@
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
+// Global Fetch Interceptor for Maintenance Mode
+const originalFetch = window.fetch;
+window.fetch = async (...args) => {
+  const res = await originalFetch(...args);
+  if (res.status === 503) {
+    const clone = res.clone();
+    try {
+      const data = await clone.json();
+      if (data.error === 'System Maintenance') {
+        window.dispatchEvent(new CustomEvent('system-maintenance'));
+      }
+    } catch (e) {}
+  }
+  return res;
+};
+
 const getHeaders = () => {
   const token = localStorage.getItem('auth_token');
   return {
@@ -262,4 +278,61 @@ export function onNotificationsChange(userId, callback) {
   notificationSubscribers.push(callback);
   connectWS();
   return () => { notificationSubscribers = notificationSubscribers.filter(cb => cb !== callback); };
+}
+
+// Admin API calls
+export async function fetchAdminMembers() {
+  const res = await fetch(`${API_URL}/admin/members`, { headers: getHeaders() });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || 'فشل جلب الأعضاء للمسؤول');
+  }
+  return res.json();
+}
+
+export async function updateAdminMember(id, memberData) {
+  const res = await fetch(`${API_URL}/admin/members/${id}`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify(memberData)
+  });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || 'فشل تحديث بيانات العضو');
+  }
+  return res.json();
+}
+
+export async function deleteAdminMember(id) {
+  const res = await fetch(`${API_URL}/admin/members/${id}`, {
+    method: 'DELETE',
+    headers: getHeaders()
+  });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || 'فشل حذف العضو');
+  }
+  return res.json();
+}
+
+export async function fetchAdminSettings() {
+  const res = await fetch(`${API_URL}/admin/settings`, { headers: getHeaders() });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || 'فشل جلب الإعدادات');
+  }
+  return res.json();
+}
+
+export async function updateAdminSettings(settings) {
+  const res = await fetch(`${API_URL}/admin/settings`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify(settings)
+  });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || 'فشل حفظ الإعدادات');
+  }
+  return res.json();
 }

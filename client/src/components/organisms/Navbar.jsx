@@ -1,34 +1,48 @@
 import React, { useRef, useEffect, useCallback, useMemo } from 'react';
-import { Home, CheckSquare, MessageSquare, Users } from 'lucide-react';
+import { Home, CheckSquare, MessageSquare, Users, ShieldAlert } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 
-const TABS = [
-  {
-    id: 'dashboard',
-    label: 'الرئيسية',
-    icon: <Home size={20} strokeWidth={2.5} />
-  },
-  {
-    id: 'tasks',
-    label: 'المهام',
-    icon: <CheckSquare size={20} strokeWidth={2.5} />
-  },
-  {
-    id: 'chat',
-    label: 'المحادثة',
-    icon: <MessageSquare size={20} strokeWidth={2.5} />
-  },
-  {
-    id: 'team',
-    label: 'الفريق',
-    icon: <Users size={20} strokeWidth={2.5} />
-  }
-];
+export default function Navbar({ activeTab, setActiveTab, currentUser }) {
+  const isSuperAdmin = currentUser?.role && (currentUser.role.includes('الادمن المطور') || currentUser.role.includes('Super Admin'));
 
-export default function Navbar({ activeTab, setActiveTab }) {
+  const tabs = useMemo(() => {
+    const base = [
+      {
+        id: 'dashboard',
+        label: 'الرئيسية',
+        icon: <Home size={20} strokeWidth={2.5} />
+      },
+      {
+        id: 'tasks',
+        label: 'المهام',
+        icon: <CheckSquare size={20} strokeWidth={2.5} />
+      },
+      {
+        id: 'chat',
+        label: 'المحادثة',
+        icon: <MessageSquare size={20} strokeWidth={2.5} />
+      },
+      {
+        id: 'team',
+        label: 'الفريق',
+        icon: <Users size={20} strokeWidth={2.5} />
+      }
+    ];
+
+    if (isSuperAdmin) {
+      base.push({
+        id: 'admin',
+        label: 'الإدارة',
+        icon: <ShieldAlert size={20} strokeWidth={2.5} />
+      });
+    }
+
+    return base;
+  }, [isSuperAdmin]);
+
   const touchStartX = useRef(null);
 
-  const currentIndex = useMemo(() => TABS.findIndex(t => t.id === activeTab), [activeTab]);
+  const currentIndex = useMemo(() => tabs.findIndex(t => t.id === activeTab), [activeTab, tabs]);
 
   const handleTabChange = useCallback((tabId) => {
     if (tabId !== activeTab) {
@@ -48,18 +62,18 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
     if (Math.abs(diff) > threshold) {
       let newIndex;
-      if (diff > 0 && currentIndex < TABS.length - 1) {
+      if (diff > 0 && currentIndex < tabs.length - 1) {
         newIndex = currentIndex + 1;
       } else if (diff < 0 && currentIndex > 0) {
         newIndex = currentIndex - 1;
       }
       if (newIndex !== undefined) {
         triggerHaptic('light');
-        setActiveTab(TABS[newIndex].id);
+        setActiveTab(tabs[newIndex].id);
       }
     }
     touchStartX.current = null;
-  }, [currentIndex, setActiveTab]);
+  }, [currentIndex, setActiveTab, tabs]);
 
   useEffect(() => {
     const container = document.querySelector('.scrollable-content');
@@ -75,7 +89,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
   return (
     <div className="bottom-navbar-wrapper">
       <div className="bottom-navbar">
-        {TABS.map((tab) => {
+        {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <button

@@ -1,4 +1,4 @@
-const { sequelize, Member, Task, Comment, Message, Notification } = require('./models');
+const { sequelize, Member, Task, Comment, Message, Notification, Settings } = require('./models');
 const logger = require('./utils/logger');
 
 const INITIAL_MEMBERS = [
@@ -33,6 +33,14 @@ const INITIAL_MEMBERS = [
     password: 'MohemmatySecureP@ss123!',
     role: 'مديرة المنتج', 
     avatar: 'https://ui-avatars.com/api/?name=ريم+خالد&background=random&color=fff' 
+  },
+  { 
+    id: 5, 
+    name: 'الادمن المطور', 
+    email: 'admin@mohemmaty.com',
+    password: 'MohemmatySuperAdmin2026!',
+    role: 'الادمن المطور', 
+    avatar: 'https://ui-avatars.com/api/?name=الادمن+المطور&background=random&color=fff' 
   }
 ];
 
@@ -121,16 +129,31 @@ const seedDatabase = async () => {
     if (isProd) {
       logger.warn('Production environment detected. Syncing database without force (no drop).');
       await sequelize.sync();
-      
-      // Check if database is already seeded
-      const memberCount = await Member.count();
-      if (memberCount > 0) {
-        logger.info('Database already has seeded data. Bypassing seed insertion.');
-        return;
-      }
     } else {
       await sequelize.sync({ force: true });
       logger.info('Database tables synced and dropped (development mode).');
+    }
+
+    // Seed Settings (run in all environments to ensure they exist)
+    await Settings.upsert({ key: 'allowUserRegistration', value: 'true' });
+    await Settings.upsert({ key: 'maintenanceMode', value: 'false' });
+    await Settings.upsert({ key: 'maxTasksPerUser', value: '10' });
+    logger.info('Seeded default settings successfully.');
+
+    if (isProd) {
+      const adminExists = await Member.findOne({ where: { email: 'admin@mohemmaty.com' } });
+      if (!adminExists) {
+        const superAdmin = INITIAL_MEMBERS.find(m => m.email === 'admin@mohemmaty.com');
+        if (superAdmin) {
+          await Member.create(superAdmin);
+          logger.info('Super Admin account created in production DB.');
+        }
+      }
+      const memberCount = await Member.count();
+      if (memberCount > 1) { // 1 because admin might have been created above
+        logger.info('Database already has seeded data. Bypassing rest of seed insertion.');
+        return;
+      }
     }
 
     // Seed Members

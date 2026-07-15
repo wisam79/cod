@@ -4,6 +4,7 @@ const Task = require('./Task');
 const Comment = require('./Comment');
 const Message = require('./Message');
 const Notification = require('./Notification');
+const Settings = require('./Settings');
 
 // Member - Task Relationship (Assignee)
 Member.hasMany(Task, { foreignKey: 'assigneeId', as: 'tasks' });
@@ -35,5 +36,6 @@ module.exports = {
   Task,
   Comment,
   Message,
-  Notification
+  Notification,
+  Settings
 };

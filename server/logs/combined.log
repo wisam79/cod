@@ -1107,3 +1107,188 @@
 {"level":"info","message":"Seeded 1 comments successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 19:42:21"}
 {"level":"info","message":"Seeded 4 messages successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 19:42:22"}
 {"level":"info","message":"Seeded 3 notifications successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 19:42:23"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:25"}
+{"level":"info","message":"New member registered: أحمد (ahmed@example.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:25"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:25"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:25"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:25"}
+{"level":"info","message":"User logged in successfully: أحمد (ahmed@example.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:25"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:26"}
+{"level":"info","message":"GET /api/health - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"GET /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"User logged in successfully: جاسم يعقوب (jassem@mohemmaty.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"User logged in successfully: جاسم يعقوب (jassem@mohemmaty.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"[AUDIT] User جاسم يعقوب (ID: 1) created task \"مهمة للاختبار\" (ID: 1)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"Broadcasting WebSocket event: task_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"Broadcasting WebSocket event: notification_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"POST /api/tasks/1/comments - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"New member registered: صالح (saleh2@mohemmaty.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"[AUDIT] User جاسم يعقوب (ID: 1) created task \"مهمة تعليقات\" (ID: 2)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"Broadcasting WebSocket event: task_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"Broadcasting WebSocket event: notification_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"POST /api/tasks/2/comments - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"Comment added on task \"مهمة تعليقات\" by جاسم يعقوب","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"Broadcasting WebSocket event: comment_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"Broadcasting WebSocket event: notification_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"DELETE /api/tasks/comments/1 - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"DELETE /api/tasks/comments/1 - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"Broadcasting WebSocket event: comment_deleted","service":"mohemmaty-backend","timestamp":"2026-07-15 21:16:27"}
+{"level":"info","message":"Database connection established successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:26"}
+{"level":"info","message":"Database models synced.","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:28"}
+{"level":"info","message":"Server is running on port 5000","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:28"}
+{"level":"info","message":"WebSocket server is running on the same port ws://localhost:5000","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:28"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:51"}
+{"level":"info","message":"New member registered: أحمد (ahmed@example.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:51"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:51"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:52"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:52"}
+{"level":"info","message":"User logged in successfully: أحمد (ahmed@example.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:52"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:52"}
+{"level":"info","message":"GET /api/health - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"GET /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"User logged in successfully: جاسم يعقوب (jassem@mohemmaty.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"User logged in successfully: جاسم يعقوب (jassem@mohemmaty.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"[AUDIT] User جاسم يعقوب (ID: 1) created task \"مهمة للاختبار\" (ID: 1)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"Broadcasting WebSocket event: task_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"Broadcasting WebSocket event: notification_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"POST /api/tasks/1/comments - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"New member registered: صالح (saleh2@mohemmaty.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"[AUDIT] User جاسم يعقوب (ID: 1) created task \"مهمة تعليقات\" (ID: 2)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"Broadcasting WebSocket event: task_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"Broadcasting WebSocket event: notification_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"POST /api/tasks/2/comments - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"Comment added on task \"مهمة تعليقات\" by جاسم يعقوب","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"Broadcasting WebSocket event: comment_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"Broadcasting WebSocket event: notification_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"DELETE /api/tasks/comments/1 - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"DELETE /api/tasks/comments/1 - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"Broadcasting WebSocket event: comment_deleted","service":"mohemmaty-backend","timestamp":"2026-07-15 21:24:53"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:16"}
+{"level":"info","message":"New member registered: أحمد (ahmed@example.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:16"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:16"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:16"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:16"}
+{"level":"info","message":"User logged in successfully: أحمد (ahmed@example.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:16"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:16"}
+{"level":"info","message":"GET /api/health - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:17"}
+{"level":"info","message":"GET /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:17"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:17"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"User logged in successfully: جاسم يعقوب (jassem@mohemmaty.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"User logged in successfully: جاسم يعقوب (jassem@mohemmaty.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"[AUDIT] User جاسم يعقوب (ID: 1) created task \"مهمة للاختبار\" (ID: 1)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"Broadcasting WebSocket event: task_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"Broadcasting WebSocket event: notification_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"POST /api/tasks/1/comments - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"New member registered: صالح (saleh2@mohemmaty.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"[AUDIT] User جاسم يعقوب (ID: 1) created task \"مهمة تعليقات\" (ID: 2)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"Broadcasting WebSocket event: task_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"Broadcasting WebSocket event: notification_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"POST /api/tasks/2/comments - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"Comment added on task \"مهمة تعليقات\" by جاسم يعقوب","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"Broadcasting WebSocket event: comment_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"Broadcasting WebSocket event: notification_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"DELETE /api/tasks/comments/1 - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"DELETE /api/tasks/comments/1 - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"Broadcasting WebSocket event: comment_deleted","service":"mohemmaty-backend","timestamp":"2026-07-15 21:26:18"}
+{"level":"info","message":"Starting database seeding...","service":"mohemmaty-backend","timestamp":"2026-07-15 21:32:39"}
+{"level":"info","message":"Database tables synced and dropped (development mode).","service":"mohemmaty-backend","timestamp":"2026-07-15 21:32:39"}
+{"level":"info","message":"Seeded default settings successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 21:32:39"}
+{"level":"info","message":"Seeded 5 members successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 21:32:39"}
+{"level":"info","message":"Seeded 5 tasks successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 21:32:39"}
+{"level":"info","message":"Seeded 1 comments successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 21:32:39"}
+{"level":"info","message":"Seeded 4 messages successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 21:32:39"}
+{"level":"info","message":"Seeded 3 notifications successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 21:32:39"}
+{"level":"info","message":"Starting database seeding...","service":"mohemmaty-backend","timestamp":"2026-07-15 21:32:56"}
+{"level":"info","message":"Database tables synced and dropped (development mode).","service":"mohemmaty-backend","timestamp":"2026-07-15 21:33:10"}
+{"level":"info","message":"Seeded default settings successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 21:33:11"}
+{"level":"info","message":"Seeded 5 members successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 21:33:12"}
+{"level":"info","message":"Seeded 5 tasks successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 21:33:13"}
+{"level":"info","message":"Seeded 1 comments successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 21:33:13"}
+{"level":"info","message":"Seeded 4 messages successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 21:33:14"}
+{"level":"info","message":"Seeded 3 notifications successfully.","service":"mohemmaty-backend","timestamp":"2026-07-15 21:33:14"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:56"}
+{"level":"info","message":"New member registered: الادمن المطور (admin@mohemmaty.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:56"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"New member registered: أحمد العادي (ahmed@mohemmaty.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"GET /api/admin/members - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"GET /api/admin/members - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"GET /api/admin/settings - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"PUT /api/admin/settings - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"System settings updated by Admin","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"PUT /api/admin/settings - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"System settings updated by Admin","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"[AUDIT] User أحمد العادي (ID: 2) created task \"مهمة 1\" (ID: 1)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"Broadcasting WebSocket event: task_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"Broadcasting WebSocket event: notification_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"[AUDIT] User أحمد العادي (ID: 2) created task \"مهمة 2\" (ID: 2)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"Broadcasting WebSocket event: task_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"Broadcasting WebSocket event: notification_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:57"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:58"}
+{"level":"info","message":"New member registered: أحمد (ahmed@example.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:58"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:58"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:58"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:58"}
+{"level":"info","message":"User logged in successfully: أحمد (ahmed@example.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:58"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:58"}
+{"level":"info","message":"GET /api/health - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:59"}
+{"level":"info","message":"GET /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:59"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:59"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:59"}
+{"level":"info","message":"User logged in successfully: جاسم يعقوب (jassem@mohemmaty.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:59"}
+{"level":"info","message":"POST /api/auth/login - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:36:59"}
+{"level":"info","message":"User logged in successfully: جاسم يعقوب (jassem@mohemmaty.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"[AUDIT] User جاسم يعقوب (ID: 1) created task \"مهمة للاختبار\" (ID: 1)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"Broadcasting WebSocket event: task_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"Broadcasting WebSocket event: notification_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"POST /api/tasks/1/comments - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"New member registered: صالح (saleh2@mohemmaty.com)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"POST /api/tasks - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"[AUDIT] User جاسم يعقوب (ID: 1) created task \"مهمة تعليقات\" (ID: 2)","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"Broadcasting WebSocket event: task_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"Broadcasting WebSocket event: notification_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"POST /api/tasks/2/comments - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"Comment added on task \"مهمة تعليقات\" by جاسم يعقوب","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"Broadcasting WebSocket event: comment_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"Broadcasting WebSocket event: notification_created","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"DELETE /api/tasks/comments/1 - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"DELETE /api/tasks/comments/1 - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}
+{"level":"info","message":"Broadcasting WebSocket event: comment_deleted","service":"mohemmaty-backend","timestamp":"2026-07-15 21:37:00"}

@@ -4,6 +4,7 @@ import { createTaskSlice } from './slices/taskSlice';
 import { createChatSlice } from './slices/chatSlice';
 import { createNotificationSlice } from './slices/notificationSlice';
 import { createWSSlice } from './slices/wsSlice';
+import { createAdminSlice } from './slices/adminSlice';
 
 export const useAppStore = create((set, get) => ({
   ...createAuthSlice(set, get),
@@ -11,4 +12,5 @@ export const useAppStore = create((set, get) => ({
   ...createChatSlice(set, get),
   ...createNotificationSlice(set, get),
   ...createWSSlice(set, get),
+  ...createAdminSlice(set, get),
 }));

@@ -10,6 +10,32 @@ const messages = require('../utils/messages');
 
 const router = express.Router();
 
+const checkMaxTasksLimit = async (memberId, targetStatus, taskIdToIgnore = null) => {
+  if (!memberId || targetStatus === 'done') return true;
+  const { Settings } = require('../models');
+  const { Op } = require('sequelize');
+  try {
+    const maxTasksSetting = await Settings.findByPk('maxTasksPerUser');
+    if (maxTasksSetting) {
+      const maxTasks = parseInt(maxTasksSetting.value, 10);
+      const whereClause = {
+        assigneeId: memberId,
+        status: { [Op.ne]: 'done' }
+      };
+      if (taskIdToIgnore) {
+        whereClause.id = { [Op.ne]: taskIdToIgnore };
+      }
+      const activeCount = await Task.count({ where: whereClause });
+      if (activeCount >= maxTasks) {
+        return false;
+      }
+    }
+  } catch (e) {
+    logger.error('Error checking max tasks limit: %o', e);
+  }
+  return true;
+};
+
 // Apply auth middleware and sanitization to all task routes
 router.use(authenticate);
 router.use(sanitizeBody);
@@ -113,6 +139,13 @@ router.post('/', validateTask, async (req, res) => {
     if (!assigneeMember) {
       return res.status(400).json({ error: messages.tasks.assigneeNotFound });
     }
+
+    const hasCapacity = await checkMaxTasksLimit(assigneeId, status || 'todo');
+    if (!hasCapacity) {
+      return res.status(400).json({ 
+        error: 'تعذر إسناد المهمة. تم بلوغ الحد الأقصى للمهام النشطة لهذا المستخدم.' 
+      });
+    }
   }
 
   const transaction = await sequelize.transaction();
@@ -186,6 +219,23 @@ router.put('/:id', canModifyTask, validateTask, async (req, res) => {
     assigneeMember = await Member.findByPk(assigneeId);
     if (!assigneeMember) {
       return res.status(400).json({ error: messages.tasks.assigneeNotFound });
+    }
+  }
+
+  const targetAssigneeId = assigneeId !== undefined ? assigneeId : task.assigneeId;
+  const targetStatus = status !== undefined ? status : task.status;
+  
+  if (targetAssigneeId) {
+    const assigneeChanged = targetAssigneeId !== task.assigneeId;
+    const statusBecameActive = targetStatus !== 'done' && task.status === 'done';
+    
+    if (assigneeChanged || statusBecameActive) {
+      const hasCapacity = await checkMaxTasksLimit(targetAssigneeId, targetStatus, task.id);
+      if (!hasCapacity) {
+        return res.status(400).json({ 
+          error: 'تعذر إسناد أو تحديث المهمة. تم بلوغ الحد الأقصى للمهام النشطة لهذا المستخدم.' 
+        });
+      }
     }
   }
 

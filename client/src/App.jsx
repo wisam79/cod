@@ -24,6 +24,8 @@ const Dashboard = React.lazy(() => import('./components/pages/Dashboard'));
 const TaskManager = React.lazy(() => import('./components/pages/TaskManager'));
 const ChatRoom = React.lazy(() => import('./components/pages/ChatRoom'));
 const TeamDirectory = React.lazy(() => import('./components/pages/TeamDirectory'));
+const AdminDashboard = React.lazy(() => import('./components/pages/AdminDashboard'));
+const Maintenance = React.lazy(() => import('./components/pages/Maintenance'));
 const Login = React.lazy(() => import('./components/pages/Login'));
 import './App.css';
 
@@ -45,12 +47,21 @@ function App() {
 
   const [activeTab, setActiveTab] = useState(() => {
     const hash = window.location.hash.replace('#/', '');
-    return ['dashboard', 'tasks', 'chat', 'team'].includes(hash) ? hash : 'dashboard';
+    return ['dashboard', 'tasks', 'chat', 'team', 'admin'].includes(hash) ? hash : 'dashboard';
   });
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const [isMaintenance, setIsMaintenance] = useState(false);
+
+  useEffect(() => {
+    const handleMaintenance = () => {
+      setIsMaintenance(true);
+    };
+    window.addEventListener('system-maintenance', handleMaintenance);
+    return () => window.removeEventListener('system-maintenance', handleMaintenance);
+  }, []);
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem('theme') === 'dark' || 
@@ -62,7 +73,7 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#/', '');
-      if (['dashboard', 'tasks', 'chat', 'team'].includes(hash)) {
+      if (['dashboard', 'tasks', 'chat', 'team', 'admin'].includes(hash)) {
         setActiveTab(hash);
       }
     };
@@ -70,7 +81,7 @@ function App() {
     window.addEventListener('hashchange', handleHashChange);
     
     const currentHash = window.location.hash.replace('#/', '');
-    if (!['dashboard', 'tasks', 'chat', 'team'].includes(currentHash)) {
+    if (!['dashboard', 'tasks', 'chat', 'team', 'admin'].includes(currentHash)) {
       window.location.hash = '#/dashboard';
     }
 
@@ -83,7 +94,7 @@ function App() {
       if (!isAuthenticated) {
         return;
       }
-      if (['dashboard', 'tasks', 'chat', 'team'].includes(hash)) {
+      if (['dashboard', 'tasks', 'chat', 'team', 'admin'].includes(hash)) {
         setActiveTab(hash);
       } else if (drawerOpen) {
         setDrawerOpen(false);
@@ -189,6 +200,8 @@ function App() {
                 return <ChatRoom />;
               case 'team':
                 return <TeamDirectory />;
+              case 'admin':
+                return <AdminDashboard />;
               default:
                 return <Dashboard />;
             }
@@ -197,6 +210,14 @@ function App() {
       </React.Suspense>
     );
   };
+
+  if (isMaintenance) {
+    return (
+      <React.Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0f172a' }}><div className="loader"></div></div>}>
+        <Maintenance />
+      </React.Suspense>
+    );
+  }
 
   if (isLoading && !isAuthenticated) {
     return (
@@ -320,7 +341,7 @@ function App() {
           onClear={clearNotifications}
         />
 
-        <Navbar activeTab={activeTab} setActiveTab={handleSetActiveTab} />
+        <Navbar activeTab={activeTab} setActiveTab={handleSetActiveTab} currentUser={currentUser} />
 
         {showInstallBanner && deferredInstallPrompt && (
           <div className="install-banner">
