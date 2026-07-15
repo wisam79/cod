@@ -23,6 +23,9 @@ export const createAuthSlice = (set, get) => ({
       get().addToast(`مرحباً بك مجدداً، ${user.member.name}!`);
       await get().fetchInitialData();
       get().initRealtimeListeners();
+      if ('Notification' in window && Notification.permission === 'default') {
+        setTimeout(() => Notification.requestPermission(), 2000);
+      }
     } catch (err) {
       set({ isLoading: false, error: err.message || 'خطأ في تسجيل الدخول' });
       throw err;
@@ -38,14 +41,19 @@ export const createAuthSlice = (set, get) => ({
     get().cleanupRealtimeListeners();
     localStorage.removeItem('auth_token');
     localStorage.removeItem('offline_user');
+    localStorage.removeItem('cached_tasks');
+    localStorage.removeItem('cached_members');
     set({
       token: null,
       currentUser: null,
       isAuthenticated: false,
+      isOffline: !navigator.onLine,
       tasks: [],
       messages: [],
       notifications: [],
       members: [],
+      adminMembers: [],
+      adminSettings: { allowUserRegistration: true, maintenanceMode: false, maxTasksPerUser: 10 },
       wsStatus: 'disconnected'
     });
     get().addToast('تم تسجيل الخروج بنجاح.');
@@ -55,7 +63,10 @@ export const createAuthSlice = (set, get) => ({
     set({ isLoading: true, error: null });
     try {
       await new Promise((resolve) => {
+        let settled = false;
         const unsubscribe = onAuthChange(async (user) => {
+          if (settled) return;
+          settled = true;
           unsubscribe();
           if (!user) {
             localStorage.removeItem('auth_token');
@@ -96,9 +107,30 @@ export const createAuthSlice = (set, get) => ({
           }
           resolve();
         });
+        setTimeout(() => {
+          if (!settled) {
+            settled = true;
+            unsubscribe();
+            let offlineUser = null;
+            try { offlineUser = JSON.parse(localStorage.getItem('offline_user')); } catch (_) {}
+            if (offlineUser) {
+              set({
+                token: null,
+                currentUser: offlineUser,
+                isAuthenticated: true,
+                isLoading: false
+              });
+              get().fetchInitialData().catch(() => {});
+              get().initRealtimeListeners();
+            } else {
+              set({ isLoading: false, isAuthenticated: false });
+            }
+            resolve();
+          }
+        }, 6000);
       });
     } catch {
-      set({ isLoading: false });
+      set({ isLoading: false, isAuthenticated: false });
     }
   }
 });

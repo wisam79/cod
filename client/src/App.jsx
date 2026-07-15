@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from './store/useAppStore';
 import Navbar from './components/organisms/Navbar';
@@ -31,6 +31,8 @@ const Maintenance = React.lazy(() => import('./components/pages/Maintenance'));
 const Login = React.lazy(() => import('./components/pages/Login'));
 import './App.css';
 
+const TAB_ORDER = ['dashboard', 'tasks', 'chat', 'team', 'admin'];
+
 function App() {
   const {
     currentUser,
@@ -50,7 +52,7 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const activeTab = ['dashboard', 'tasks', 'chat', 'team', 'admin'].includes(location.pathname.slice(1)) 
+  const activeTab = TAB_ORDER.includes(location.pathname.slice(1)) 
     ? location.pathname.slice(1) 
     : 'dashboard';
 
@@ -61,14 +63,16 @@ function App() {
   const [isMaintenance, setIsMaintenance] = useState(false);
   const [pageDirection, setPageDirection] = useState('right');
   const prevTabRef = useRef('dashboard');
-  const touchStartX = useRef(null);
 
   useEffect(() => {
-    const handleMaintenance = () => {
-      setIsMaintenance(true);
+    const onMaintenance = () => setIsMaintenance(true);
+    const onResolved = () => setIsMaintenance(false);
+    window.addEventListener('system-maintenance', onMaintenance);
+    window.addEventListener('system-maintenance-resolved', onResolved);
+    return () => {
+      window.removeEventListener('system-maintenance', onMaintenance);
+      window.removeEventListener('system-maintenance-resolved', onResolved);
     };
-    window.addEventListener('system-maintenance', handleMaintenance);
-    return () => window.removeEventListener('system-maintenance', handleMaintenance);
   }, []);
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -76,7 +80,6 @@ function App() {
            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
   });
 
-  // Dynamic theme-color meta tag
   useEffect(() => {
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) {
@@ -87,42 +90,18 @@ function App() {
   useEffect(() => {
     if (isAuthenticated) {
       const cleanPath = location.pathname.slice(1);
-      if (location.pathname === '/' || !['dashboard', 'tasks', 'chat', 'team', 'admin'].includes(cleanPath)) {
+      if (location.pathname === '/' || !TAB_ORDER.includes(cleanPath)) {
         navigate('/dashboard', { replace: true });
       }
     }
   }, [isAuthenticated, location.pathname, navigate]);
 
-  // Track navigation direction for page transitions
-  const tabOrder = ['dashboard', 'tasks', 'chat', 'team', 'admin'];
   useEffect(() => {
     if (prevTabRef.current !== activeTab) {
-      const prevIdx = tabOrder.indexOf(prevTabRef.current);
-      const currIdx = tabOrder.indexOf(activeTab);
+      const prevIdx = TAB_ORDER.indexOf(prevTabRef.current);
+      const currIdx = TAB_ORDER.indexOf(activeTab);
       setPageDirection(currIdx > prevIdx ? 'right' : 'left');
       prevTabRef.current = activeTab;
-    }
-  }, [activeTab]);
-
-  // Swipe-to-go-back / swipe navigation gesture
-  const handleTouchStart = useCallback((e) => {
-    if (e.touches[0].clientX < 40) {
-      touchStartX.current = e.touches[0].clientX;
-    }
-  }, []);
-
-  const handleTouchEnd = useCallback((e) => {
-    if (touchStartX.current !== null) {
-      const diff = e.changedTouches[0].clientX - touchStartX.current;
-      if (diff > 80) {
-        triggerHaptic('light');
-        const currIdx = tabOrder.indexOf(activeTab);
-        if (currIdx > 0) {
-          const prevTab = tabOrder[currIdx - 1];
-          window.location.hash = `#/${prevTab}`;
-        }
-      }
-      touchStartX.current = null;
     }
   }, [activeTab]);
 
@@ -187,18 +166,12 @@ function App() {
     };
   }, [setOffline, triggerHaptic]);
 
-  useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-  }, []);
-
-  const handleSetActiveTab = (tab) => {
+  const handleSetActiveTab = useCallback((tab) => {
     if (tab !== activeTab) {
       triggerHaptic('light');
-      window.location.hash = `#/${tab}`;
+      navigate(`/${tab}`, { replace: false });
     }
-  };
+  }, [activeTab, navigate]);
 
   const toggleDarkMode = () => {
     triggerHaptic('light');
@@ -213,7 +186,11 @@ function App() {
     fetchCurrentUser();
   }, [fetchCurrentUser]);
 
-  const getSkeleton = () => {
+  const cachedUser = useMemo(() => {
+    try { return JSON.parse(localStorage.getItem('offline_user')); } catch { return null; }
+  }, []);
+
+  const getSkeleton = useCallback(() => {
     switch (activeTab) {
       case 'dashboard': return <SkeletonPage cards={4} />;
       case 'tasks': return <SkeletonPage cards={5} />;
@@ -222,9 +199,9 @@ function App() {
       case 'admin': return <SkeletonPage cards={4} />;
       default: return <SkeletonPage cards={3} />;
     }
-  };
+  }, [activeTab]);
 
-  const renderTabContent = () => {
+  const renderTabContent = useMemo(() => {
     return (
       <React.Suspense fallback={getSkeleton()}>
         <div className={pageDirection === 'right' ? 'animate-slide-right' : 'animate-slide-left'} key={activeTab}>
@@ -247,17 +224,23 @@ function App() {
         </div>
       </React.Suspense>
     );
-  };
+  }, [activeTab, pageDirection, getSkeleton]);
 
   if (isMaintenance) {
     return (
-      <React.Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0f172a' }}><div className="loader"></div></div>}>
-        <Maintenance />
-      </React.Suspense>
+      <div className={`phone-mockup-wrapper ${fullscreen ? 'fullscreen' : ''}`}>
+        {!fullscreen && <div className="phone-notch"></div>}
+        <div className={`app-container ${isDarkMode ? 'dark-theme' : ''}`}>
+          <React.Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0f172a' }}><div className="loader"></div></div>}>
+            <Maintenance />
+          </React.Suspense>
+        </div>
+      </div>
     );
   }
 
-  if (isLoading && !isAuthenticated) {
+  const showFullLoader = isLoading && !isAuthenticated && !cachedUser;
+  if (showFullLoader) {
     return (
       <div className={`phone-mockup-wrapper ${fullscreen ? 'fullscreen' : ''}`}>
         {!fullscreen && <div className="phone-notch"></div>}
@@ -292,10 +275,7 @@ function App() {
     <div className={`phone-mockup-wrapper ${fullscreen ? 'fullscreen' : ''}`}>
       {!fullscreen && <div className="phone-notch"></div>}
       
-      <div className={`app-container ${isDarkMode ? 'dark-theme' : ''}`}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
+      <div className={`app-container ${isDarkMode ? 'dark-theme' : ''}`}>
         <ToastContainer activeToasts={activeToasts} />
 
         <div className="connection-status-bars">
@@ -372,7 +352,7 @@ function App() {
         </div>
 
         <div className="scrollable-content">
-          {renderTabContent()}
+          {renderTabContent}
         </div>
 
         <NotificationDrawer 

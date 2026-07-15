@@ -39,7 +39,7 @@ export const createTaskSlice = (set, get) => ({
   },
 
   addTask: async (taskData) => {
-    const { isOffline, currentUser } = get();
+    const { isOffline, currentUser, tasks: originalTasks } = get();
     if (isOffline) {
       get().addToast('لا يمكنك إضافة مهام جديدة أثناء انقطاع الاتصال.');
       return;
@@ -54,6 +54,7 @@ export const createTaskSlice = (set, get) => ({
         return { tasks: [newTask, ...state.tasks] };
       });
     } catch (err) {
+      set({ tasks: originalTasks });
       get().addToast(`تعذر إضافة المهمة: ${err.message}`);
     }
   },

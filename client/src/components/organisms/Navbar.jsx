@@ -42,8 +42,10 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
   }, [isSuperAdmin]);
 
   const touchStartX = useRef(null);
+  const currentIndexRef = useRef(0);
 
   const currentIndex = useMemo(() => tabs.findIndex(t => t.id === activeTab), [activeTab, tabs]);
+  useEffect(() => { currentIndexRef.current = currentIndex; }, [currentIndex]);
 
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX;
@@ -55,11 +57,12 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
     const threshold = 60;
 
     if (Math.abs(diff) > threshold) {
+      const idx = currentIndexRef.current;
       let newIndex;
-      if (diff > 0 && currentIndex < tabs.length - 1) {
-        newIndex = currentIndex + 1;
-      } else if (diff < 0 && currentIndex > 0) {
-        newIndex = currentIndex - 1;
+      if (diff > 0 && idx < tabs.length - 1) {
+        newIndex = idx + 1;
+      } else if (diff < 0 && idx > 0) {
+        newIndex = idx - 1;
       }
       if (newIndex !== undefined) {
         triggerHaptic('light');
@@ -67,7 +70,7 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
       }
     }
     touchStartX.current = null;
-  }, [currentIndex, setActiveTab, tabs]);
+  }, [setActiveTab, tabs]);
 
   useEffect(() => {
     const container = document.querySelector('.scrollable-content');

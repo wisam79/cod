@@ -1,26 +1,63 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAppStore } from '../../store/useAppStore';
+import { useShallow } from 'zustand/react/shallow';
 import PullToRefresh from '../atoms/PullToRefresh';
 import MessageItem from '../molecules/MessageItem';
 import { MessageSquare, Send } from 'lucide-react';
 
 export default function ChatRoom() {
-  const store = useAppStore();
-  const { messages, members, currentUser, sendMessage, fetchMessages } = store;
+  const { messages, members, currentUser, sendMessage, fetchMessages } = useAppStore(useShallow(s => ({
+    messages: s.messages,
+    members: s.members,
+    currentUser: s.currentUser,
+    sendMessage: s.sendMessage,
+    fetchMessages: s.fetchMessages,
+  })));
   const [inputText, setInputText] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const chatEndRef = useRef(null);
   const inputRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+  const isNearBottomRef = useRef(true);
 
-  // Keyboard-aware: scroll to bottom when keyboard opens
   useEffect(() => {
-    const handleResize = () => {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleResize);
-      return () => window.visualViewport.removeEventListener('resize', handleResize);
+    if (messages.length > 0) {
+      if (isNearBottomRef.current) {
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }
     }
+  }, [messages]);
+
+  useEffect(() => {
+    if (messages.length === 0 && fetchMessages) {
+      fetchMessages();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!window.visualViewport) return;
+    const inputForm = document.querySelector('.chat-input-form');
+    const onResize = () => {
+      const offsetFromBottom = window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop;
+      if (inputForm) {
+        inputForm.style.transform = `translateY(${-offsetFromBottom}px)`;
+      }
+      if (isNearBottomRef.current) {
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+    window.visualViewport.addEventListener('resize', onResize);
+    window.visualViewport.addEventListener('scroll', onResize);
+    return () => {
+      window.visualViewport.removeEventListener('resize', onResize);
+      window.visualViewport.removeEventListener('scroll', onResize);
+    };
+  }, []);
+
+  const onScroll = useCallback(() => {
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    isNearBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 120;
   }, []);
 
   const handleRefresh = useCallback(async () => {
@@ -37,15 +74,9 @@ export default function ChatRoom() {
     inputRef.current?.focus();
   };
 
-  // Scroll to bottom when messages load/update
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
   return (
     <PullToRefresh onRefresh={handleRefresh} isRefreshing={refreshing}>
     <div className="chat-room-view">
-      {/* Group Chat Banner Info */}
       <div className="chat-banner card">
         <div className="chat-banner-info">
           <h3>
@@ -56,8 +87,7 @@ export default function ChatRoom() {
         </div>
       </div>
 
-      {/* Messages List Area */}
-      <div className="messages-container">
+      <div className="messages-container" ref={messagesContainerRef} onScroll={onScroll}>
         {messages.map((msg) => {
           const isMe = msg.senderId === currentUser?.id;
           return (
@@ -72,7 +102,6 @@ export default function ChatRoom() {
         <div ref={chatEndRef} />
       </div>
 
-      {/* Input Message Form */}
       <form onSubmit={handleSend} className="chat-input-form">
         <input 
           ref={inputRef}
@@ -92,7 +121,7 @@ export default function ChatRoom() {
         .chat-room-view {
           display: flex;
           flex-direction: column;
-          height: calc(100% - 30px); /* Fill space in mockup, accounting for header spacing */
+          height: calc(100% - 30px);
           position: relative;
         }
 
@@ -120,11 +149,14 @@ export default function ChatRoom() {
         .messages-container {
           flex: 1;
           overflow-y: auto;
-          padding: 8px 4px 80px 4px; /* padding bottom to keep space from chat input */
+          padding: 8px 4px 80px 4px;
           display: flex;
           flex-direction: column;
           gap: 16px;
           text-align: right;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
+          scroll-behavior: smooth;
         }
 
         .messages-container::-webkit-scrollbar {
@@ -137,15 +169,16 @@ export default function ChatRoom() {
 
         .chat-input-form {
           position: absolute;
-          bottom: 12px;
+          bottom: calc(12px + env(safe-area-inset-bottom, 0px));
           left: 0;
           right: 0;
           display: flex;
           gap: 8px;
           background: var(--bg-app);
-          padding: 10px 0px;
+          padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
           border-top: 1px solid var(--border);
           z-index: 10;
+          transition: transform 0.2s ease;
         }
 
         .chat-input-form input {

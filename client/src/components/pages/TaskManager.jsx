@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useAppStore } from '../../store/useAppStore';
+import { useShallow } from 'zustand/react/shallow';
 import PullToRefresh from '../atoms/PullToRefresh';
 import TaskCard from '../molecules/TaskCard';
 import TaskFilter from '../organisms/TaskFilter';
@@ -7,17 +8,16 @@ import AddTaskModal from '../organisms/AddTaskModal';
 import TaskDetailsModal from '../organisms/TaskDetailsModal';
 
 export default function TaskManager() {
-  const store = useAppStore();
-  const { 
-    tasks, 
-    members, 
-    currentUser, 
-    addTask, 
-    updateTaskStatus, 
-    addCommentToTask, 
-    deleteTask,
-    fetchInitialData 
-  } = store;
+  const { tasks, members, currentUser, addTask, updateTaskStatus, addCommentToTask, deleteTask, fetchInitialData } = useAppStore(useShallow(s => ({
+    tasks: s.tasks,
+    members: s.members,
+    currentUser: s.currentUser,
+    addTask: s.addTask,
+    updateTaskStatus: s.updateTaskStatus,
+    addCommentToTask: s.addCommentToTask,
+    deleteTask: s.deleteTask,
+    fetchInitialData: s.fetchInitialData,
+  })));
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = useCallback(async () => {
@@ -30,23 +30,22 @@ export default function TaskManager() {
   const [activeAssigneeFilter, setActiveAssigneeFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
 
-  // Scroll to top when filters change
-  React.useEffect(() => {
-    document.querySelector('.scrollable-content')?.scrollTo({ top: 0, behavior: 'smooth' });
+  useEffect(() => {
+    document.querySelector('.scrollable-content')?.scrollTo({ top: 0, behavior: 'auto' });
   }, [activeFilterStatus, activeAssigneeFilter]);
 
-  // Filtering Logic
-  const filteredTasks = tasks.filter(task => {
-    const matchesStatus = activeFilterStatus === 'all' || task.status === activeFilterStatus;
-    const matchesAssignee = activeAssigneeFilter === 'all' || task.assigneeId === activeAssigneeFilter;
-    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          task.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesAssignee && matchesSearch;
-  });
+  const filteredTasks = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return tasks.filter(task => {
+      const matchesStatus = activeFilterStatus === 'all' || task.status === activeFilterStatus;
+      const matchesAssignee = activeAssigneeFilter === 'all' || task.assigneeId === activeAssigneeFilter;
+      const matchesSearch = !q || task.title.toLowerCase().includes(q) || task.description.toLowerCase().includes(q);
+      return matchesStatus && matchesAssignee && matchesSearch;
+    });
+  }, [tasks, activeFilterStatus, activeAssigneeFilter, searchQuery]);
 
   const getStatusLabel = (status) => {
     switch(status) {
@@ -74,7 +73,6 @@ export default function TaskManager() {
         getStatusLabel={getStatusLabel}
       />
 
-      {/* Tasks List */}
       <div className="tasks-list">
         {filteredTasks.map(task => {
           const assignee = members.find(m => m.id === task.assigneeId) || currentUser;
@@ -95,7 +93,6 @@ export default function TaskManager() {
         )}
       </div>
 
-      {/* ADD TASK MODAL */}
       <AddTaskModal 
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
@@ -103,7 +100,6 @@ export default function TaskManager() {
         members={members}
       />
 
-      {/* TASK DETAILS & COMMENTS MODAL */}
       <TaskDetailsModal 
         task={selectedTask}
         tasks={tasks}
@@ -256,6 +252,8 @@ export default function TaskManager() {
           overflow-y: auto;
           flex: 1;
           padding-bottom: 80px;
+          overscroll-behavior: contain;
+          -webkit-overflow-scrolling: touch;
         }
 
         .task-manager-view .task-card {

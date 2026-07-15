@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useAppStore } from '../../store/useAppStore';
+import { useShallow } from 'zustand/react/shallow';
 import PullToRefresh from '../atoms/PullToRefresh';
 import { 
   BarChart3, 
@@ -14,8 +15,14 @@ import {
 } from 'lucide-react';
 
 export default function Dashboard() {
-  const store = useAppStore();
-  const { tasks, members, currentUser, addTask, notifications, fetchInitialData } = store;
+  const { tasks, members, currentUser, addTask, notifications, fetchInitialData } = useAppStore(useShallow(s => ({
+    tasks: s.tasks,
+    members: s.members,
+    currentUser: s.currentUser,
+    addTask: s.addTask,
+    notifications: s.notifications,
+    fetchInitialData: s.fetchInitialData,
+  })));
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = useCallback(async () => {
@@ -26,16 +33,14 @@ export default function Dashboard() {
   const [quickTitle, setQuickTitle] = useState('');
   const [quickAssignee, setQuickAssignee] = useState(members[0]?.id || 1);
 
-  // Fallback to avoid crashes if currentUser or members aren't loaded yet
   const user = currentUser || { id: 0, name: 'جاري التحميل...' };
 
-  const myTasks = tasks.filter(t => t.assigneeId === user.id);
-  const myCompleted = myTasks.filter(t => t.status === 'done').length;
-  const myPending = myTasks.length - myCompleted;
-
+  const myTasks = useMemo(() => tasks.filter(t => t.assigneeId === user.id), [tasks, user.id]);
+  const myCompleted = useMemo(() => myTasks.filter(t => t.status === 'done').length, [myTasks]);
+  const myPending = useMemo(() => myTasks.length - myCompleted, [myTasks, myCompleted]);
+  const inProgressTasks = useMemo(() => tasks.filter(t => t.status === 'progress').length, [tasks]);
+  const completedTasks = useMemo(() => tasks.filter(t => t.status === 'done').length, [tasks]);
   const totalTasks = tasks.length;
-  const inProgressTasks = tasks.filter(t => t.status === 'progress').length;
-  const completedTasks = tasks.filter(t => t.status === 'done').length;
 
   const handleQuickAddSubmit = (e) => {
     e.preventDefault();
@@ -47,7 +52,7 @@ export default function Dashboard() {
       assigneeId: quickAssignee,
       priority: 'medium',
       status: 'todo',
-      dueDate: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0] // 2 days from now
+      dueDate: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0]
     });
 
     setQuickTitle('');
@@ -71,7 +76,6 @@ export default function Dashboard() {
   return (
     <PullToRefresh onRefresh={handleRefresh} isRefreshing={refreshing}>
     <div className="dashboard-view">
-      {/* Welcome Banner */}
       <div className="welcome-banner card">
         <div className="banner-content">
           <div className="banner-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
@@ -91,7 +95,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stats Counter Grid */}
       <div className="stats-grid">
         <div className="stat-card card">
           <span className="stat-icon all">
@@ -124,7 +127,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Quick Task Assigner */}
       <div className="quick-add-task card">
         <h3 className="section-title">إسناد مهمة سريعة</h3>
         <form onSubmit={handleQuickAddSubmit} className="quick-add-form">
@@ -154,7 +156,6 @@ export default function Dashboard() {
         </form>
       </div>
 
-      {/* Recent Activity Feed */}
       <div className="recent-activity card">
         <div className="activity-header">
           <h3 className="section-title">الأنشطة الأخيرة</h3>

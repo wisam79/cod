@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 
 const STATUS = { PULLING: 'pulling', READY: 'ready', REFRESHING: 'refreshing', IDLE: 'idle' };
 
@@ -10,15 +10,9 @@ export default function PullToRefresh({ onRefresh, children, isRefreshing: exter
   const containerRef = useRef(null);
   const isRefreshing = externalRefreshing !== undefined ? externalRefreshing : status === STATUS.REFRESHING;
 
-  const handleTouchStart = useCallback((e) => {
-    if (containerRef.current && containerRef.current.scrollTop <= 0) {
-      startY.current = e.touches[0].clientY;
-      pulling.current = true;
-    }
-  }, []);
-
   const handleTouchMove = useCallback((e) => {
     if (!pulling.current) return;
+    e.preventDefault();
     const diff = e.touches[0].clientY - startY.current;
     if (diff <= 0) { setPullDistance(0); return; }
     const distance = Math.min(diff * 0.5, 100);
@@ -26,29 +20,54 @@ export default function PullToRefresh({ onRefresh, children, isRefreshing: exter
     setStatus(distance >= 60 ? STATUS.READY : STATUS.PULLING);
   }, []);
 
+  const handleTouchStart = useCallback((e) => {
+    let el = e.target instanceof Element ? e.target : null;
+    while (el && el !== containerRef.current) {
+      const style = getComputedStyle(el);
+      if (style.overflowY === 'auto' || style.overflowY === 'scroll') break;
+      el = el.parentElement;
+    }
+    const scroller = el || containerRef.current;
+    if (scroller && scroller.scrollTop <= 0) {
+      startY.current = e.touches[0].clientY;
+      pulling.current = true;
+    }
+  }, []);
+
   const handleTouchEnd = useCallback(() => {
     if (!pulling.current) return;
     pulling.current = false;
     if (pullDistance >= 60) {
-      setStatus(STATUS.REFRESHING);
+      if (externalRefreshing === undefined) setStatus(STATUS.REFRESHING);
       setPullDistance(40);
       const result = onRefresh && onRefresh();
       if (result && result.then) {
-        result.finally(() => { setStatus(STATUS.IDLE); setPullDistance(0); });
-      } else {
+        result.finally(() => {
+          setPullDistance(0);
+          if (externalRefreshing === undefined) setStatus(STATUS.IDLE);
+        });
+      } else if (externalRefreshing === undefined) {
         setTimeout(() => { setStatus(STATUS.IDLE); setPullDistance(0); }, 800);
+      } else {
+        setPullDistance(0);
       }
     } else {
       setStatus(STATUS.IDLE);
       setPullDistance(0);
     }
-  }, [pullDistance, onRefresh]);
+  }, [pullDistance, onRefresh, externalRefreshing]);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.addEventListener('touchmove', handleTouchMove, { passive: false });
+    return () => el.removeEventListener('touchmove', handleTouchMove);
+  }, [handleTouchMove]);
 
   return (
     <div
       ref={containerRef}
       onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       style={{ position: 'relative', minHeight: '100%' }}
     >

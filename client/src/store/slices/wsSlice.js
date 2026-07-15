@@ -3,24 +3,32 @@ import { onTasksChange, onMessagesChange, onNotificationsChange } from '../apiCl
 export const createWSSlice = (set, get) => ({
   wsStatus: 'disconnected',
   unsubscribers: [],
+  sessionToken: null,
 
   initRealtimeListeners: () => {
     const { currentUser } = get();
     if (!currentUser) return;
 
     get().cleanupRealtimeListeners();
-    set({ wsStatus: 'connecting' });
+    const session = Math.random().toString(36).slice(2);
+    set({ wsStatus: 'connecting', sessionToken: session });
 
     const unsub1 = onTasksChange(async () => {
-      // For tasks, it's safer to refetch the whole list to maintain order and relations
+      if (get().sessionToken !== session) return;
       await get().fetchInitialData();
     });
 
-    const unsub2 = onMessagesChange((newMessage) => {
-      set((state) => ({ messages: [newMessage, ...state.messages] }));
+    const unsub2 = onMessagesChange((payload) => {
+      if (get().sessionToken !== session) return;
+      const newMessage = payload.data ?? payload;
+      set((state) => {
+        if (state.messages.some(m => m.id === newMessage.id)) return state;
+        return { messages: [newMessage, ...state.messages] };
+      });
     });
 
-    const unsub3 = onNotificationsChange(currentUser.id, (newNotification) => {
+    const unsub3 = onNotificationsChange((newNotification) => {
+      if (get().sessionToken !== session) return;
       const prevNotifs = get().notifications;
       if (prevNotifs.some(p => p.id === newNotification.id)) return;
       
@@ -46,7 +54,7 @@ export const createWSSlice = (set, get) => ({
     unsubscribers.forEach(unsub => {
       try { unsub(); } catch { /* ignore */ }
     });
-    set({ unsubscribers: [], wsStatus: 'disconnected' });
+    set({ unsubscribers: [], wsStatus: 'disconnected', sessionToken: null });
   },
 
   initWebSocket: () => {
