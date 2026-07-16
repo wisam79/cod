@@ -109,5 +109,22 @@ export const createTaskSlice = (set, get) => ({
       set({ tasks: originalTasks });
       get().addToast(`تعذر حذف المهمة: ${err.message}`, 'error');
     }
-  }
+  },
+
+  searchQuery: '',
+  statusFilter: 'all',
+  priorityFilter: 'all',
+  assigneeFilter: 'all',
+
+  setSearchQuery: (query) => set({ searchQuery: query }),
+  setStatusFilter: (status) => set({ statusFilter: status }),
+  setPriorityFilter: (priority) => set({ priorityFilter: priority }),
+  setAssigneeFilter: (assigneeId) => set({ assigneeFilter: assigneeId }),
+
+  resetFilters: () => set({
+    searchQuery: '',
+    statusFilter: 'all',
+    priorityFilter: 'all',
+    assigneeFilter: 'all'
+  })
 });

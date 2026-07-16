@@ -4,7 +4,16 @@ const { Member } = require('../models');
 const { JWT_SECRET, authenticate } = require('../middleware/auth');
 const { authLimiter } = require('../middleware/rateLimiter');
 const { sanitizeBody } = require('../middleware/sanitize');
-const { validateRegister, validateLogin } = require('../middleware/validation');
+const { 
+  validateRegister, 
+  validateLogin, 
+  validateForgotPassword, 
+  validateResetPassword,
+  validateProfileUpdate,
+  validateChangePassword
+} = require('../middleware/validation');
+const { sendPasswordResetEmail } = require('../services/emailService');
+const crypto = require('crypto');
 const logger = require('../utils/logger');
 const messages = require('../utils/messages');
 
@@ -100,6 +109,99 @@ router.get('/me', authenticate, async (req, res) => {
       avatar: req.user.avatar
     }
   });
+});
+
+// PUT /api/auth/profile
+router.put('/profile', authenticate, validateProfileUpdate, async (req, res) => {
+  try {
+    const { name, avatar } = req.body;
+    if (name !== undefined) req.user.name = name;
+    if (avatar !== undefined) req.user.avatar = avatar;
+    await req.user.save();
+    
+    logger.info(`Profile updated for user ${req.user.email}`);
+    return res.json({
+      member: {
+        id: req.user.id,
+        name: req.user.name,
+        email: req.user.email,
+        role: req.user.role,
+        avatar: req.user.avatar
+      }
+    });
+  } catch (error) {
+    logger.error('Profile update error: %o', error);
+    return res.status(500).json({ error: 'حدث خطأ أثناء تحديث الملف الشخصي.' });
+  }
+});
+
+// PUT /api/auth/change-password
+router.put('/change-password', authenticate, validateChangePassword, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const isMatch = await req.user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'كلمة المرور الحالية غير صحيحة.' });
+    }
+
+    req.user.password = newPassword;
+    await req.user.save();
+
+    logger.info(`Password changed for user ${req.user.email}`);
+    return res.json({ message: 'تم تغيير كلمة المرور بنجاح.' });
+  } catch (error) {
+    logger.error('Change password error: %o', error);
+    return res.status(500).json({ error: 'حدث خطأ أثناء تغيير كلمة المرور.' });
+  }
+});
+
+// POST /api/auth/forgot-password
+router.post('/forgot-password', validateForgotPassword, async (req, res) => {
+  try {
+    const { email } = req.body;
+    const member = await Member.findOne({ where: { email } });
+    if (!member) {
+      // For security, don't reveal if email exists or not
+      return res.json({ message: 'إذا كان البريد الإلكتروني مسجلاً لدينا، فقد تم إرسال رابط إعادة تعيين كلمة المرور.' });
+    }
+
+    const token = crypto.randomBytes(20).toString('hex');
+    member.resetPasswordToken = token;
+    member.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
+    await member.save();
+
+    const resetUrl = `${req.headers.origin || 'http://localhost:5173'}/#/reset-password?token=${token}`;
+    await sendPasswordResetEmail(member.email, member.name, resetUrl);
+
+    logger.info(`Password reset link sent to ${email}`);
+    return res.json({ message: 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.' });
+  } catch (error) {
+    logger.error('Forgot password error: %o', error);
+    return res.status(500).json({ error: 'حدث خطأ أثناء معالجة طلبك.' });
+  }
+});
+
+// POST /api/auth/reset-password
+router.post('/reset-password', validateResetPassword, async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    const member = await Member.findOne({ where: { resetPasswordToken: token } });
+    
+    if (!member || !member.resetPasswordExpires || member.resetPasswordExpires < new Date()) {
+      return res.status(400).json({ error: 'رمز إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية.' });
+    }
+
+    member.password = password;
+    member.resetPasswordToken = null;
+    member.resetPasswordExpires = null;
+    await member.save();
+
+    logger.info(`Password successfully reset for user ${member.email}`);
+    return res.json({ message: 'تم إعادة تعيين كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول.' });
+  } catch (error) {
+    logger.error('Reset password error: %o', error);
+    return res.status(500).json({ error: 'حدث خطأ أثناء إعادة تعيين كلمة المرور.' });
+  }
 });
 
 module.exports = router;

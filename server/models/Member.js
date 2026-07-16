@@ -31,6 +31,23 @@ const Member = sequelize.define('Member', {
   avatar: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  resetPasswordToken: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  resetPasswordExpires: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  emailVerified: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  },
+  emailVerificationToken: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 }, {
   hooks: {

@@ -29,6 +29,7 @@ export default function TaskManager() {
 
   const [activeFilterStatus, setActiveFilterStatus] = useState('all');
   const [activeAssigneeFilter, setActiveAssigneeFilter] = useState('all');
+  const [activePriorityFilter, setActivePriorityFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   
   const [showAddModal, setShowAddModal] = useState(false);
@@ -36,17 +37,18 @@ export default function TaskManager() {
 
   useEffect(() => {
     document.querySelector('.scrollable-content')?.scrollTo({ top: 0, behavior: 'auto' });
-  }, [activeFilterStatus, activeAssigneeFilter]);
+  }, [activeFilterStatus, activeAssigneeFilter, activePriorityFilter]);
 
   const filteredTasks = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return tasks.filter(task => {
       const matchesStatus = activeFilterStatus === 'all' || task.status === activeFilterStatus;
-      const matchesAssignee = activeAssigneeFilter === 'all' || task.assigneeId === activeAssigneeFilter;
-      const matchesSearch = !q || task.title.toLowerCase().includes(q) || task.description.toLowerCase().includes(q);
-      return matchesStatus && matchesAssignee && matchesSearch;
+      const matchesAssignee = activeAssigneeFilter === 'all' || (task.assigneeId && task.assigneeId.toString() === activeAssigneeFilter);
+      const matchesPriority = activePriorityFilter === 'all' || task.priority === activePriorityFilter;
+      const matchesSearch = !q || task.title.toLowerCase().includes(q) || (task.description && task.description.toLowerCase().includes(q));
+      return matchesStatus && matchesAssignee && matchesPriority && matchesSearch;
     });
-  }, [tasks, activeFilterStatus, activeAssigneeFilter, searchQuery]);
+  }, [tasks, activeFilterStatus, activeAssigneeFilter, activePriorityFilter, searchQuery]);
 
   const getStatusLabel = (status) => {
     switch(status) {
@@ -70,6 +72,8 @@ export default function TaskManager() {
         setActiveAssigneeFilter={setActiveAssigneeFilter}
         activeFilterStatus={activeFilterStatus}
         setActiveFilterStatus={setActiveFilterStatus}
+        activePriorityFilter={activePriorityFilter}
+        setActivePriorityFilter={setActivePriorityFilter}
         tasks={tasks}
         getStatusLabel={getStatusLabel}
       />

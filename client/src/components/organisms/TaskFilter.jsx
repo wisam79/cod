@@ -11,6 +11,8 @@ export default function TaskFilter({
   setActiveAssigneeFilter,
   activeFilterStatus,
   setActiveFilterStatus,
+  activePriorityFilter,
+  setActivePriorityFilter,
   tasks,
   getStatusLabel
 }) {
@@ -51,6 +53,35 @@ export default function TaskFilter({
             {member.name.split(' ')[0]}
           </button>
         ))}
+      </div>
+
+      {/* Priority Filter pills */}
+      <div className="assignee-filter-bar priority-filter-bar" style={{ marginTop: '8px', borderTop: '1px dashed var(--border)', paddingTop: '8px' }}>
+        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', marginLeft: '8px', fontWeight: 'bold' }}>الأولوية:</span>
+        <button 
+          className={`filter-pill ${activePriorityFilter === 'all' ? 'active' : ''}`}
+          onClick={() => setActivePriorityFilter('all')}
+        >
+          الكل
+        </button>
+        <button 
+          className={`filter-pill ${activePriorityFilter === 'high' ? 'active' : ''}`}
+          onClick={() => setActivePriorityFilter('high')}
+        >
+          عالية
+        </button>
+        <button 
+          className={`filter-pill ${activePriorityFilter === 'medium' ? 'active' : ''}`}
+          onClick={() => setActivePriorityFilter('medium')}
+        >
+          متوسطة
+        </button>
+        <button 
+          className={`filter-pill ${activePriorityFilter === 'low' ? 'active' : ''}`}
+          onClick={() => setActivePriorityFilter('low')}
+        >
+          منخفضة
+        </button>
       </div>
 
       {/* Task Status Filters */}

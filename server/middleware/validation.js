@@ -110,10 +110,77 @@ const validateComment = (req, res, next) => {
   next();
 };
 
+const validateForgotPassword = (req, res, next) => {
+  const { email } = req.body;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!isString(email) || !emailRegex.test(email)) {
+    return res.status(400).json({ error: messages.validation.emailInvalid });
+  }
+  next();
+};
+
+const validateResetPassword = (req, res, next) => {
+  const { token, password } = req.body;
+  if (!isString(token) || token.trim().length === 0) {
+    return res.status(400).json({ error: messages.validation.tokenRequired });
+  }
+  if (!isString(password) || password.length < 8) {
+    return res.status(400).json({ error: messages.validation.passwordLength });
+  }
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSpecial = /[!@#$%^&*(),.?":{}|<>\-_=+]/.test(password);
+  if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+    return res.status(400).json({ error: messages.validation.passwordStrength });
+  }
+  next();
+};
+
+const validateProfileUpdate = (req, res, next) => {
+  const { name, avatar } = req.body;
+  if (name !== undefined && (!isString(name) || name.trim().length < 2)) {
+    return res.status(400).json({ error: messages.validation.nameLength });
+  }
+  if (avatar) {
+    if (!isString(avatar)) {
+      return res.status(400).json({ error: messages.validation.avatarText });
+    }
+    try {
+      new URL(avatar);
+    } catch (e) {
+      return res.status(400).json({ error: messages.validation.avatarInvalid });
+    }
+  }
+  next();
+};
+
+const validateChangePassword = (req, res, next) => {
+  const { currentPassword, newPassword } = req.body;
+  if (!isString(currentPassword) || currentPassword.trim().length === 0) {
+    return res.status(400).json({ error: 'كلمة المرور الحالية مطلوبة.' });
+  }
+  if (!isString(newPassword) || newPassword.length < 8) {
+    return res.status(400).json({ error: messages.validation.passwordLength });
+  }
+  const hasUppercase = /[A-Z]/.test(newPassword);
+  const hasLowercase = /[a-z]/.test(newPassword);
+  const hasNumber = /\d/.test(newPassword);
+  const hasSpecial = /[!@#$%^&*(),.?":{}|<>\-_=+]/.test(newPassword);
+  if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+    return res.status(400).json({ error: messages.validation.passwordStrength });
+  }
+  next();
+};
+
 module.exports = {
   validateRegister,
   validateLogin,
   validateTask,
   validateMessage,
-  validateComment
+  validateComment,
+  validateForgotPassword,
+  validateResetPassword,
+  validateProfileUpdate,
+  validateChangePassword
 };

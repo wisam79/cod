@@ -195,17 +195,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 }
 
 .scrollable-content::-webkit-scrollbar {
-  width: 5px;
-}
-.scrollable-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-.scrollable-content::-webkit-scrollbar-thumb {
-  background: rgba(30, 64, 175, 0.15);
-  border-radius: 10px;
-}
-.scrollable-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(30, 64, 175, 0.3);
+  display: none;
 }
 
 @media (max-width: 480px) {
@@ -337,10 +327,13 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--bg-app);
+  background: rgba(241, 245, 249, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   position: sticky;
   top: 0;
   z-index: 10;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.4);
 }
 
 .header-user {
@@ -685,7 +678,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 
 /* Sheet-like modal animations */
 .sheet-modal-overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 2000;
   background: rgba(15, 23, 42, 0.45);
@@ -696,6 +689,19 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   -webkit-backdrop-filter: blur(8px) saturate(180%);
   animation: iosOverlayFade 0.22s var(--ease-ios) forwards;
   touch-action: none;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px) saturate(180%);
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
+  animation: iosOverlayFade 0.22s var(--ease-ios) forwards;
 }
 
 .sheet-modal-overlay.modal-fade-out {
@@ -773,12 +779,15 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 }
 
 .app-container.dark-theme .header-bar {
-  background-color: var(--bg-app);
+  background: rgba(15, 23, 42, 0.8);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.4);
 }
 
 .app-container.dark-theme .card {
-  background-color: var(--bg-card);
-  border-color: var(--border);
+  background: rgba(30, 41, 59, 0.8) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-color: rgba(255, 255, 255, 0.08) !important;
   color: var(--text-main);
 }
 

@@ -196,7 +196,7 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
           display: flex;
           justify-content: space-around;
           align-items: center;
-          background-color: var(--primary);
+          background-color: rgba(30, 64, 175, 0.85);
           padding: 6px;
           border-radius: 40px;
           width: 92%;
@@ -209,6 +209,18 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
           -webkit-backdrop-filter: blur(24px) saturate(180%);
           position: relative;
           isolation: isolate;
+        }
+        
+        .nav-indicator {
+          position: absolute;
+          top: 6px;
+          bottom: 6px;
+          left: 0;
+          background: #ffffff;
+          border-radius: 40px;
+          transition: transform var(--dur-base) var(--ease-ios), width var(--dur-base) var(--ease-ios);
+          z-index: 0;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
         }
 
         .nav-item {
@@ -278,6 +290,21 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
             transition: none !important;
             animation: none !important;
           }
+        }
+
+        .app-container.dark-theme .bottom-navbar {
+          background-color: rgba(30, 41, 59, 0.85);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+        }
+
+        .app-container.dark-theme .nav-indicator {
+          background: var(--primary);
+        }
+
+        .app-container.dark-theme .nav-item.active {
+          background-color: transparent !important;
+          color: #ffffff;
         }
       `}</style>
     </div>

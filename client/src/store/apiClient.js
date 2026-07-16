@@ -34,6 +34,42 @@ export async function registerUser(name, email, password, role) {
   return handleResponse(res);
 }
 
+export async function forgotPassword(email) {
+  const res = await fetch(`${API_URL}/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  });
+  return handleResponse(res);
+}
+
+export async function resetPassword(token, password) {
+  const res = await fetch(`${API_URL}/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, password })
+  });
+  return handleResponse(res);
+}
+
+export async function updateProfile(profileData) {
+  const res = await fetch(`${API_URL}/auth/profile`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify(profileData)
+  });
+  return handleResponse(res);
+}
+
+export async function changePassword(passwordData) {
+  const res = await fetch(`${API_URL}/auth/change-password`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify(passwordData)
+  });
+  return handleResponse(res);
+}
+
 export async function logoutUser() {
   const token = localStorage.getItem('auth_token');
   if (token) {

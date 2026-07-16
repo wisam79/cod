@@ -1,12 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import Button from '../atoms/Button';
 import Input from '../atoms/Input';
+import { forgotPassword, resetPassword } from '../../store/apiClient';
 
 export default function Login() {
   const { login, isLoading, error } = useAppStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Forgot password state
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotSuccess, setForgotSuccess] = useState('');
+  const [forgotError, setForgotError] = useState('');
+
+  // Reset password state
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState('');
+  const [resetError, setResetError] = useState('');
+
+  const [view, setView] = useState('login'); // 'login' | 'forgot' | 'reset'
+  const [token, setToken] = useState('');
+
+  // Check for reset token in URL hash on mount / hash change
+  useEffect(() => {
+    const checkHash = () => {
+      const hash = window.location.hash;
+      const hasResetToken = hash.includes('reset-password') && hash.includes('token=');
+      if (hasResetToken) {
+        const parts = hash.split('token=');
+        if (parts.length > 1) {
+          const extractedToken = parts[1].split('&')[0];
+          setToken(extractedToken);
+          setView('reset');
+        }
+      }
+    };
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,6 +51,196 @@ export default function Login() {
     } catch {
       // Handled by store
     }
+  };
+
+  const handleForgotSubmit = async (e) => {
+    e.preventDefault();
+    setForgotLoading(true);
+    setForgotError('');
+    setForgotSuccess('');
+    try {
+      const response = await forgotPassword(forgotEmail);
+      setForgotSuccess(response.message || 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.');
+      setForgotEmail('');
+    } catch (err) {
+      setForgotError(err.message || 'حدث خطأ ما، يرجى المحاولة لاحقاً.');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleResetSubmit = async (e) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      setResetError('كلمتا المرور غير متطابقتين.');
+      return;
+    }
+    setResetLoading(true);
+    setResetError('');
+    setResetSuccess('');
+    try {
+      const response = await resetPassword(token, newPassword);
+      setResetSuccess(response.message || 'تم إعادة تعيين كلمة المرور بنجاح.');
+      setNewPassword('');
+      setConfirmPassword('');
+      setTimeout(() => {
+        window.location.hash = '#/';
+        setView('login');
+        setResetSuccess('');
+      }, 3000);
+    } catch (err) {
+      setResetError(err.message || 'حدث خطأ ما، يرجى المحاولة لاحقاً.');
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
+  const renderCardContent = () => {
+    if (view === 'forgot') {
+      return (
+        <div className="login-card card">
+          <h3>استعادة كلمة المرور</h3>
+
+          {forgotError && <div className="login-error-alert">{forgotError}</div>}
+          {forgotSuccess && <div className="login-success-alert">{forgotSuccess}</div>}
+
+          <form onSubmit={handleForgotSubmit}>
+            <Input
+              label="البريد الإلكتروني"
+              type="email"
+              placeholder="أدخل بريدك الإلكتروني المسجل"
+              value={forgotEmail}
+              onChange={(e) => setForgotEmail(e.target.value)}
+              required
+            />
+
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={forgotLoading}
+              style={{ width: '100%', marginTop: '10px' }}
+            >
+              {forgotLoading ? 'جاري الإرسال...' : 'إرسال رابط الاستعادة'}
+            </Button>
+          </form>
+
+          <div style={{ textAlign: 'center', marginTop: '16px' }}>
+            <a
+              href="#/"
+              onClick={(e) => { e.preventDefault(); setView('login'); setForgotError(''); setForgotSuccess(''); }}
+              style={{ color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.85rem', textDecoration: 'none' }}
+            >
+              العودة لتسجيل الدخول
+            </a>
+          </div>
+        </div>
+      );
+    }
+
+    if (view === 'reset') {
+      return (
+        <div className="login-card card">
+          <h3>إعادة تعيين كلمة المرور</h3>
+
+          {resetError && <div className="login-error-alert">{resetError}</div>}
+          {resetSuccess && <div className="login-success-alert">{resetSuccess}</div>}
+
+          <form onSubmit={handleResetSubmit}>
+            <Input
+              label="كلمة المرور الجديدة"
+              type="password"
+              placeholder="أدخل كلمة المرور الجديدة"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+            />
+
+            <Input
+              label="تأكيد كلمة المرور الجديدة"
+              type="password"
+              placeholder="تأكيد كلمة المرور الجديدة"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={resetLoading}
+              style={{ width: '100%', marginTop: '10px' }}
+            >
+              {resetLoading ? 'جاري الحفظ...' : 'حفظ كلمة المرور الجديدة'}
+            </Button>
+          </form>
+
+          <div style={{ textAlign: 'center', marginTop: '16px' }}>
+            <a
+              href="#/"
+              onClick={(e) => { e.preventDefault(); window.location.hash = '#/'; setView('login'); setResetError(''); setResetSuccess(''); }}
+              style={{ color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.85rem', textDecoration: 'none' }}
+            >
+              العودة لتسجيل الدخول
+            </a>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="login-card card">
+        <h3>تسجيل الدخول للمتابعة</h3>
+
+        {error && (
+          <div className="login-error-alert">
+            {error}
+          </div>
+        )}
+
+        <div className="login-hint">
+          للأدمن: <strong>admin@mohemmaty.com</strong>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <Input
+            label="البريد الإلكتروني"
+            type="email"
+            placeholder="البريد الإلكتروني"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+
+          <Input
+            label="كلمة المرور"
+            type="password"
+            placeholder="كلمة المرور"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '-4px 0 16px 0' }}>
+            <a
+              href="#/forgot-password"
+              onClick={(e) => { e.preventDefault(); setView('forgot'); }}
+              style={{ color: 'var(--primary)', fontSize: '0.8rem', textDecoration: 'none', fontWeight: '600' }}
+            >
+              نسيت كلمة المرور؟
+            </a>
+          </div>
+
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={isLoading}
+            style={{ width: '100%', marginTop: '10px' }}
+          >
+            {isLoading ? 'جاري التحقق...' : 'تسجيل الدخول'}
+          </Button>
+        </form>
+      </div>
+    );
   };
 
   return (
@@ -42,48 +268,7 @@ export default function Login() {
         <p>تطبيق إدارة المهام التفاعلي للفريق</p>
       </div>
 
-      <div className="login-card card">
-        <h3>تسجيل الدخول للمتابعة</h3>
-
-        {error && (
-          <div className="login-error-alert">
-            {error}
-          </div>
-        )}
-
-        <div className="login-hint">
-          للأدمن: <strong>wisam@mohemmaty.com</strong>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <Input
-            label="البريد الإلكتروني"
-            type="email"
-            placeholder="البريد الإلكتروني"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-
-          <Input
-            label="كلمة المرور"
-            type="password"
-            placeholder="كلمة المرور"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={isLoading}
-            style={{ width: '100%', marginTop: '10px' }}
-          >
-            {isLoading ? 'جاري التحقق...' : 'تسجيل الدخول'}
-          </Button>
-        </form>
-      </div>
+      {renderCardContent()}
 
       <style>{`
         .login-view {
@@ -191,6 +376,17 @@ export default function Login() {
           margin-bottom: 16px;
           text-align: center;
           border: 1px solid #ffccd0;
+        }
+        .login-success-alert {
+          background-color: #e6ffed;
+          color: #047857;
+          padding: 10px;
+          border-radius: 12px;
+          font-size: 0.8rem;
+          font-weight: 700;
+          margin-bottom: 16px;
+          text-align: center;
+          border: 1px solid #d1fad7;
         }
         .login-hint {
           text-align: center;

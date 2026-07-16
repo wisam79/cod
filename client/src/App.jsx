@@ -5,6 +5,7 @@ import Navbar from './components/organisms/Navbar';
 import NotificationDrawer from './components/organisms/NotificationDrawer';
 import ToastContainer from './components/organisms/ToastContainer';
 import Avatar from './components/atoms/Avatar';
+import ProfileModal from './components/organisms/ProfileModal';
 import { SkeletonPage, SkeletonChat } from './components/atoms/Skeleton';
 import { triggerHaptic } from './utils/haptics';
 
@@ -19,7 +20,8 @@ import {
   Bell, 
   LogOut,
   Download,
-  X
+  X,
+  RefreshCw
 } from 'lucide-react';
 
 const Dashboard = React.lazy(() => import('./components/pages/Dashboard'));
@@ -57,6 +59,7 @@ function App() {
     : 'dashboard';
 
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
@@ -309,7 +312,7 @@ function App() {
         </div>
 
         <div className="header-bar">
-          <div className="header-user">
+          <div className="header-user" onClick={() => { setProfileOpen(true); triggerHaptic('light'); }} style={{ cursor: 'pointer' }} role="button" tabIndex={0} aria-label="تعديل الملف الشخصي">
             <Avatar src={user.avatar} alt={user.name} size="md" className="avatar" />
             <div className="user-info">
               <h3 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -363,6 +366,11 @@ function App() {
         <div className="scrollable-content">
           {renderTabContent}
         </div>
+
+        <ProfileModal 
+          isOpen={profileOpen}
+          onClose={() => setProfileOpen(false)}
+        />
 
         <NotificationDrawer 
           isOpen={drawerOpen}

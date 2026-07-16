@@ -1,4 +1,4 @@
-import { loginUser, logoutUser, onAuthChange } from '../apiClient';
+import { loginUser, logoutUser, onAuthChange, updateProfile, changePassword } from '../apiClient';
 
 export const createAuthSlice = (set, get) => ({
   token: null,
@@ -137,6 +137,37 @@ export const createAuthSlice = (set, get) => ({
       });
     } catch {
       set({ isLoading: false, isAuthenticated: false });
+    }
+  },
+
+  updateCurrentUserProfile: async (profileData) => {
+    try {
+      const response = await updateProfile(profileData);
+      const userData = { 
+        id: response.member.id, 
+        name: response.member.name, 
+        email: response.member.email, 
+        role: response.member.role, 
+        avatar: response.member.avatar 
+      };
+      localStorage.setItem('offline_user', JSON.stringify(userData));
+      set({ currentUser: userData });
+      get().addToast('تم تحديث الملف الشخصي بنجاح.', 'success');
+      return response.member;
+    } catch (err) {
+      get().addToast(err.message || 'فشل تحديث الملف الشخصي', 'error');
+      throw err;
+    }
+  },
+
+  changeCurrentUserPassword: async (passwordData) => {
+    try {
+      const response = await changePassword(passwordData);
+      get().addToast('تم تغيير كلمة المرور بنجاح.', 'success');
+      return response;
+    } catch (err) {
+      get().addToast(err.message || 'فشل تغيير كلمة المرور', 'error');
+      throw err;
     }
   }
 });

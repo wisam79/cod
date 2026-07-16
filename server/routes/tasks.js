@@ -69,8 +69,34 @@ router.use(sanitizeBody);
 router.get('/', async (req, res) => {
   try {
     const { limit, offset } = getPagination(req.query);
+    const { search, status, priority, assigneeId } = req.query;
+    const { Op } = require('sequelize');
+
+    const whereClause = {};
+
+    if (search) {
+      const isPostgres = sequelize.options.dialect === 'postgres';
+      const likeOp = isPostgres ? Op.iLike : Op.like;
+      whereClause[Op.or] = [
+        { title: { [likeOp]: `%${search}%` } },
+        { description: { [likeOp]: `%${search}%` } }
+      ];
+    }
+
+    if (status) {
+      whereClause.status = { [Op.in]: status.split(',') };
+    }
+
+    if (priority) {
+      whereClause.priority = { [Op.in]: priority.split(',') };
+    }
+
+    if (assigneeId) {
+      whereClause.assigneeId = assigneeId === 'null' ? null : assigneeId;
+    }
 
     const queryOptions = {
+      where: whereClause,
       include: taskIncludes(),
       order: [['createdAt', 'DESC']]
     };
