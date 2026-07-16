@@ -58,12 +58,11 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
   const recomputeIndicator = useCallback(() => {
     const navEl = navRef.current;
     if (!navEl) return;
-    const isRTL = getComputedStyle(navEl).direction === 'rtl';
     const activeEl = itemsRef.current[activeTab];
     if (!activeEl) return;
     const navRect = navEl.getBoundingClientRect();
     const aRect = activeEl.getBoundingClientRect();
-    const rawX = isRTL ? navRect.right - aRect.right : aRect.left - navRect.left;
+    const rawX = aRect.left - navRect.left;
     setIndicator({ x: rawX, w: aRect.width, ready: true });
   }, [activeTab]);
 
