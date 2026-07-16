@@ -445,6 +445,39 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   animation: pageTransitionIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+@keyframes slideInFromRight {
+  from { transform: translateX(32px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInFromLeft {
+  from { transform: translateX(-32px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-slide-right {
+  animation: slideInFromRight 0.32s var(--ease-ios) forwards;
+}
+
+.animate-slide-left {
+  animation: slideInFromLeft 0.32s var(--ease-ios) forwards;
+}
+
+@keyframes iosOverlayFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes iosSheetSnap {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes iosSheetDismiss {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}
+
 .connection-status-bars {
   position: absolute;
   top: 55px;
