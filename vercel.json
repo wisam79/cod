@@ -1,14 +1,8 @@
 {
   "version": 2,
   "outputDirectory": "client/dist",
-  "functions": {
-    "server/server.js": {
-      "maxDuration": 30,
-      "includeFiles": "server/**"
-    }
-  },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/server/server.js" },
+    { "source": "/api/(.*)", "destination": "/api/server.js" },
     { "source": "/assets/(.*)", "destination": "/assets/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
