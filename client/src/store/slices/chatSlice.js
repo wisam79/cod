@@ -16,20 +16,20 @@ export const createChatSlice = (set, get) => ({
         return { messages: [...state.messages, ...newMsgs] };
       });
     } catch (err) {
-      get().addToast(`تعذر تحميل الرسائل: ${err.message}`);
+      get().addToast(`تعذر تحميل الرسائل: ${err.message}`, 'error');
     }
   },
 
   sendMessage: async (text) => {
     const { isOffline, currentUser } = get();
     if (isOffline) {
-      get().addToast('لا يمكنك إرسال رسائل أثناء انقطاع الاتصال.');
+      get().addToast('لا يمكنك إرسال رسائل أثناء انقطاع الاتصال.', 'error');
       return;
     }
     try {
       await fbSendMessage(text, currentUser?.id || '');
     } catch (err) {
-      get().addToast(`تعذر إرسال الرسالة: ${err.message}`);
+      get().addToast(`تعذر إرسال الرسالة: ${err.message}`, 'error');
     }
   }
 });

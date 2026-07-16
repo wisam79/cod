@@ -7,13 +7,13 @@ export const createNotificationSlice = (set, get) => ({
 
   setOffline: (offline) => set({ isOffline: offline }),
 
-  addToast: (text) => {
+  addToast: (text, type = 'info') => {
     const id = Date.now() + Math.random();
     set((state) => {
       if (state.activeToasts.some(t => t.text === text)) {
         return state;
       }
-      return { activeToasts: [...state.activeToasts, { id, text }] };
+      return { activeToasts: [...state.activeToasts, { id, text, type }] };
     });
 
     setTimeout(() => {
@@ -30,7 +30,7 @@ export const createNotificationSlice = (set, get) => ({
   clearNotifications: async () => {
     const { isOffline, currentUser } = get();
     if (isOffline) {
-      get().addToast('لا يمكنك مسح الإشعارات أثناء انقطاع الاتصال.');
+      get().addToast('لا يمكنك مسح الإشعارات أثناء انقطاع الاتصال.', 'error');
       return;
     }
     
@@ -41,7 +41,7 @@ export const createNotificationSlice = (set, get) => ({
       await fbClearNotifications(currentUser?.id || '');
     } catch (err) {
       set({ notifications: originalNotifications });
-      get().addToast(`تعذر مسح الإشعارات: ${err.message}`);
+      get().addToast(`تعذر مسح الإشعارات: ${err.message}`, 'error');
     }
   }
 });

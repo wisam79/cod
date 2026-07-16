@@ -41,7 +41,7 @@ export const createTaskSlice = (set, get) => ({
   addTask: async (taskData) => {
     const { isOffline, currentUser, tasks: originalTasks } = get();
     if (isOffline) {
-      get().addToast('لا يمكنك إضافة مهام جديدة أثناء انقطاع الاتصال.');
+      get().addToast('لا يمكنك إضافة مهام جديدة أثناء انقطاع الاتصال.', 'error');
       return;
     }
     try {
@@ -55,7 +55,7 @@ export const createTaskSlice = (set, get) => ({
       });
     } catch (err) {
       set({ tasks: originalTasks });
-      get().addToast(`تعذر إضافة المهمة: ${err.message}`);
+      get().addToast(`تعذر إضافة المهمة: ${err.message}`, 'error');
     }
   },
 
@@ -76,27 +76,27 @@ export const createTaskSlice = (set, get) => ({
       await fbUpdateTask(taskId, { status: newStatus });
     } catch (err) {
       set({ tasks: originalTasks });
-      get().addToast(`تعذر تحديث حالة المهمة: ${err.message}`);
+      get().addToast(`تعذر تحديث حالة المهمة: ${err.message}`, 'error');
     }
   },
 
   addCommentToTask: async (taskId, text) => {
     const { isOffline, currentUser } = get();
     if (isOffline) {
-      get().addToast('لا يمكنك إضافة تعليقات أثناء انقطاع الاتصال.');
+      get().addToast('لا يمكنك إضافة تعليقات أثناء انقطاع الاتصال.', 'error');
       return;
     }
     try {
       await fbAddComment(taskId, text, currentUser?.id || '');
     } catch (err) {
-      get().addToast(`تعذر إضافة التعليق: ${err.message}`);
+      get().addToast(`تعذر إضافة التعليق: ${err.message}`, 'error');
     }
   },
 
   deleteTask: async (taskId) => {
     const { isOffline, tasks } = get();
     if (isOffline) {
-      get().addToast('لا يمكنك حذف المهام أثناء انقطاع الاتصال.');
+      get().addToast('لا يمكنك حذف المهام أثناء انقطاع الاتصال.', 'error');
       return;
     }
     const originalTasks = [...tasks];
@@ -107,7 +107,7 @@ export const createTaskSlice = (set, get) => ({
       await fbDeleteTask(taskId);
     } catch (err) {
       set({ tasks: originalTasks });
-      get().addToast(`تعذر حذف المهمة: ${err.message}`);
+      get().addToast(`تعذر حذف المهمة: ${err.message}`, 'error');
     }
   }
 });

@@ -20,7 +20,7 @@ export const createAuthSlice = (set, get) => ({
         isAuthenticated: true,
         isLoading: false
       });
-      get().addToast(`مرحباً بك مجدداً، ${user.member.name}!`);
+      get().addToast(`مرحباً بك مجدداً، ${user.member.name}!`, 'success');
       await get().fetchInitialData();
       get().initRealtimeListeners();
       if ('Notification' in window && Notification.permission === 'default') {
@@ -56,7 +56,7 @@ export const createAuthSlice = (set, get) => ({
       adminSettings: { allowUserRegistration: true, maintenanceMode: false, maxTasksPerUser: 10 },
       wsStatus: 'disconnected'
     });
-    get().addToast('تم تسجيل الخروج بنجاح.');
+    get().addToast('تم تسجيل الخروج بنجاح.', 'success');
   },
 
   fetchCurrentUser: async () => {

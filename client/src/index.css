@@ -831,3 +831,82 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   border-color: var(--primary);
 }
 
+/* Accessibility: respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Selection styling */
+::selection {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+/* Better focus visibility for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Ripple / press feedback on tap targets */
+.tap-feedback {
+  transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease;
+}
+.tap-feedback:active {
+  transform: scale(0.96);
+}
+
+/* Smooth, consistent card entrance */
+.card-enter {
+  animation: cardEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Empty state enhancement */
+.empty-state-card {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.empty-state-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.empty-state-card .empty-title {
+  font-weight: 800;
+  color: var(--text-main);
+  font-size: 0.95rem;
+}
+
+.empty-state-card .empty-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  max-width: 260px;
+}
+

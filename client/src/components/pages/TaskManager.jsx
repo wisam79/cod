@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { useShallow } from 'zustand/react/shallow';
+import { CheckSquare, SearchX } from 'lucide-react';
 import PullToRefresh from '../atoms/PullToRefresh';
 import TaskCard from '../molecules/TaskCard';
 import TaskFilter from '../organisms/TaskFilter';
@@ -88,7 +89,17 @@ export default function TaskManager() {
 
         {filteredTasks.length === 0 && (
           <div className="empty-state-card card">
-            <p>لا توجد مهام مطابقة للبحث أو التصفية.</p>
+            <div className="empty-state-icon">
+              {tasks.length === 0 ? <CheckSquare size={28} /> : <SearchX size={28} />}
+            </div>
+            <p className="empty-title">
+              {tasks.length === 0 ? 'لا توجد مهام بعد' : 'لا توجد نتائج مطابقة'}
+            </p>
+            <p className="empty-subtitle">
+              {tasks.length === 0
+                ? 'ابدأ بإضافة مهمة جديدة عبر زر "+" بالأعلى لتنظيم عمل فريقك.'
+                : 'جرّب تغيير عوامل التصفية أو كلمة البحث للعثور على ما تريد.'}
+            </p>
           </div>
         )}
       </div>

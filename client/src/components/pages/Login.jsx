@@ -19,9 +19,14 @@ export default function Login() {
 
   return (
     <div className="login-view animate-fade-in text-right">
+      <div className="login-bg-decor" aria-hidden="true">
+        <span className="login-blob login-blob-1" />
+        <span className="login-blob login-blob-2" />
+      </div>
+
       <div className="login-logo-container">
-        <div className="login-logo-svg-wrapper" style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
-          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div className="login-logo-svg-wrapper login-logo-float">
+          <svg width="64" height="64" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="60" height="60" rx="18" fill="url(#logoGrad)" />
             <path d="M42 20L25.5 36.5L18 29" stroke="white" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
             <circle cx="42" cy="18" r="4" fill="#DBEAFE" />
@@ -87,6 +92,56 @@ export default function Login() {
           min-height: calc(100vh - 100px);
           padding: 20px;
           gap: 24px;
+          position: relative;
+          z-index: 1;
+        }
+
+        .login-bg-decor {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          z-index: -1;
+          pointer-events: none;
+        }
+
+        .login-blob {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(50px);
+          opacity: 0.45;
+          animation: blobFloat 14s ease-in-out infinite;
+        }
+
+        .login-blob-1 {
+          width: 240px;
+          height: 240px;
+          background: var(--primary-light);
+          top: -60px;
+          right: -40px;
+        }
+
+        .login-blob-2 {
+          width: 280px;
+          height: 280px;
+          background: rgba(59, 130, 246, 0.18);
+          bottom: -80px;
+          left: -60px;
+          animation-delay: -7s;
+        }
+
+        @keyframes blobFloat {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(20px, -30px) scale(1.08); }
+          66% { transform: translate(-15px, 20px) scale(0.95); }
+        }
+
+        .login-logo-float {
+          animation: logoFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
         }
 
         .login-logo-container {

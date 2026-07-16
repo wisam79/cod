@@ -88,6 +88,15 @@ export default function ChatRoom() {
       </div>
 
       <div className="messages-container" ref={messagesContainerRef} onScroll={onScroll}>
+        {messages.length === 0 && (
+          <div className="chat-empty-state">
+            <div className="empty-state-icon">
+              <MessageSquare size={28} />
+            </div>
+            <p className="empty-title">لا توجد رسائل بعد</p>
+            <p className="empty-subtitle">ابدأ المحادثة مع فريقك الآن — اكتب أول رسالة في الأسفل.</p>
+          </div>
+        )}
         {messages.map((msg) => {
           const isMe = msg.senderId === currentUser?.id;
           return (
@@ -157,6 +166,17 @@ export default function ChatRoom() {
           -webkit-overflow-scrolling: touch;
           overscroll-behavior: contain;
           scroll-behavior: smooth;
+        }
+
+        .chat-empty-state {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          gap: 12px;
+          padding: 60px 24px;
+          color: var(--text-muted);
         }
 
         .messages-container::-webkit-scrollbar {

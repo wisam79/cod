@@ -1,5 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
+
+// Deterministic gradient palette for initials fallback
+const GRADIENTS = [
+  ['#1e40af', '#3b82f6'],
+  ['#7c3aed', '#a855f7'],
+  ['#0891b2', '#06b6d4'],
+  ['#059669', '#10b981'],
+  ['#d97706', '#f59e0b'],
+  ['#dc2626', '#ef4444'],
+  ['#db2777', '#ec4899'],
+  ['#4f46e5', '#6366f1'],
+];
+
+function hashString(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
 
 export default function Avatar({ src, alt, size = 'md', className = '' }) {
   const [error, setError] = useState(false);
@@ -11,8 +32,18 @@ export default function Avatar({ src, alt, size = 'md', className = '' }) {
     xl: { width: '96px', height: '96px', borderRadius: '50%' }
   };
 
-  // Fallback if no avatar image
-  const initial = alt ? alt.charAt(0) : '?';
+  const { gradient, initials } = useMemo(() => {
+    const name = alt || '?';
+    const initials = name
+      .split(/\s+/)
+      .slice(0, 2)
+      .map(w => w.charAt(0))
+      .join('')
+      .toUpperCase() || '?';
+    return { gradient: GRADIENTS[hashString(name) % GRADIENTS.length], initials };
+  }, [alt]);
+
+  const fontSize = { sm: 13, md: 16, lg: 24, xl: 36 }[size];
 
   return (src && !error) ? (
     <img 
@@ -26,17 +57,22 @@ export default function Avatar({ src, alt, size = 'md', className = '' }) {
     <div 
       style={{
         ...style[size],
-        backgroundColor: 'var(--primary-light)',
-        color: 'var(--primary)',
+        background: `linear-gradient(135deg, ${gradient[0]} 0%, ${gradient[1]} 100%)`,
+        color: '#ffffff',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontWeight: 'bold',
-        textTransform: 'uppercase'
+        fontWeight: '700',
+        fontSize,
+        lineHeight: 1,
+        boxShadow: '0 2px 6px rgba(15, 23, 42, 0.15)',
+        userSelect: 'none'
       }}
       className={`avatar-fallback ${className}`}
+      aria-label={alt}
+      role="img"
     >
-      {initial}
+      {initials}
     </div>
   );
 }
