@@ -59,6 +59,7 @@ export default function Login() {
           <Input
             label="البريد الإلكتروني"
             type="email"
+            placeholder="البريد الإلكتروني"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -67,6 +68,7 @@ export default function Login() {
           <Input
             label="كلمة المرور"
             type="password"
+            placeholder="كلمة المرور"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
