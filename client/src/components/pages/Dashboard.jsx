@@ -84,18 +84,29 @@ export default function Dashboard() {
     <div className="dashboard-view">
       <div className="welcome-banner card">
         <div className="banner-content">
-          <div className="banner-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-            <Zap size={20} fill="currentColor" />
-            <h2 style={{ margin: 0 }}>معدل الإنتاجية اليوم ممتاز</h2>
+          <div className="banner-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+            <Zap size={18} fill="currentColor" />
+            <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800' }}>الإنتاجية اليومية</h2>
           </div>
-          <p>لديك <strong>{myPending}</strong> مهام معلقة من أصل <strong>{myTasks.length}</strong> مهام موكلة إليك.</p>
-          <div className="progress-bar-container">
+          
+          <div className="banner-stats" style={{ display: 'flex', gap: '16px', margin: '8px 0', fontSize: '0.8rem', color: 'var(--text-main)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--status-progress)' }}></span>
+              <span>المتبقي: <strong>{myPending}</strong></span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--status-done)' }}></span>
+              <span>المكتمل: <strong>{myCompleted}</strong></span>
+            </div>
+          </div>
+
+          <div className="progress-bar-container" style={{ margin: '8px 0 4px 0' }}>
             <div 
               className="progress-bar-fill" 
               style={{ width: `${myTasks.length ? (myCompleted / myTasks.length) * 100 : 0}%` }}
             ></div>
           </div>
-          <span className="progress-percentage">
+          <span className="progress-percentage" style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
             {myTasks.length ? Math.round((myCompleted / myTasks.length) * 100) : 0}% مكتمل
           </span>
         </div>

@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Badge from '../atoms/Badge';
 import Avatar from '../atoms/Avatar';
-import { translatePriority } from '../../utils/translations';
 
 function TaskCardFn({ task, assignee, onSelect }) {
   const handleClick = React.useCallback(() => {
@@ -16,7 +15,9 @@ function TaskCardFn({ task, assignee, onSelect }) {
       style={{ cursor: 'pointer' }}
     >
       <div className="task-card-header">
-        <Badge type={task.priority} content={translatePriority(task.priority)} />
+        <Badge type={task.priority} content={
+          task.priority === 'high' ? '!!!' : task.priority === 'medium' ? '!!' : '!'
+        } />
         <span className={`task-status-dot status-${task.status}`}></span>
       </div>
       

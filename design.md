@@ -146,3 +146,13 @@ sequenceDiagram
     *   `medium` (30ms vibration) - triggered on task updates/submissions.
     *   `success` (double vibration) - triggered on successful operations or going online.
     *   `error` (long vibration) - triggered on failed actions or going offline.
+
+---
+
+## 6. Minimalist UI & Clean Presentation Principles
+
+To maintain a premium, uncluttered native mobile feel, all visual layouts adhere to the following principles:
+- **No Over-explanations:** Avoid long sentences, descriptions, or helper texts on the main screens. Use clean visual indicators and status pills instead.
+- **Redundancy Reduction:** Remove visual labels from input fields when placeholders clearly describe the input (e.g. Email and Password fields).
+- **Symbolic Priority Badges:** Rather than writing text names like `"عالية"` (High), task card priority badges use clean visual markers (`!!!` for high, `!!` for medium, `!` for low).
+- **Icon-Driven Controls:** Utilize clean icons (e.g. `<AlertCircle size={14} />`) next to filter controls and action items instead of redundant text headers.

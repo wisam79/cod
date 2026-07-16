@@ -1,6 +1,6 @@
 import React from 'react';
 import Avatar from '../atoms/Avatar';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, AlertCircle } from 'lucide-react';
 
 export default function TaskFilter({ 
   searchQuery, 
@@ -57,7 +57,9 @@ export default function TaskFilter({
 
       {/* Priority Filter pills */}
       <div className="assignee-filter-bar priority-filter-bar" style={{ marginTop: '8px', borderTop: '1px dashed var(--border)', paddingTop: '8px' }}>
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', marginLeft: '8px', fontWeight: 'bold' }}>الأولوية:</span>
+        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', marginLeft: '8px' }} title="الأولوية">
+          <AlertCircle size={15} />
+        </span>
         <button 
           className={`filter-pill ${activePriorityFilter === 'all' ? 'active' : ''}`}
           onClick={() => setActivePriorityFilter('all')}
