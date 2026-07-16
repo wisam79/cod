@@ -155,8 +155,7 @@ export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
 
         <form onSubmit={handleSubmit} className="modal-form">
           <Input
-            label="اسم المهمة"
-            placeholder="مثال: تصميم واجهة الشات"
+            placeholder="اسم المهمة"
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             required
@@ -165,8 +164,7 @@ export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
 
           <Input
             type="textarea"
-            label="الوصف"
-            placeholder="تفاصيل عن متطلبات هذه المهمة..."
+            placeholder="الوصف التفصيلي للمهمة..."
             value={newDesc}
             onChange={(e) => setNewDesc(e.target.value)}
           />

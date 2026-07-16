@@ -106,9 +106,8 @@ export default function Login() {
 
           <form onSubmit={handleForgotSubmit}>
             <Input
-              label="البريد الإلكتروني"
               type="email"
-              placeholder="أدخل بريدك الإلكتروني المسجل"
+              placeholder="البريد الإلكتروني المسجل"
               value={forgotEmail}
               onChange={(e) => setForgotEmail(e.target.value)}
               required
@@ -147,16 +146,14 @@ export default function Login() {
 
           <form onSubmit={handleResetSubmit}>
             <Input
-              label="كلمة المرور الجديدة"
               type="password"
-              placeholder="أدخل كلمة المرور الجديدة"
+              placeholder="كلمة المرور الجديدة"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
             />
 
             <Input
-              label="تأكيد كلمة المرور الجديدة"
               type="password"
               placeholder="تأكيد كلمة المرور الجديدة"
               value={confirmPassword}
@@ -203,7 +200,6 @@ export default function Login() {
 
         <form onSubmit={handleSubmit}>
           <Input
-            label="البريد الإلكتروني"
             type="email"
             placeholder="البريد الإلكتروني"
             value={email}
@@ -212,7 +208,6 @@ export default function Login() {
           />
 
           <Input
-            label="كلمة المرور"
             type="password"
             placeholder="كلمة المرور"
             value={password}

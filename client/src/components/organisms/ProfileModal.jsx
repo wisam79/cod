@@ -80,7 +80,6 @@ export default function ProfileModal({ isOpen, onClose }) {
 
           <form onSubmit={handleSaveProfile} className="profile-form">
             <Input
-              label="الاسم الكامل"
               type="text"
               placeholder="الاسم الكامل"
               value={name}
@@ -89,9 +88,8 @@ export default function ProfileModal({ isOpen, onClose }) {
             />
 
             <Input
-              label="رابط الصورة الشخصية (Avatar)"
               type="url"
-              placeholder="رابط الصورة الشخصية"
+              placeholder="رابط الصورة الشخصية (Avatar)"
               value={avatar}
               onChange={(e) => setAvatar(e.target.value)}
             />
@@ -123,7 +121,6 @@ export default function ProfileModal({ isOpen, onClose }) {
                 {passwordError && <div className="password-error-alert">{passwordError}</div>}
                 
                 <Input
-                  label="كلمة المرور الحالية"
                   type="password"
                   placeholder="كلمة المرور الحالية"
                   value={currentPassword}
@@ -132,7 +129,6 @@ export default function ProfileModal({ isOpen, onClose }) {
                 />
 
                 <Input
-                  label="كلمة المرور الجديدة"
                   type="password"
                   placeholder="كلمة المرور الجديدة (8 أحرف على الأقل)"
                   value={newPassword}
@@ -141,7 +137,6 @@ export default function ProfileModal({ isOpen, onClose }) {
                 />
 
                 <Input
-                  label="تأكيد كلمة المرور الجديدة"
                   type="password"
                   placeholder="تأكيد كلمة المرور الجديدة"
                   value={confirmPassword}
