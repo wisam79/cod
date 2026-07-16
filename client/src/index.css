@@ -35,6 +35,19 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
+
+  /* Native-feel motion tokens */
+  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-quick: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-base: 220ms;
+  --dur-slow: 380ms;
+  --press-scale: 0.96;
+  --nav-pill-shift: 220ms;
+
+  /* Minimum recommended touch target */
+  --tap-target: 44px;
 }
 
 * {
@@ -49,6 +62,8 @@
 html {
   height: 100%;
   overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -66,6 +81,35 @@ body {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  font-feature-settings: "kern" 1, "liga" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* iOS-style rubber-band overscroll fallback.
+   Browsers that don't honor overscroll-behavior-y get a visual hint instead. */
+.scrollable-content {
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Standardized, baseline-pressable button.
+   Components can opt out by overriding; this ensures touch targets stay native-sized. */
+button {
+  min-height: var(--tap-target);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 input, textarea, select, .message-item p, .detail-task-desc, .comment-form input, .activity-details p {
@@ -224,15 +268,19 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   border: none;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform var(--dur-fast) var(--ease-quick),
+              background-color var(--dur-fast) var(--ease-quick),
+              box-shadow var(--dur-fast) var(--ease-quick),
+              color var(--dur-fast) var(--ease-quick);
   font-size: 0.95rem;
   gap: 8px;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  min-height: var(--tap-target);
 }
 
 .btn:active {
-  transform: scale(0.95);
+  transform: scale(var(--press-scale));
 }
 
 .btn:focus-visible, .icon-btn:focus-visible {
@@ -547,10 +595,41 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   100% { transform: scale3d(1, 1, 1); }
 }
 
-.animate-slide-right { animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.animate-slide-left { animation: slideInLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.animate-spring-up { animation: springUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-.animate-rubber { animation: rubberBand 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes iosSheetSnap {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+@keyframes iosSheetDismiss {
+  from { transform: translateY(0);     opacity: 1; }
+  to   { transform: translateY(100%); opacity: 0; }
+}
+
+@keyframes iosOverlayFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animate-slide-right { animation: slideInRight 0.3s var(--ease-ios) forwards; }
+.animate-slide-left { animation: slideInLeft 0.3s var(--ease-ios) forwards; }
+.animate-spring-up { animation: springUp 0.5s var(--ease-spring) forwards; }
+.animate-rubber { animation: rubberBand 0.6s var(--ease-spring); }
+
+/* Native pill indicator for navbars. Components paint a single bar that slides
+   between tabs on activation. */
+.nav-indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  transition: transform var(--nav-pill-shift) var(--ease-spring),
+              width var(--nav-pill-shift) var(--ease-spring);
+  will-change: transform, width;
+  pointer-events: none;
+  z-index: 0;
+}
 
 .pressable {
   transition: transform 0.1s ease;
@@ -609,24 +688,39 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   position: fixed;
   inset: 0;
   z-index: 2000;
-  background: rgba(0,0,0,0.35);
+  background: rgba(15, 23, 42, 0.45);
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  animation: fadeInOverlay 0.2s ease forwards;
+  backdrop-filter: blur(8px) saturate(180%);
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
+  animation: iosOverlayFade 0.22s var(--ease-ios) forwards;
+  touch-action: none;
 }
+
+.sheet-modal-overlay.modal-fade-out {
+  animation: iosOverlayFade 0.18s var(--ease-quick) reverse forwards;
+}
+
 .sheet-modal {
   width: 100%;
   max-width: 420px;
   background: var(--bg-app);
   border-radius: 24px 24px 0 0;
-  animation: springUp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  max-height: 85vh;
+  animation: iosSheetSnap 0.45s var(--ease-spring) forwards;
+  max-height: 90vh;
   overflow-y: auto;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+  transition: transform 0.35s var(--ease-ios), opacity 0.2s var(--ease-quick);
+  will-change: transform, opacity;
 }
+
+.sheet-modal.modal-slide-down {
+  animation: iosSheetDismiss 0.25s var(--ease-quick) forwards;
+}
+
 .sheet-modal-handle {
   width: 36px;
   height: 5px;

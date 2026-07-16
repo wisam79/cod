@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { triggerHaptic } from '../haptics';
+import { triggerHaptic, resetHapticDedupe } from '../haptics';
 
 describe('triggerHaptic', () => {
   let vibrateSpy;
@@ -11,6 +11,7 @@ describe('triggerHaptic', () => {
       writable: true,
       configurable: true
     });
+    resetHapticDedupe();
   });
 
   afterEach(() => {
@@ -77,5 +78,53 @@ describe('triggerHaptic', () => {
     delete navigator.vibrate;
     expect(() => triggerHaptic('light')).not.toThrow();
     navigator.vibrate = originalVibrate;
+  });
+
+  it('triggers new patterns: soft, rigid, tick, selection, warning', () => {
+    triggerHaptic('soft', { force: true });
+    expect(vibrateSpy).toHaveBeenLastCalledWith(5);
+    triggerHaptic('rigid', { force: true });
+    expect(vibrateSpy).toHaveBeenLastCalledWith(25);
+    triggerHaptic('tick', { force: true });
+    expect(vibrateSpy).toHaveBeenLastCalledWith(6);
+    triggerHaptic('selection', { force: true });
+    expect(vibrateSpy).toHaveBeenLastCalledWith(4);
+    triggerHaptic('warning', { force: true });
+    expect(vibrateSpy).toHaveBeenLastCalledWith([12, 40, 12]);
+  });
+
+  it('deduplicates rapid calls within the default window', () => {
+    triggerHaptic('light');
+    triggerHaptic('medium');
+    triggerHaptic('heavy');
+    expect(vibrateSpy).toHaveBeenCalledTimes(1);
+    expect(vibrateSpy).toHaveBeenCalledWith(10);
+  });
+
+  it('can bypass deduplication via force flag', () => {
+    triggerHaptic('light');
+    triggerHaptic('light', { force: true });
+    triggerHaptic('medium', { force: true });
+    expect(vibrateSpy).toHaveBeenCalledTimes(3);
+    expect(vibrateSpy).toHaveBeenNthCalledWith(2, 10);
+    expect(vibrateSpy).toHaveBeenLastCalledWith(20);
+  });
+
+  it('respects a custom dedupe window', () => {
+    triggerHaptic('light', { dedupe: 0 });
+    triggerHaptic('medium', { dedupe: 0 });
+    triggerHaptic('heavy', { dedupe: 0 });
+    expect(vibrateSpy).toHaveBeenCalledTimes(3);
+    expect(vibrateSpy).toHaveBeenLastCalledWith([10, 30, 10]);
+  });
+
+  it('resetHapticDedupe lets the next call go through immediately', () => {
+    triggerHaptic('light');
+    expect(vibrateSpy).toHaveBeenCalledTimes(1);
+    triggerHaptic('medium');
+    expect(vibrateSpy).toHaveBeenCalledTimes(1);
+    resetHapticDedupe();
+    triggerHaptic('medium');
+    expect(vibrateSpy).toHaveBeenCalledTimes(2);
   });
 });

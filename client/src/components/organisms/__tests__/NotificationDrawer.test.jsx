@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import NotificationDrawer from '../NotificationDrawer';
 
 describe('NotificationDrawer', () => {
@@ -16,7 +16,14 @@ describe('NotificationDrawer', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useFakeTimers();
   });
+
+  const flushClose = () => {
+    act(() => {
+      vi.advanceTimersByTime(250);
+    });
+  };
 
   it('renders when open', () => {
     render(<NotificationDrawer {...defaultProps} />);
@@ -37,12 +44,14 @@ describe('NotificationDrawer', () => {
   it('calls onClose when overlay is clicked', () => {
     render(<NotificationDrawer {...defaultProps} />);
     fireEvent.click(screen.getByText('مركز التنبيهات').closest('.drawer-overlay'));
+    flushClose();
     expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
   });
 
   it('calls onClose when X button is clicked', () => {
     render(<NotificationDrawer {...defaultProps} />);
     fireEvent.click(screen.getByLabelText('إغلاق'));
+    flushClose();
     expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
   });
 

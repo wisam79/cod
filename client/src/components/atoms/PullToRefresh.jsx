@@ -1,26 +1,51 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { triggerHaptic } from '../../utils/haptics';
 
 const STATUS = { PULLING: 'pulling', READY: 'ready', REFRESHING: 'refreshing', IDLE: 'idle' };
+const THRESHOLD = 64;
+const RUBBER_BAND_MAX = 140;
 
 export default function PullToRefresh({ onRefresh, children, isRefreshing: externalRefreshing }) {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [pullDistance, setPullDistance] = useState(0);
   const startY = useRef(0);
   const pulling = useRef(false);
+  const firedThresholdHaptic = useRef(false);
   const containerRef = useRef(null);
   const isRefreshing = externalRefreshing !== undefined ? externalRefreshing : status === STATUS.REFRESHING;
+
+  /* Rubber-band curve: grows slower as you pull further. */
+  const applyRubber = (raw) => {
+    if (raw <= 0) return 0;
+    const ratio = 0.45 - Math.max(0, raw - 240) * 0.00008;
+    const eased = raw * ratio;
+    return Math.min(eased, RUBBER_BAND_MAX);
+  };
 
   const handleTouchMove = useCallback((e) => {
     if (!pulling.current) return;
     e.preventDefault();
     const diff = e.touches[0].clientY - startY.current;
-    if (diff <= 0) { setPullDistance(0); return; }
-    const distance = Math.min(diff * 0.5, 100);
+    if (diff <= 0) {
+      if (pullDistance !== 0) setPullDistance(0);
+      firedThresholdHaptic.current = false;
+      return;
+    }
+    const distance = applyRubber(diff);
     setPullDistance(distance);
-    setStatus(distance >= 60 ? STATUS.READY : STATUS.PULLING);
-  }, []);
+    const reached = distance >= THRESHOLD;
+    setStatus(reached ? STATUS.READY : STATUS.PULLING);
+    if (reached && !firedThresholdHaptic.current) {
+      firedThresholdHaptic.current = true;
+      triggerHaptic('selection');
+    } else if (!reached && firedThresholdHaptic.current) {
+      firedThresholdHaptic.current = false;
+    }
+  }, [pullDistance]);
 
   const handleTouchStart = useCallback((e) => {
+    const t = e.touches[0];
     let el = e.target instanceof Element ? e.target : null;
     while (el && el !== containerRef.current) {
       const style = getComputedStyle(el);
@@ -29,17 +54,20 @@ export default function PullToRefresh({ onRefresh, children, isRefreshing: exter
     }
     const scroller = el || containerRef.current;
     if (scroller && scroller.scrollTop <= 0) {
-      startY.current = e.touches[0].clientY;
+      startY.current = t.clientY;
       pulling.current = true;
+      firedThresholdHaptic.current = false;
     }
   }, []);
 
   const handleTouchEnd = useCallback(() => {
     if (!pulling.current) return;
     pulling.current = false;
-    if (pullDistance >= 60) {
+    const overThreshold = pullDistance >= THRESHOLD;
+    if (overThreshold) {
       if (externalRefreshing === undefined) setStatus(STATUS.REFRESHING);
       setPullDistance(40);
+      triggerHaptic('submit');
       const result = onRefresh && onRefresh();
       if (result && result.then) {
         result.finally(() => {
@@ -64,39 +92,84 @@ export default function PullToRefresh({ onRefresh, children, isRefreshing: exter
     return () => el.removeEventListener('touchmove', handleTouchMove);
   }, [handleTouchMove]);
 
+  /* After the refreshing state completes (external or internal), spring back to 0. */
+  useEffect(() => {
+    if (!isRefreshing && status !== STATUS.IDLE && externalRefreshing !== undefined) {
+      setPullDistance(0);
+      setStatus(STATUS.IDLE);
+    }
+  }, [isRefreshing, status, externalRefreshing]);
+
   return (
     <div
       ref={containerRef}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      style={{ position: 'relative', minHeight: '100%' }}
+      style={{
+        position: 'relative',
+        minHeight: '100%',
+        touchAction: 'pan-y',
+        WebkitOverflowScrolling: 'touch'
+      }}
     >
-      <div style={{
-        position: 'absolute', top: -40 + pullDistance, left: 0, right: 0,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: 40, transition: pullDistance > 0 ? 'none' : 'top 0.3s ease',
-        fontSize: '0.75rem', fontWeight: '700', color: 'var(--text-muted)',
-        gap: 8,
-      }}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          top: -40 + pullDistance,
+          left: 0,
+          right: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: 40,
+          transform: `rotate(${Math.min(pullDistance / THRESHOLD, 1) * 360}deg)`,
+          transition: pullDistance > 0 && !isRefreshing ? 'none' : 'top 0.4s var(--ease-spring), transform 0.4s var(--ease-spring)',
+          fontSize: '0.75rem',
+          fontWeight: '700',
+          color: 'var(--text-muted)',
+          gap: 8
+        }}
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           style={{
-            transform: `rotate(${isRefreshing ? 360 : (pullDistance / 60) * 360}deg)`,
-            animation: isRefreshing ? 'spin 0.8s linear infinite' : 'none',
-            transition: isRefreshing ? 'none' : 'transform 0.2s ease',
+            animation: isRefreshing ? 'spin 0.8s linear infinite' : 'none'
           }}
         >
-          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-          <path d="M3 3v5h5"/>
+          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+          <path d="M3 3v5h5" />
         </svg>
-        {isRefreshing ? 'جارٍ التحديث...' : pullDistance >= 60 ? 'أفلت للتحديث' : 'اسحب للتحديث'}
+        {isRefreshing
+          ? 'جارٍ التحديث...'
+          : pullDistance >= THRESHOLD
+            ? 'أفلت للتحديث'
+            : 'اسحب للتحديث'}
       </div>
-      <div style={{
-        transform: `translateY(${pullDistance}px)`,
-        transition: status === STATUS.REFRESHING ? 'transform 0.3s ease' : pullDistance > 0 ? 'none' : 'transform 0.3s ease',
-        willChange: 'transform',
-      }}>
+      <div
+        style={{
+          transform: `translateY(${pullDistance}px)`,
+          transition: pullDistance > 0 && !isRefreshing
+            ? 'none'
+            : 'transform 0.4s var(--ease-spring)',
+          willChange: 'transform'
+        }}
+      >
         {children}
       </div>
     </div>
   );
 }
+
+PullToRefresh.propTypes = {
+  onRefresh: PropTypes.func,
+  children: PropTypes.node,
+  isRefreshing: PropTypes.bool
+};

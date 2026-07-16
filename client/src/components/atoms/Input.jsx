@@ -1,22 +1,23 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 
-export default function Input({ 
-  type = 'text', 
-  placeholder = '', 
-  value, 
-  onChange, 
-  name, 
-  required = false, 
-  className = '', 
+const Input = forwardRef(function Input({
+  type = 'text',
+  placeholder = '',
+  value,
+  onChange,
+  name,
+  required = false,
+  className = '',
   label = '',
   rows = 3
-}) {
+}, ref) {
   return (
     <div className={`custom-input-wrapper ${className}`}>
       {label && <label className="custom-input-label">{label}</label>}
       {type === 'textarea' ? (
         <textarea
+          ref={ref}
           name={name}
           placeholder={placeholder}
           value={value}
@@ -27,6 +28,7 @@ export default function Input({
         />
       ) : (
         <input
+          ref={ref}
           type={type}
           name={name}
           placeholder={placeholder}
@@ -38,7 +40,9 @@ export default function Input({
       )}
     </div>
   );
-}
+});
+
+export default Input;
 
 Input.propTypes = {
   type: PropTypes.string,
