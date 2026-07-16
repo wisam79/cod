@@ -1,18 +1,7 @@
-const CACHE_NAME = 'mohemmaty-cache-v2';
+const CACHE_NAME = 'mohemmaty-v3';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll([
-        '/',
-        '/index.html',
-        '/app-icon.png',
-        '/favicon.svg',
-        '/icons.svg',
-        '/manifest.json'
-      ]);
-    }).then(() => self.skipWaiting())
-  );
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -50,6 +39,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // index.html: always network-first (detect new deploys)
+  if (url.pathname === '/' || url.pathname === '/index.html') {
+    event.respondWith(
+      fetch(req).then((response) => {
+        const clonedResponse = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(req, clonedResponse);
+        });
+        return response;
+      }).catch(() => {
+        return caches.match(req);
+      })
+    );
+    return;
+  }
+
+  // Static assets (hashed by Vite): stale-while-revalidate
   event.respondWith(
     caches.match(req).then((cachedResponse) => {
       if (cachedResponse) {

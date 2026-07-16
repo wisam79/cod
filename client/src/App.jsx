@@ -62,6 +62,7 @@ function App() {
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [isMaintenance, setIsMaintenance] = useState(false);
   const [pageDirection, setPageDirection] = useState('right');
+  const [showUpdateBanner, setShowUpdateBanner] = useState(false);
   const prevTabRef = useRef('dashboard');
 
   useEffect(() => {
@@ -181,6 +182,14 @@ function App() {
       return next;
     });
   };
+
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        setShowUpdateBanner(true);
+      });
+    }
+  }, []);
 
   useEffect(() => {
     fetchCurrentUser();
@@ -378,6 +387,21 @@ function App() {
               <button className="install-btn-dismiss" onClick={dismissInstallBanner}>
                 <X size={14} />
               </button>
+            </div>
+          </div>
+        )}
+
+        {showUpdateBanner && (
+          <div className="install-banner" style={{ background: 'linear-gradient(135deg, #059669, #10b981)' }}>
+            <div className="install-banner-icon">
+              <RefreshCw size={20} color="#fff" />
+            </div>
+            <div className="install-banner-text">
+              <h4>تحديث جديد متاح</h4>
+              <p>قم بتحديث التطبيق للحصول على أحدث الإصدار</p>
+            </div>
+            <div className="install-banner-actions">
+              <button className="install-btn-accept" onClick={() => window.location.reload()}>تحديث</button>
             </div>
           </div>
         )}
