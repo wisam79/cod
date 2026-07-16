@@ -32,7 +32,7 @@ export default function ChatRoom() {
     if (messages.length === 0 && fetchMessages) {
       fetchMessages();
     }
-  }, []);
+  }, [fetchMessages, messages.length]);
 
   useEffect(() => {
     if (!window.visualViewport) return;

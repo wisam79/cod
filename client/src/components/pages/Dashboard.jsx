@@ -31,7 +31,13 @@ export default function Dashboard() {
     setRefreshing(false);
   }, [fetchInitialData]);
   const [quickTitle, setQuickTitle] = useState('');
-  const [quickAssignee, setQuickAssignee] = useState(members[0]?.id || 1);
+  const [quickAssignee, setQuickAssignee] = useState(null);
+
+  useEffect(() => {
+    if (members.length > 0 && quickAssignee === null) {
+      setQuickAssignee(members[0].id);
+    }
+  }, [members, quickAssignee]);
 
   const user = currentUser || { id: 0, name: 'جاري التحميل...' };
 

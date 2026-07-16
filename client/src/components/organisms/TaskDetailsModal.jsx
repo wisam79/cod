@@ -20,6 +20,7 @@ export default function TaskDetailsModal({
   const [showActionSheet, setShowActionSheet] = useState(false);
   const touchStartY = useRef(null);
   const modalRef = useRef(null);
+  const statusChangeTimeoutRef = useRef(null);
 
   const handleClose = useCallback(() => {
     triggerHaptic('close');
@@ -42,6 +43,9 @@ export default function TaskDetailsModal({
     window.addEventListener('popstate', handleBack);
     return () => {
       window.removeEventListener('popstate', handleBack);
+      if (statusChangeTimeoutRef.current) {
+        clearTimeout(statusChangeTimeoutRef.current);
+      }
     };
   }, [task, handleClose]);
 
@@ -116,7 +120,12 @@ export default function TaskDetailsModal({
                 value={taskInStore.status} 
                 onChange={(e) => {
                   triggerHaptic('light');
-                  updateTaskStatus(task.id, e.target.value);
+                  if (statusChangeTimeoutRef.current) {
+                    clearTimeout(statusChangeTimeoutRef.current);
+                  }
+                  statusChangeTimeoutRef.current = setTimeout(() => {
+                    updateTaskStatus(task.id, e.target.value);
+                  }, 300);
                 }}
                 className={`status-select status-${taskInStore.status}`}
               >
@@ -141,7 +150,7 @@ export default function TaskDetailsModal({
                 المسؤول:
               </span>
               <span className="val">
-                {(members.find(m => m.id === taskInStore.assigneeId) || currentUser)?.name || 'غير محدد'}
+                {members.find(m => m.id === taskInStore.assigneeId)?.name || 'غير محدد'}
               </span>
             </div>
 

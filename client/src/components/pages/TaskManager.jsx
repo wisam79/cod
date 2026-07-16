@@ -75,7 +75,7 @@ export default function TaskManager() {
 
       <div className="tasks-list">
         {filteredTasks.map(task => {
-          const assignee = members.find(m => m.id === task.assigneeId) || currentUser;
+          const assignee = members.find(m => m.id === task.assigneeId) || { name: 'غير محدد', avatar: '' };
           return (
             <TaskCard 
               key={task.id}

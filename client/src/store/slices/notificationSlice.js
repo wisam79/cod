@@ -9,16 +9,12 @@ export const createNotificationSlice = (set, get) => ({
 
   addToast: (text) => {
     const id = Date.now() + Math.random();
-    let isDuplicate = false;
     set((state) => {
       if (state.activeToasts.some(t => t.text === text)) {
-        isDuplicate = true;
         return state;
       }
       return { activeToasts: [...state.activeToasts, { id, text }] };
     });
-    
-    if (isDuplicate) return;
 
     setTimeout(() => {
       set((state) => ({

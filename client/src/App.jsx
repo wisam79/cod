@@ -164,7 +164,7 @@ function App() {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [setOffline, triggerHaptic]);
+  }, [setOffline]);
 
   const handleSetActiveTab = useCallback((tab) => {
     if (tab !== activeTab) {

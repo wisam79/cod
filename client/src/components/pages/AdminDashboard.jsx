@@ -32,7 +32,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     loadAdminMembers();
     loadAdminSettings();
-  }, []);
+  }, [loadAdminMembers, loadAdminSettings]);
 
   useEffect(() => {
     if (adminSettings) {

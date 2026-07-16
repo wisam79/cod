@@ -1,4 +1,4 @@
-import { onTasksChange, onMessagesChange, onNotificationsChange } from '../apiClient';
+import { onTasksChange, onMessagesChange, onNotificationsChange, disconnectWS } from '../apiClient';
 
 export const createWSSlice = (set, get) => ({
   wsStatus: 'disconnected',
@@ -54,6 +54,7 @@ export const createWSSlice = (set, get) => ({
     unsubscribers.forEach(unsub => {
       try { unsub(); } catch { /* ignore */ }
     });
+    disconnectWS();
     set({ unsubscribers: [], wsStatus: 'disconnected', sessionToken: null });
   },
 

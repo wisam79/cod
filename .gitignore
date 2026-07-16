@@ -34,3 +34,4 @@ media__*
 walkthrough.md.data*
 
 .vercel
+.env*

@@ -62,52 +62,50 @@ export const createAuthSlice = (set, get) => ({
   fetchCurrentUser: async () => {
     set({ isLoading: true, error: null });
     try {
-      await new Promise((resolve) => {
-        let settled = false;
-        const unsubscribe = onAuthChange(async (user) => {
-          if (settled) return;
-          settled = true;
-          unsubscribe();
-          if (!user) {
-            localStorage.removeItem('auth_token');
-            set({ token: null, currentUser: null, isAuthenticated: false, isLoading: false });
-            resolve();
-            return;
-          }
-          try {
-            const token = await user.getIdToken();
-            const userData = { id: user.uid, name: user.name, email: user.email, role: user.role, avatar: user.avatar };
-            localStorage.setItem('offline_user', JSON.stringify(userData));
+      let settled = false;
+      const unsubscribe = onAuthChange(async (user) => {
+        if (settled) return;
+        settled = true;
+        unsubscribe();
+        if (!user) {
+          localStorage.removeItem('auth_token');
+          set({ token: null, currentUser: null, isAuthenticated: false, isLoading: false });
+          return;
+        }
+        try {
+          const token = await user.getIdToken();
+          const userData = { id: user.uid, name: user.name, email: user.email, role: user.role, avatar: user.avatar };
+          localStorage.setItem('offline_user', JSON.stringify(userData));
+          set({
+            token,
+            currentUser: userData,
+            isAuthenticated: true,
+            isLoading: false
+          });
+          await get().fetchInitialData();
+          get().initRealtimeListeners();
+        } catch (err) {
+          console.error('Failed to restore session:', err);
+          let offlineUser = null;
+          try { offlineUser = JSON.parse(localStorage.getItem('offline_user')); } catch (_) {}
+          if (offlineUser) {
             set({
-              token,
-              currentUser: userData,
+              token: null,
+              currentUser: offlineUser,
               isAuthenticated: true,
               isLoading: false
             });
             await get().fetchInitialData();
             get().initRealtimeListeners();
-          } catch (err) {
-            console.error('Failed to restore session:', err);
-            let offlineUser = null;
-            try { offlineUser = JSON.parse(localStorage.getItem('offline_user')); } catch (_) {}
-            if (offlineUser) {
-              set({
-                token: null,
-                currentUser: offlineUser,
-                isAuthenticated: true,
-                isLoading: false
-              });
-              await get().fetchInitialData();
-              get().initRealtimeListeners();
-            } else {
-              localStorage.removeItem('auth_token');
-              localStorage.removeItem('offline_user');
-              set({ token: null, currentUser: null, isAuthenticated: false, isLoading: false });
-            }
+          } else {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('offline_user');
+            set({ token: null, currentUser: null, isAuthenticated: false, isLoading: false });
           }
-          resolve();
-        });
-        setTimeout(() => {
+        }
+      });
+      await new Promise((resolve) => {
+        const timeoutId = setTimeout(() => {
           if (!settled) {
             settled = true;
             unsubscribe();
@@ -128,6 +126,14 @@ export const createAuthSlice = (set, get) => ({
             resolve();
           }
         }, 6000);
+        
+        const checkSettled = setInterval(() => {
+          if (settled) {
+            clearInterval(checkSettled);
+            clearTimeout(timeoutId);
+            resolve();
+          }
+        }, 100);
       });
     } catch {
       set({ isLoading: false, isAuthenticated: false });

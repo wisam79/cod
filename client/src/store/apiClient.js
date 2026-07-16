@@ -35,7 +35,19 @@ export async function registerUser(name, email, password, role) {
 }
 
 export async function logoutUser() {
-  return Promise.resolve();
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    try {
+      await fetch(`${API_URL}/auth/logout`, {
+        method: 'POST',
+        headers: getHeaders()
+      });
+    } catch {
+      // ignore
+    }
+  }
+  // Clean up WebSocket and polling
+  disconnectWS();
 }
 
 export function onAuthChange(callback) {
@@ -240,10 +252,25 @@ function startPollingFallback() {
   }, 6000);
 }
 
+function stopPollingFallback() {
+  if (pollingTimer) {
+    clearInterval(pollingTimer);
+    pollingTimer = null;
+  }
+}
+
 function getBackoffDelay() {
   const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), MAX_RECONNECT_DELAY);
   const jitter = Math.random() * 1000;
   return delay + jitter;
+}
+
+function clearAllSubscribers() {
+  taskSubscribers = [];
+  messageSubscribers = [];
+  notificationSubscribers = [];
+  wsStatusSubscribers = [];
+  stopPollingFallback();
 }
 
 function connectWS() {
@@ -279,6 +306,16 @@ function connectWS() {
     reconnectAttempts++;
     setTimeout(connectWS, delay);
   };
+}
+
+export function disconnectWS() {
+  if (ws) {
+    ws.onclose = null;
+    ws.close();
+    ws = null;
+  }
+  clearAllSubscribers();
+  notifyWsStatus('disconnected');
 }
 
 export function onTasksChange(callback) {
