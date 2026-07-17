@@ -224,7 +224,7 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
           border-radius: 50%;
           transition: transform var(--nav-pill-shift) var(--ease-out), width var(--nav-pill-shift) var(--ease-out);
           z-index: 0;
-          box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
 
         .nav-item {
@@ -274,7 +274,7 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
 
         .app-container.dark-theme .nav-indicator {
           background: var(--primary);
-          box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
         }
 
         .app-container.dark-theme .nav-item.active {

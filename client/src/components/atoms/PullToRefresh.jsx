@@ -25,13 +25,14 @@ export default function PullToRefresh({ onRefresh, children, isRefreshing: exter
 
   const handleTouchMove = useCallback((e) => {
     if (!pulling.current) return;
-    e.preventDefault();
     const diff = e.touches[0].clientY - startY.current;
-    if (diff <= 0) {
+    // Only intercept if user is clearly pulling down (> 5px threshold)
+    if (diff <= 5) {
       setPullDistance(0);
       firedThresholdHaptic.current = false;
       return;
     }
+    e.preventDefault();
     const distance = applyRubber(diff);
     setPullDistance(distance);
     const reached = distance >= THRESHOLD;

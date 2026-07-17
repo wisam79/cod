@@ -94,14 +94,10 @@ export default function TaskDetailsModal({
         ref={modalRef}
         className={`sheet-modal ${isClosing ? 'modal-slide-down' : ''}`} 
         onClick={(e) => e.stopPropagation()}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
         role="dialog"
         aria-modal="true"
         style={{ direction: 'rtl' }}
       >
-        <div className="sheet-modal-handle" />
         <div className="modal-header" style={{ padding: 'var(--space-4)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-light)' }}>
           <h2 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800 }}>تفاصيل المهمة</h2>
           <button className="close-btn" onClick={handleClose} aria-label="إغلاق">

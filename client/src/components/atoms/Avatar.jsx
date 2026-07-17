@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 // Deterministic gradient palette for initials fallback
 const GRADIENTS = [
   ['#1e40af', '#3b82f6'],
-  ['#7c3aed', '#a855f7'],
+  ['#1d4ed8', '#2563eb'],
   ['#0891b2', '#06b6d4'],
   ['#059669', '#10b981'],
   ['#d97706', '#f59e0b'],

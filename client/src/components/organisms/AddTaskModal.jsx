@@ -148,11 +148,7 @@ export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
         aria-modal="true"
         aria-labelledby="add-task-title"
         onClick={(e) => e.stopPropagation()}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
-        <div className="sheet-modal-handle" />
         <div className="modal-header">
           <h2 id="add-task-title">إضافة مهمة جديدة</h2>
           <button className="close-btn" onClick={handleClose} aria-label="إغلاق">

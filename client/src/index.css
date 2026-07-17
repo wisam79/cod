@@ -4,11 +4,11 @@
    DESIGN TOKENS — Institutional Authority System
    ========================================================= */
 :root {
-  --primary: #a855f7;
-  --primary-hover: #9333ea;
-  --primary-light: rgba(168, 85, 247, 0.08);
-  --accent-light: rgba(168, 85, 247, 0.06);
-  --primary-gradient: linear-gradient(135deg, #a855f7 0%, #c084fc 100%);
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-light: rgba(37, 99, 235, 0.08);
+  --accent-light: rgba(37, 99, 235, 0.06);
+  --primary-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
 
   /* Semantic status */
   --danger: #ef4444;
@@ -45,7 +45,7 @@
   /* Status colors mapped to image colors */
   --status-todo: #f97316;
   --status-progress: #3b82f6;
-  --status-review: #a855f7;
+  --status-review: #8b5cf6;
   --status-done: #22c55e;
 
   /* Typography */
@@ -511,7 +511,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   box-shadow: var(--shadow-xs), 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .btn-primary:hover {
-  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
   box-shadow: var(--shadow-sm), 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 .btn-primary:active {
@@ -521,10 +521,10 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 .btn-secondary {
   background: var(--primary-light);
   color: var(--primary);
-  border: 1px solid rgba(30, 64, 175, 0.15);
+  border: 1px solid rgba(37, 99, 235, 0.15);
 }
 .btn-secondary:hover {
-  background: rgba(30, 64, 175, 0.12);
+  background: rgba(37, 99, 235, 0.12);
 }
 
 /* =========================================================
@@ -546,8 +546,8 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 .badge-medium { background-color: var(--priority-medium-bg); color: var(--priority-medium); }
 .badge-low { background-color: var(--priority-low-bg); color: var(--priority-low); }
 .badge-todo { background-color: rgba(71, 84, 103, 0.08); color: var(--status-todo); }
-.badge-progress { background-color: rgba(30, 64, 175, 0.08); color: var(--status-progress); }
-.badge-review { background-color: rgba(124, 58, 237, 0.08); color: var(--status-review); }
+.badge-progress { background-color: rgba(37, 99, 235, 0.08); color: var(--status-progress); }
+.badge-review { background-color: rgba(139, 92, 246, 0.08); color: var(--status-review); }
 .badge-done { background-color: rgba(6, 95, 70, 0.08); color: var(--status-done); }
 .badge-default { background-color: var(--primary-light); color: var(--primary); }
 
@@ -685,6 +685,16 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 @keyframes iosSheetDismiss {
   from { transform: translateY(0); }
   to { transform: translateY(100%); }
+}
+
+@keyframes modalScaleIn {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes modalScaleOut {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(0.92); opacity: 0; }
 }
 
 @keyframes slideDownBar {
@@ -905,10 +915,12 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   z-index: 2000;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   animation: iosOverlayFade 0.2s var(--ease-in-out) forwards;
-  touch-action: none;
+  padding: var(--space-4);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-backdrop {
@@ -930,21 +942,22 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   width: 100%;
   max-width: 420px;
   background: var(--bg-card);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  border-top: 1px solid var(--border-light);
-  animation: iosSheetSnap 0.3s var(--ease-out) forwards;
-  max-height: 90vh;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+  animation: modalScaleIn 0.25s var(--ease-out) forwards;
+  max-height: 85vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-4));
+  padding-bottom: var(--space-4);
   transition: transform 0.25s var(--ease-out), opacity 0.2s var(--ease-in-out);
   will-change: transform, opacity;
   box-shadow: var(--shadow-lg);
+  margin: auto;
 }
 
 .sheet-modal.modal-slide-down {
-  animation: iosSheetDismiss 0.2s var(--ease-in-out) forwards;
+  animation: modalScaleOut 0.18s var(--ease-in-out) forwards;
 }
 
 .sheet-modal-handle {
@@ -1063,9 +1076,9 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   --shadow-sm: 0 8px 30px rgba(0, 0, 0, 0.25);
   --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.35);
   --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.55);
-  --primary-light: rgba(168, 85, 247, 0.15);
-  --primary-gradient: linear-gradient(135deg, #a855f7 0%, #c084fc 100%);
-  --accent-light: rgba(168, 85, 247, 0.1);
+  --primary-light: rgba(37, 99, 235, 0.15);
+  --primary-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  --accent-light: rgba(37, 99, 235, 0.1);
   --danger-light: rgba(239, 68, 68, 0.12);
   --warning-light: rgba(249, 115, 22, 0.12);
   --success-light: rgba(34, 197, 94, 0.12);
@@ -1128,7 +1141,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 
 .app-container.dark-theme .sidebar-item.active {
   background-color: var(--primary-light);
-  box-shadow: inset 3px 0 0 #3b82f6;
+  box-shadow: inset 3px 0 0 var(--primary);
 }
 
 .app-container.dark-theme .sidebar-user-info:hover {
@@ -1146,7 +1159,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 .app-container.dark-theme .btn-secondary {
   background: var(--primary-light);
   color: #60a5fa;
-  border-color: rgba(37, 99, 235, 0.2);
+  border-color: rgba(37, 99, 235, 0.25);
 }
 
 /* =========================================================
@@ -1178,7 +1191,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.25);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
 }
 
 .install-banner-text {
@@ -1215,7 +1228,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 .install-btn-accept {
   background: var(--primary-gradient);
   color: #fff;
-  box-shadow: 0 2px 6px rgba(30, 64, 175, 0.2);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
 }
 
 .install-btn-dismiss {
@@ -1262,7 +1275,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 
 .custom-input-element:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 /* =========================================================

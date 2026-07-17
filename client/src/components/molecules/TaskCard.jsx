@@ -17,7 +17,7 @@ function TaskCardFn({ task, assignee, onSelect }) {
   const statusColors = {
     todo: { bg: 'rgba(249, 115, 22, 0.08)', text: '#f97316', label: 'في الانتظار' },
     progress: { bg: 'rgba(59, 130, 246, 0.08)', text: '#3b82f6', label: 'قيد العمل' },
-    review: { bg: 'rgba(168, 85, 247, 0.08)', text: '#a855f7', label: 'قيد المراجعة' },
+    review: { bg: 'rgba(139, 92, 246, 0.08)', text: '#8b5cf6', label: 'قيد المراجعة' },
     done: { bg: 'rgba(34, 197, 94, 0.08)', text: '#22c55e', label: 'مكتملة' }
   };
 

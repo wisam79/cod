@@ -180,7 +180,7 @@ export default function TaskFilter({
                       cursor: 'pointer',
                       flexShrink: 0,
                       transition: 'all var(--dur-fast) var(--ease-in-out)',
-                      boxShadow: isSelected ? '0 4px 12px rgba(168, 85, 247, 0.2)' : 'var(--shadow-xs)'
+                      boxShadow: isSelected ? '0 4px 12px rgba(37, 99, 235, 0.2)' : 'var(--shadow-xs)'
                     }}
                   >
                     <span className="font-english" style={{ fontSize: '0.65rem', fontWeight: 500, color: isSelected ? 'rgba(255, 255, 255, 0.8)' : 'var(--text-muted)' }}>
