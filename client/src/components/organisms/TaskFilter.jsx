@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Avatar from '../atoms/Avatar';
-import { Search, Plus, AlertCircle, SlidersHorizontal } from 'lucide-react';
+import { Search, Plus, AlertCircle, Filter } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 
 export default function TaskFilter({ 
@@ -126,7 +126,7 @@ export default function TaskFilter({
             setShowAdvancedFilters(!showAdvancedFilters);
           }}
         >
-          <SlidersHorizontal size={14} />
+          <Filter size={14} />
           <span>خيارات التصفية الفائقة</span>
           {activeFilterCount > 0 && (
             <span className="filter-count-badge font-english">{activeFilterCount}</span>
