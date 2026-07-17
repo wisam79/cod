@@ -2,7 +2,7 @@ const express = require('express');
 const { Task, Member, Comment, Notification, sequelize } = require('../models');
 const { authenticate } = require('../middleware/auth');
 const { broadcast } = require('../services/websocket');
-const { sanitizeBody } = require('../middleware/sanitize');
+
 const { validateTask, validateComment } = require('../middleware/validation');
 const { canModifyTask } = require('../middleware/authorize');
 const { getPagination } = require('../utils/pagination');
@@ -65,9 +65,8 @@ const checkMaxTasksLimit = async (memberId, targetStatus, taskIdToIgnore = null)
   return true;
 };
 
-// Apply auth middleware and sanitization to all task routes
+// Apply auth middleware to all task routes
 router.use(authenticate);
-router.use(sanitizeBody);
 
 // GET /api/tasks - Retrieve all tasks with assignees and comments (including comment senders)
 router.get('/', async (req, res) => {

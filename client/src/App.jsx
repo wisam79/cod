@@ -174,6 +174,11 @@ function App() {
     const handleOnline = () => {
       setOffline(false);
       triggerHaptic('success');
+      const state = useAppStore.getState();
+      if (state.isAuthenticated) {
+        state.fetchInitialData().catch(() => {});
+        state.initWebSocket();
+      }
     };
     const handleOffline = () => {
       setOffline(true);

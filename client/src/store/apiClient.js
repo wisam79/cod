@@ -90,15 +90,21 @@ export function onAuthChange(callback) {
   const token = localStorage.getItem('auth_token');
   if (token) {
     fetch(`${API_URL}/auth/me`, { headers: getHeaders() })
-      .then(res => res.ok ? res.json() : null)
-      .then(user => {
-        if (user) {
-          callback({ uid: user.id, getIdToken: async () => token, ...user });
+      .then(res => {
+        if (res.ok) {
+          return res.json().then(user => {
+            const member = user?.member || user;
+            callback({ uid: member.id, getIdToken: async () => token, ...member });
+          });
+        } else if (res.status === 401 || res.status === 403) {
+          callback(null, { status: res.status });
         } else {
-          callback(null);
+          callback(null, { keepToken: true, error: res.status });
         }
       })
-      .catch(() => callback(null));
+      .catch((err) => {
+        callback(null, { keepToken: true, error: err.message });
+      });
   } else {
     setTimeout(() => callback(null), 100);
   }

@@ -63,12 +63,27 @@ export const createAuthSlice = (set, get) => ({
     set({ authLoading: true, authError: null });
     try {
       let settled = false;
-      const unsubscribe = onAuthChange(async (user) => {
+      const unsubscribe = onAuthChange(async (user, meta) => {
         if (settled) return;
         settled = true;
         unsubscribe();
         if (!user) {
+          if (meta && meta.keepToken) {
+            let offlineUser = null;
+            try { offlineUser = JSON.parse(localStorage.getItem('offline_user')); } catch (_) {}
+            if (offlineUser) {
+              set({
+                token: localStorage.getItem('auth_token'),
+                currentUser: offlineUser,
+                isAuthenticated: true,
+                authLoading: false
+              });
+              get().fetchInitialData().catch(() => {});
+              return;
+            }
+          }
           localStorage.removeItem('auth_token');
+          localStorage.removeItem('offline_user');
           set({ token: null, currentUser: null, isAuthenticated: false, authLoading: false });
           return;
         }

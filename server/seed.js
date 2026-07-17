@@ -160,9 +160,12 @@ const seedDatabase = async () => {
 
     // Seed Members
     for (const memberData of INITIAL_MEMBERS) {
-      await Member.create(memberData);
+      const exists = await Member.findOne({ where: { email: memberData.email } });
+      if (!exists) {
+        await Member.create(memberData);
+      }
     }
-    logger.info(`Seeded ${INITIAL_MEMBERS.length} members successfully.`);
+    logger.info(`Seeded members successfully.`);
 
     // Seed Tasks
     for (const taskData of INITIAL_TASKS) {

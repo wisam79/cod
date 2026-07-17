@@ -8,9 +8,14 @@ export default function CommentItem({ comment, members }) {
     avatar: ''
   };
 
-  const formattedTime = comment.time || (() => {
+  const formattedTime = (() => {
+    const timeVal = comment.time;
+    if (timeVal && typeof timeVal === 'string' && !timeVal.includes('T')) {
+      return timeVal;
+    }
     try {
-      const date = comment.createdAt?.toDate ? comment.createdAt.toDate() : new Date(comment.createdAt);
+      const dateValue = comment.createdAt || timeVal;
+      const date = new Date(dateValue);
       return isNaN(date.getTime()) ? 'الآن' : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } catch {
       return 'الآن';

@@ -26,9 +26,14 @@ export default function NotificationItem({ notification }) {
       <div className="drawer-item-details">
         <p>{notification.text}</p>
         <span className="drawer-item-time font-english">
-          {notification.time || (() => {
+          {(() => {
+            const timeVal = notification.time;
+            if (timeVal && typeof timeVal === 'string' && !timeVal.includes('T')) {
+              return timeVal;
+            }
             try {
-              const date = notification.createdAt?.toDate ? notification.createdAt.toDate() : new Date(notification.createdAt);
+              const dateValue = notification.createdAt || timeVal;
+              const date = new Date(dateValue);
               return isNaN(date.getTime()) ? 'الآن' : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             } catch {
               return 'الآن';

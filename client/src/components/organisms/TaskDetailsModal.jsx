@@ -208,12 +208,7 @@ export default function TaskDetailsModal({
                   value={taskInStore.status} 
                   onChange={(e) => {
                     triggerHaptic('light');
-                    if (statusChangeTimeoutRef.current) {
-                      clearTimeout(statusChangeTimeoutRef.current);
-                    }
-                    statusChangeTimeoutRef.current = setTimeout(() => {
-                      updateTaskStatus(task.id, e.target.value);
-                    }, 300);
+                    updateTaskStatus(task.id, e.target.value);
                   }}
                   style={{
                     border: 'none',

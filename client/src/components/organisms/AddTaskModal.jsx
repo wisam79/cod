@@ -7,7 +7,7 @@ import { triggerHaptic, resetHapticDedupe } from '../../utils/haptics';
 export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
-  const [newAssignee, setNewAssignee] = useState(members[0]?.id ?? null);
+  const [newAssignee, setNewAssignee] = useState(null);
   const [newPriority, setNewPriority] = useState('medium');
   const [newDueDate, setNewDueDate] = useState('');
   const [isClosing, setIsClosing] = useState(false);
@@ -180,10 +180,11 @@ export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
             <div className="input-group" style={{ flex: 1 }}>
               <label style={{ display: 'block', marginBottom: 'var(--space-2)', fontSize: '0.8125rem', fontWeight: '600', color: 'var(--text-muted)' }}>المسؤول</label>
               <select
-                value={newAssignee}
-                onChange={(e) => setNewAssignee(Number(e.target.value))}
+                value={newAssignee || ''}
+                onChange={(e) => setNewAssignee(e.target.value ? Number(e.target.value) : null)}
                 style={selectStyle}
               >
+                <option value="">غير محدد (بدون إسناد)</option>
                 {members.map(m => (
                   <option key={m.id} value={m.id}>{m.name}</option>
                 ))}

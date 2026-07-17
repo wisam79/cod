@@ -60,7 +60,7 @@ const initWebSocket = (server) => {
             }
             clearInterval(tokenCheckInterval);
           }
-        }, 10000);
+        }, 300000); // Verify token every 5 minutes instead of 10 seconds to optimize CPU usage
 
         ws.on('close', () => {
           clearInterval(tokenCheckInterval);

@@ -2,7 +2,7 @@ const express = require('express');
 const { Message, Member, Notification, sequelize } = require('../models');
 const { authenticate } = require('../middleware/auth');
 const { broadcast } = require('../services/websocket');
-const { sanitizeBody } = require('../middleware/sanitize');
+
 const { validateMessage } = require('../middleware/validation');
 const { getPagination } = require('../utils/pagination');
 const logger = require('../utils/logger');
@@ -11,7 +11,6 @@ const messages = require('../utils/messages');
 const router = express.Router();
 
 router.use(authenticate);
-router.use(sanitizeBody);
 
 // GET /api/messages - Retrieve message history
 router.get('/', async (req, res) => {

@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { Member } = require('../models');
 const { JWT_SECRET, authenticate } = require('../middleware/auth');
 const { authLimiter } = require('../middleware/rateLimiter');
-const { sanitizeBody } = require('../middleware/sanitize');
+
 const { 
   validateRegister, 
   validateLogin, 
@@ -19,9 +19,8 @@ const messages = require('../utils/messages');
 
 const router = express.Router();
 
-// Apply auth rate limiting and body sanitization
+// Apply auth rate limiting
 router.use(authLimiter);
-router.use(sanitizeBody);
 
 // POST /api/auth/login
 router.post('/login', validateLogin, async (req, res) => {

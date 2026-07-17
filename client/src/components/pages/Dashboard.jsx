@@ -30,12 +30,6 @@ export default function Dashboard() {
   const [quickTitle, setQuickTitle] = useState('');
   const [quickAssignee, setQuickAssignee] = useState(null);
 
-  useEffect(() => {
-    if (members.length > 0 && quickAssignee === null) {
-      setQuickAssignee(members[0].id);
-    }
-  }, [members, quickAssignee]);
-
   const user = currentUser || { id: 0, name: 'جاري التحميل...' };
 
   const myTasks = useMemo(() => tasks.filter(t => t.assigneeId === user.id), [tasks, user.id]);
@@ -192,9 +186,10 @@ export default function Dashboard() {
           <div className="form-row">
             <select
               value={quickAssignee || ''}
-              onChange={(e) => setQuickAssignee(Number(e.target.value))}
+              onChange={(e) => setQuickAssignee(e.target.value ? Number(e.target.value) : null)}
               className="quick-select"
             >
+              <option value="">غير محدد (بدون إسناد)</option>
               {members.map(m => (
                 <option key={m.id} value={m.id}>إسناد إلى: {m.name}</option>
               ))}
@@ -224,7 +219,21 @@ export default function Dashboard() {
               </div>
               <div className="activity-details">
                 <p>{notif.text}</p>
-                <span className="activity-time font-english">{notif.time || 'الآن'}</span>
+                <span className="activity-time font-english">
+                  {(() => {
+                    const timeVal = notif.time;
+                    if (timeVal && typeof timeVal === 'string' && !timeVal.includes('T')) {
+                      return timeVal;
+                    }
+                    try {
+                      const dateValue = notif.createdAt || timeVal;
+                      const date = new Date(dateValue);
+                      return isNaN(date.getTime()) ? 'الآن' : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    } catch {
+                      return 'الآن';
+                    }
+                  })()}
+                </span>
               </div>
             </div>
           ))}

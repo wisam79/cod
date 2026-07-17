@@ -13,6 +13,7 @@ const logger = require('./utils/logger');
 const messages = require('./utils/messages');
 const { apiLimiter } = require('./middleware/rateLimiter');
 const { initWebSocket } = require('./services/websocket');
+const { sanitizeBody } = require('./middleware/sanitize');
 
 // Route Imports
 const authRoutes = require('./routes/auth');
@@ -77,6 +78,9 @@ app.use('/api/', apiLimiter);
 
 // Body Parser
 app.use(express.json({ limit: '1mb' }));
+
+// Global XSS Sanitization for all API routes
+app.use('/api', sanitizeBody);
 
 // HTTP Parameter Pollution protection
 app.use(hpp());

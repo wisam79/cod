@@ -88,6 +88,16 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
   }, [setActiveTab]);
 
   const handleTouchStart = useCallback((e) => {
+    const isHorizontalScroll = e.target.closest('.horizontal-date-scroll') || 
+                               e.target.closest('.kanban-board-desktop') ||
+                               e.target.closest('.assignee-filter-bar') ||
+                               e.target.closest('.priority-filter-bar') ||
+                               e.target.closest('.messages-container');
+    if (isHorizontalScroll) {
+      touchStartX.current = null;
+      touchStartY.current = null;
+      return;
+    }
     const t = e.touches[0];
     touchStartX.current = t.clientX;
     touchStartY.current = t.clientY;
