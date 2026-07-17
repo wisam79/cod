@@ -143,9 +143,9 @@ const seedDatabase = async () => {
     logger.info('Seeded default settings successfully.');
 
     if (isProd) {
-      const adminExists = await Member.findOne({ where: { email: 'admin@mohemmaty.com' } });
+      const adminExists = await Member.findOne({ where: { email: 'admin' } });
       if (!adminExists) {
-        const superAdmin = INITIAL_MEMBERS.find(m => m.email === 'admin@mohemmaty.com');
+        const superAdmin = INITIAL_MEMBERS.find(m => m.email === 'admin');
         if (superAdmin) {
           await Member.create(superAdmin);
           logger.info('Super Admin account created in production DB.');
