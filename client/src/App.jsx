@@ -392,13 +392,13 @@ function App() {
                 أنت تعمل في وضع عدم الاتصال (Offline)
               </div>
             )}
-            {!isOffline && wsStatus === 'connecting' && (
+            {!isOffline && wsStatus === 'connecting' && !window.location.hostname.endsWith('.vercel.app') && (
               <div className="status-bar connecting" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                 <Loader2 size={14} className="animate-spin" style={{ animation: 'spin 1.5s linear infinite' }} />
                 جاري إعادة اتصال البث المباشر...
               </div>
             )}
-            {!isOffline && wsStatus === 'disconnected' && (
+            {!isOffline && wsStatus === 'disconnected' && !window.location.hostname.endsWith('.vercel.app') && (
               <div className="status-bar disconnected" onClick={() => { initWebSocket(); triggerHaptic('medium'); }} role="button" tabIndex={0} aria-label="إعادة الاتصال بالبث المباشر" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                 <Activity size={14} />
                 انقطع البث المباشر. اضغط لإعادة الاتصال

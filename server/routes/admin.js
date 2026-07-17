@@ -27,6 +27,79 @@ router.get('/members', async (req, res) => {
 });
 
 /**
+ * POST /api/admin/members
+ * Create a new member by Admin
+ */
+router.post('/members', async (req, res) => {
+  try {
+    const { name, email, password, role, avatar } = req.body;
+
+    // Validate inputs
+    if (!name || typeof name !== 'string' || name.trim().length < 2) {
+      return res.status(400).json({ error: 'الاسم يجب أن يكون نصاً بطول حرفين على الأقل.' });
+    }
+    if (!email || typeof email !== 'string' || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+      return res.status(400).json({ error: 'البريد الإلكتروني غير صالح.' });
+    }
+    if (!password || typeof password !== 'string') {
+      return res.status(400).json({ error: 'كلمة المرور مطلوبة.' });
+    }
+    
+    // Validate password strength
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ 
+        error: 'كلمة المرور ضعيفة جداً. يجب أن تحتوي على 8 رموز كحد أدنى وتتضمن أحرف كبيرة وصغيرة وأرقام ورمز خاص.' 
+      });
+    }
+
+    if (role && !VALID_ROLES.includes(role)) {
+      return res.status(400).json({ error: 'الدور المحدد غير صالح. الأدوار المسموح بها: ' + VALID_ROLES.join('، ') });
+    }
+
+    if (avatar && typeof avatar !== 'string') {
+      return res.status(400).json({ error: 'رابط الصورة الرمزية غير صالح.' });
+    }
+    if (avatar) {
+      try { new URL(avatar); } catch {
+        return res.status(400).json({ error: 'رابط الصورة الرمزية غير صالح.' });
+      }
+    }
+
+    // Check if email already exists
+    const exists = await Member.findOne({ where: { email } });
+    if (exists) {
+      return res.status(400).json({ error: 'البريد الإلكتروني مستخدم بالفعل.' });
+    }
+
+    const newMember = await Member.create({
+      name,
+      email,
+      password,
+      role: role || 'عضو عادي',
+      avatar: avatar || ''
+    });
+
+    logger.info(`Admin created new member: ${newMember.name} (ID: ${newMember.id})`);
+
+    res.status(201).json({
+      message: 'تم إضافة العضو بنجاح.',
+      member: {
+        id: newMember.id,
+        name: newMember.name,
+        email: newMember.email,
+        role: newMember.role,
+        avatar: newMember.avatar,
+        createdAt: newMember.createdAt
+      }
+    });
+  } catch (error) {
+    logger.error('Admin API error creating member: %o', error);
+    res.status(500).json({ error: 'حدث خطأ أثناء إضافة العضو الجديد.' });
+  }
+});
+
+/**
  * PUT /api/admin/members/:id
  * Update any member's details
  */

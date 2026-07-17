@@ -1,5 +1,6 @@
 import {
   fetchAdminMembers,
+  createAdminMember,
   updateAdminMember,
   deleteAdminMember,
   fetchAdminSettings,
@@ -20,6 +21,21 @@ export const createAdminSlice = (set, get) => ({
       set({ adminMembers: members });
     } catch (err) {
       get().addToast(`تعذر تحميل الأعضاء: ${err.message}`, 'error');
+    }
+  },
+
+  addMember: async (memberData) => {
+    try {
+      const result = await createAdminMember(memberData);
+      set((state) => ({
+        adminMembers: [...state.adminMembers, result.member]
+      }));
+      get().addToast('تم إضافة العضو بنجاح.', 'success');
+      await get().loadAdminMembers();
+      await get().fetchInitialData();
+    } catch (err) {
+      get().addToast(`تعذر إضافة العضو: ${err.message}`, 'error');
+      throw err;
     }
   },
 

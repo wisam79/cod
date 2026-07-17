@@ -9,6 +9,7 @@ export default function AdminDashboard() {
   const adminMembers = useAppStore(s => s.adminMembers);
   const adminSettings = useAppStore(s => s.adminSettings);
   const loadAdminMembers = useAppStore(s => s.loadAdminMembers);
+  const addMember = useAppStore(s => s.addMember);
   const updateMemberDetails = useAppStore(s => s.updateMemberDetails);
   const deleteMember = useAppStore(s => s.deleteMember);
   const loadAdminSettings = useAppStore(s => s.loadAdminSettings);
@@ -20,6 +21,11 @@ export default function AdminDashboard() {
   const [editForm, setEditForm] = useState({ name: '', email: '', password: '', role: '', avatar: '' });
   const [editError, setEditError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Add Member State
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addForm, setAddForm] = useState({ name: '', email: '', password: '', role: 'عضو عادي', avatar: '' });
+  const [addError, setAddError] = useState('');
 
   // Settings states
   const [settingsForm, setSettingsForm] = useState({
@@ -99,6 +105,27 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleAddSubmit = async (e) => {
+    e.preventDefault();
+    setAddError('');
+    setIsSubmitting(true);
+    try {
+      await addMember({
+        name: addForm.name,
+        email: addForm.email,
+        password: addForm.password,
+        role: addForm.role,
+        avatar: addForm.avatar
+      });
+      setShowAddModal(false);
+      setAddForm({ name: '', email: '', password: '', role: 'عضو عادي', avatar: '' });
+    } catch (err) {
+      setAddError(err.message || 'حدث خطأ أثناء إضافة العضو.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const roles = [
     'الادمن المطور',
     'مديرة المنتج',
@@ -131,8 +158,11 @@ export default function AdminDashboard() {
 
       {activeTab === 'members' && (
         <div className="admin-tab-content">
-          <div className="section-title-container">
-            <h2>أعضاء النظام ({adminMembers.length})</h2>
+          <div className="section-title-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
+            <h2 style={{ margin: 0 }}>أعضاء النظام ({adminMembers.length})</h2>
+            <Button variant="primary" size="sm" onClick={() => { triggerHaptic('light'); setShowAddModal(true); }} style={{ height: '32px' }}>
+              إضافة عضو جديد ➕
+            </Button>
           </div>
 
           <div className="members-card-list">
@@ -231,6 +261,80 @@ export default function AdminDashboard() {
               {isSubmitting ? 'جاري حفظ الإعدادات...' : 'حفظ الإعدادات 💾'}
             </Button>
           </form>
+        </div>
+      )}
+
+      {/* Add Member Modal */}
+      {showAddModal && (
+        <div className="modal-backdrop" onClick={() => setShowAddModal(false)}>
+          <div className="modal-content card" onClick={(e) => e.stopPropagation()} style={{ width: '92%', maxWidth: '380px' }}>
+            <div className="modal-header">
+              <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, margin: 0 }}>إضافة عضو جديد</h3>
+            </div>
+            <form onSubmit={handleAddSubmit} className="modal-form">
+              {addError && <div className="error-message alert-red">{addError}</div>}
+              <Input
+                label="الاسم الكامل"
+                value={addForm.name}
+                onChange={(e) => setAddForm({ ...addForm, name: e.target.value })}
+                required
+              />
+              <Input
+                label="البريد الإلكتروني"
+                type="email"
+                value={addForm.email}
+                onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
+                required
+              />
+              <Input
+                label="كلمة المرور"
+                type="password"
+                value={addForm.password}
+                placeholder="أدخل كلمة مرور قوية"
+                onChange={(e) => setAddForm({ ...addForm, password: e.target.value })}
+                required
+              />
+              <Input
+                label="رابط الصورة الرمزية (Avatar URL)"
+                value={addForm.avatar}
+                onChange={(e) => setAddForm({ ...addForm, avatar: e.target.value })}
+              />
+              
+              <div className="custom-input-wrapper">
+                <label className="custom-input-label">الدور الوظيفي</label>
+                <select
+                  value={addForm.role}
+                  onChange={(e) => setAddForm({ ...addForm, role: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '10px var(--space-3)',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--border)',
+                    backgroundColor: 'var(--bg-card)',
+                    color: 'var(--text-main)',
+                    fontSize: '0.875rem',
+                    height: 'var(--tap-target)',
+                    outline: 'none'
+                  }}
+                  required
+                >
+                  <option value="">اختر دوراً...</option>
+                  {roles.map((r) => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="modal-actions" style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 'var(--space-3)' }}>
+                <Button type="submit" variant="primary" disabled={isSubmitting} style={{ flex: 1 }}>
+                  إضافة العضو ➕
+                </Button>
+                <Button type="button" variant="secondary" onClick={() => setShowAddModal(false)} style={{ flex: 1 }}>
+                  إلغاء
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 

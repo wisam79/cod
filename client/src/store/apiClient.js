@@ -192,6 +192,15 @@ export async function fetchAdminMembers() {
   return handleResponse(res);
 }
 
+export async function createAdminMember(memberData) {
+  const res = await fetch(`${API_URL}/admin/members`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(memberData)
+  });
+  return handleResponse(res);
+}
+
 export async function updateAdminMember(id, memberData) {
   const res = await fetch(`${API_URL}/admin/members/${id}`, {
     method: 'PUT',
