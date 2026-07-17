@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useCallback, useMemo, useLayoutEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { LayoutGrid, CheckSquare, MessageSquare, Users, ShieldAlert } from 'lucide-react';
+import { Home, CheckSquare, MessageCircle, Users, Shield } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 
 export default function Navbar({ activeTab, setActiveTab, currentUser }) {
@@ -138,15 +138,15 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
             const fill = isActive ? "currentColor" : "none";
             switch (tab.id) {
               case 'dashboard':
-                return <LayoutGrid size={size} strokeWidth={strokeWidth} fill={fill} />;
+                return <Home size={size} strokeWidth={strokeWidth} fill={fill} />;
               case 'tasks':
                 return <CheckSquare size={size} strokeWidth={strokeWidth} fill={fill} />;
               case 'chat':
-                return <MessageSquare size={size} strokeWidth={strokeWidth} fill={fill} />;
+                return <MessageCircle size={size} strokeWidth={strokeWidth} fill={fill} />;
               case 'team':
                 return <Users size={size} strokeWidth={strokeWidth} fill={fill} />;
               case 'admin':
-                return <ShieldAlert size={size} strokeWidth={strokeWidth} fill={fill} />;
+                return <Shield size={size} strokeWidth={strokeWidth} fill={fill} />;
               default:
                 return null;
             }
