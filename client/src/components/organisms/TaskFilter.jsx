@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Avatar from '../atoms/Avatar';
 import { Search, Plus, AlertCircle } from 'lucide-react';
+import { triggerHaptic } from '../../utils/haptics';
 
 export default function TaskFilter({ 
   searchQuery, 
@@ -14,7 +15,9 @@ export default function TaskFilter({
   activePriorityFilter,
   setActivePriorityFilter,
   tasks,
-  getStatusLabel
+  getStatusLabel,
+  activeDateFilter = 'all',
+  setActiveDateFilter
 }) {
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const debounceRef = useRef(null);
@@ -38,6 +41,35 @@ export default function TaskFilter({
     };
   }, []);
 
+  const weekDays = useMemo(() => {
+    const days = [];
+    const dayNamesAr = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    const dayNamesEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() + i);
+      const dateStr = d.toISOString().split('T')[0];
+      days.push({
+        dateStr,
+        dayNameAr: dayNamesAr[d.getDay()],
+        dayNameEn: dayNamesEn[d.getDay()],
+        dayNum: d.getDate(),
+        monthName: d.toLocaleDateString('ar-EG', { month: 'short' }),
+        yearNum: d.getFullYear()
+      });
+    }
+    return days;
+  }, []);
+
+  const selectedDateLabel = useMemo(() => {
+    if (!activeDateFilter || activeDateFilter === 'all') return 'جدول المواعيد';
+    const matched = weekDays.find(w => w.dateStr === activeDateFilter);
+    if (matched) {
+      return `${matched.dayNameAr}، ${matched.dayNum} ${matched.monthName}`;
+    }
+    return activeDateFilter;
+  }, [activeDateFilter, weekDays]);
+
   return (
     <div className="task-filter-organism">
       {/* Header Search & Actions */}
@@ -57,8 +89,66 @@ export default function TaskFilter({
         </button>
       </div>
 
+      {/* Date title & Horizontal Scroll picker */}
+      <div className="date-picker-section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', direction: 'rtl', marginTop: 'var(--space-1)' }}>
+          <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-main)' }}>
+            {selectedDateLabel}
+          </span>
+          <button 
+            className={`filter-pill ${(!activeDateFilter || activeDateFilter === 'all') ? 'active' : ''}`}
+            onClick={() => {
+              triggerHaptic('light');
+              setActiveDateFilter('all');
+            }}
+            style={{ minHeight: '30px', height: '30px', padding: '0 12px', fontSize: '0.7rem', borderRadius: '15px' }}
+          >
+            عرض الكل
+          </button>
+        </div>
+        
+        <div className="horizontal-date-scroll" style={{ display: 'flex', gap: 'var(--space-2)', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+          {weekDays.map((day) => {
+            const isSelected = activeDateFilter === day.dateStr;
+            return (
+              <button
+                key={day.dateStr}
+                className={`date-scroll-card ${isSelected ? 'active' : ''}`}
+                onClick={() => {
+                  triggerHaptic('selection');
+                  setActiveDateFilter(isSelected ? 'all' : day.dateStr);
+                }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minWidth: '56px',
+                  height: '68px',
+                  borderRadius: '16px',
+                  border: isSelected ? 'none' : '1px solid var(--border)',
+                  background: isSelected ? 'var(--primary)' : 'var(--bg-card)',
+                  color: isSelected ? '#ffffff' : 'var(--text-main)',
+                  cursor: 'pointer',
+                  flexShrink: 0,
+                  transition: 'all var(--dur-fast) var(--ease-in-out)',
+                  boxShadow: isSelected ? '0 4px 12px rgba(168, 85, 247, 0.3)' : 'var(--shadow-xs)'
+                }}
+              >
+                <span className="font-english" style={{ fontSize: '0.7rem', fontWeight: 500, color: isSelected ? 'rgba(255, 255, 255, 0.8)' : 'var(--text-muted)' }}>
+                  {day.dayNameEn}
+                </span>
+                <span className="font-english" style={{ fontSize: '1.125rem', fontWeight: 800, marginTop: '2px' }}>
+                  {day.dayNum}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Team Member Filter pills */}
-      <div className="assignee-filter-bar">
+      <div className="assignee-filter-bar" style={{ marginTop: 'var(--space-1)' }}>
         <button 
           className={`filter-pill ${activeAssigneeFilter === 'all' ? 'active' : ''}`}
           onClick={() => setActiveAssigneeFilter('all')}

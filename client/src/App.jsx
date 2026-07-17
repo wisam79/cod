@@ -390,14 +390,30 @@ function App() {
             )}
           </div>
 
-          <div className="header-bar">
-            <div className="header-user" onClick={() => { setProfileOpen(true); triggerHaptic('light'); }} style={{ cursor: 'pointer' }} role="button" tabIndex={0} aria-label="تعديل الملف الشخصي">
-              <Avatar src={user.avatar} alt={user.name} size="md" className="avatar" />
-            </div>
+          <div className="header-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+            {activeTab === 'dashboard' ? (
+              <div className="header-welcome-container" onClick={() => { setProfileOpen(true); triggerHaptic('light'); }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                <Avatar src={user.avatar} alt={user.name} size="md" className="avatar" />
+                <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'right' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    أهلاً، {user.name.split(' ')[0]} 👋
+                  </span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                    {user.email || user.role || 'عضو متصل'}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="header-user" onClick={() => { setProfileOpen(true); triggerHaptic('light'); }} style={{ cursor: 'pointer' }} role="button" tabIndex={0} aria-label="تعديل الملف الشخصي">
+                <Avatar src={user.avatar} alt={user.name} size="md" className="avatar" />
+              </div>
+            )}
 
-            <h2 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)' }}>
-              {TAB_TITLES[activeTab] || 'مُهِمَّة'}
-            </h2>
+            {activeTab !== 'dashboard' && (
+              <h2 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
+                {TAB_TITLES[activeTab] || 'مُهِمَّة'}
+              </h2>
+            )}
 
             <div className="header-actions">
               <button 
@@ -405,7 +421,7 @@ function App() {
                 onClick={() => { setDrawerOpen(true); triggerHaptic('light'); }}
                 aria-label="مركز التنبيهات"
                 aria-expanded={drawerOpen}
-                style={{ width: '40px', height: '40px' }}
+                style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--bg-card)', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)' }}
               >
                 <Bell size={18} />
                 {notifications.length > 0 && (

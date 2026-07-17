@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useCallback, useMemo, useLayoutEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Home, CheckSquare, MessageSquare, Users, ShieldAlert } from 'lucide-react';
+import { LayoutGrid, CheckSquare, MessageSquare, Users, ShieldAlert } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 
 export default function Navbar({ activeTab, setActiveTab, currentUser }) {
@@ -12,7 +12,7 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
       {
         id: 'dashboard',
         label: 'الرئيسية',
-        icon: <Home size={20} strokeWidth={2} />
+        icon: <LayoutGrid size={20} strokeWidth={2} />
       },
       {
         id: 'tasks',
@@ -167,13 +167,25 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
               aria-current={isActive ? 'page' : undefined}
             >
               <span className="nav-icon">{tab.icon}</span>
-              {isActive && <span className="nav-label">{tab.label}</span>}
+              {isActive && <span className="nav-label sr-only">{tab.label}</span>}
             </button>
           );
         })}
       </div>
 
       <style>{`
+        .sr-only {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border-width: 0;
+        }
+
         .bottom-navbar-wrapper {
           position: absolute;
           bottom: var(--space-5);
@@ -192,47 +204,45 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
           display: flex;
           justify-content: space-around;
           align-items: center;
-          background-color: var(--bg-card);
-          border: 1px solid var(--border);
-          padding: var(--space-1);
-          border-radius: var(--radius-lg);
-          width: 92%;
-          max-width: 460px;
-          box-shadow: var(--shadow-md);
+          background-color: #212328;
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          padding: 6px;
+          border-radius: 40px;
+          width: 90%;
+          max-width: 380px;
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
           position: relative;
           isolation: isolate;
         }
         
         .nav-indicator {
           position: absolute;
-          top: var(--space-1);
-          bottom: var(--space-1);
+          top: 6px;
+          height: 48px;
           left: 0;
           background: var(--primary);
-          border-radius: var(--radius-md);
+          border-radius: 50%;
           transition: transform var(--nav-pill-shift) var(--ease-out), width var(--nav-pill-shift) var(--ease-out);
           z-index: 0;
-          box-shadow: var(--shadow-xs);
+          box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
         }
 
         .nav-item {
           background: transparent;
           border: none;
-          color: var(--text-muted);
-          padding: 10px 14px;
-          min-height: var(--tap-target);
+          color: #8a8d94;
+          width: 48px;
+          height: 48px;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
           transition: color var(--dur-fast) var(--ease-in-out);
-          border-radius: var(--radius-md);
-          gap: var(--space-2);
+          border-radius: 50%;
           -webkit-tap-highlight-color: transparent;
           touch-action: manipulation;
           position: relative;
           z-index: 1;
-          flex: 1;
         }
 
         .nav-item:active {
@@ -249,42 +259,22 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
           justify-content: center;
         }
 
-        .nav-label {
-          font-size: 0.8125rem;
-          font-weight: 700;
-          white-space: nowrap;
-          max-width: 120px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          animation: navLabelIn var(--dur-base) var(--ease-out) forwards;
-        }
-
-        @keyframes navLabelIn {
-          from {
-            max-width: 0;
-            opacity: 0;
-          }
-          to {
-            max-width: 120px;
-            opacity: 1;
-          }
-        }
-
         @media (prefers-reduced-motion: reduce) {
-          .nav-item, .nav-icon, .nav-label, .nav-indicator {
+          .nav-item, .nav-icon, .nav-indicator {
             transition: none !important;
             animation: none !important;
           }
         }
 
         .app-container.dark-theme .bottom-navbar {
-          background-color: var(--bg-card);
-          border-color: var(--border);
-          box-shadow: var(--shadow-lg);
+          background-color: #16171c;
+          border-color: rgba(255, 255, 255, 0.03);
+          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
         }
 
         .app-container.dark-theme .nav-indicator {
           background: var(--primary);
+          box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
         }
 
         .app-container.dark-theme .nav-item.active {

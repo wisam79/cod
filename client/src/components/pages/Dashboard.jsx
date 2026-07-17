@@ -4,14 +4,11 @@ import { useShallow } from 'zustand/react/shallow';
 import PullToRefresh from '../atoms/PullToRefresh';
 import { 
   BarChart3, 
-  Clock, 
-  CheckCircle2, 
   MessageSquare, 
   RefreshCw, 
   UserPlus, 
   AlertCircle, 
-  Plus, 
-  TrendingUp 
+  Plus 
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -43,7 +40,6 @@ export default function Dashboard() {
 
   const myTasks = useMemo(() => tasks.filter(t => t.assigneeId === user.id), [tasks, user.id]);
   const myCompleted = useMemo(() => myTasks.filter(t => t.status === 'done').length, [myTasks]);
-  const myPending = useMemo(() => myTasks.length - myCompleted, [myTasks, myCompleted]);
   const inProgressTasks = useMemo(() => tasks.filter(t => t.status === 'progress').length, [tasks]);
   const completedTasks = useMemo(() => tasks.filter(t => t.status === 'done').length, [tasks]);
   const totalTasks = tasks.length;
@@ -80,83 +76,109 @@ export default function Dashboard() {
   };
 
   const progressPercent = myTasks.length ? Math.round((myCompleted / myTasks.length) * 100) : 0;
+  const completedTasksPercent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  const inProgressTasksPercent = totalTasks > 0 ? Math.round((inProgressTasks / totalTasks) * 100) : 0;
 
   return (
     <PullToRefresh onRefresh={handleRefresh} isRefreshing={refreshing}>
     <div className="dashboard-view">
-      {/* Progress Banner */}
-      <div className="progress-banner" style={{
-        background: 'var(--primary-gradient)',
-        borderRadius: 'var(--radius-lg)',
-        padding: 'var(--space-5)',
-        textAlign: 'right',
-        color: '#fff',
-        boxShadow: '0 4px 16px rgba(30, 64, 175, 0.25)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <div style={{ position: 'absolute', top: '-20px', left: '-20px', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
-        <div style={{ position: 'absolute', bottom: '-30px', right: '-10px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
-        <div className="banner-top">
-          <div className="banner-title" style={{ color: 'rgba(255,255,255,0.9)' }}>
-            <TrendingUp size={16} />
-            <h2 style={{ color: '#fff', margin: 0 }}>الإنتاجية اليومية</h2>
+      {/* Card 1: Total Tasks */}
+      <div className="card stat-card-full" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: 'var(--space-5)', border: 'none', background: 'var(--bg-card)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'right' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <BarChart3 size={14} />
+            إجمالي المهام
+          </span>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--space-3)', marginTop: '8px' }}>
+            <span className="font-english" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1 }}>{totalTasks}</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>مهمة</span>
+            <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: '12px', background: 'var(--success-light)', color: 'var(--success)', fontSize: '0.72rem', fontWeight: 700, marginRight: '10px' }}>
+              +8% من الأسبوع الماضي
+            </div>
           </div>
-          <span className="banner-percent font-english" style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 800 }}>{progressPercent}%</span>
         </div>
-        <div className="banner-bar-track" style={{ background: 'rgba(255,255,255,0.2)', height: '6px', borderRadius: '3px', overflow: 'hidden', marginBottom: 'var(--space-3)' }}>
-          <div 
-            className="banner-bar-fill" 
-            style={{ width: `${progressPercent}%`, background: '#fff', height: '100%', borderRadius: '3px', transition: 'width 0.4s var(--ease-out)' }}
-          />
+        <div style={{ color: 'var(--text-faint)' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </div>
-        <div className="banner-stats" style={{ display: 'flex', gap: 'var(--space-5)', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.85)' }}>
-          <div className="banner-stat" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'rgba(255,255,255,0.5)', flexShrink: 0 }} />
-            <span>المتبقي: <strong className="font-english">{myPending}</strong></span>
-          </div>
-          <div className="banner-stat" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#fff', flexShrink: 0 }} />
-            <span>المكتمل: <strong className="font-english">{myCompleted}</strong></span>
+      </div>
+
+      {/* Card 2: Today's Schedule */}
+      <div className="card stat-card-full" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-5)', border: 'none', background: 'var(--bg-card)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'right' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>جدول اليوم</span>
+          <span className="font-english" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '8px', lineHeight: 1 }}>
+            {myTasks.length} <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-muted)' }}>مهام مسندة</span>
+          </span>
+          <span style={{ fontSize: '0.72rem', color: 'var(--text-faint)', marginTop: '4px' }}>الإنتاجية اليومية للفريق</span>
+        </div>
+        
+        {/* Vertical Progress Bar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span className="font-english" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary)' }}>
+            {progressPercent}%
+          </span>
+          <div style={{ width: '6px', height: '56px', background: 'var(--border-light)', borderRadius: '3px', position: 'relative', overflow: 'hidden' }}>
+            <div 
+              style={{ 
+                position: 'absolute', 
+                bottom: 0, 
+                left: 0, 
+                width: '100%', 
+                height: `${progressPercent}%`, 
+                background: 'var(--primary)', 
+                borderRadius: '3px',
+                transition: 'height 0.4s var(--ease-out)'
+              }} 
+            />
           </div>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="stats-grid">
-        <div className="stat-card card" style={{ border: 'none', boxShadow: 'var(--shadow-sm)' }}>
-          <span className="stat-icon stat-icon-all">
-            <BarChart3 size={18} />
+      {/* Row 3: Two columns (Completed & In Progress) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+        {/* Completed Card */}
+        <div className="card" style={{ padding: 'var(--space-4)', border: 'none', display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'right' }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>المهام المكتملة</span>
+          <span style={{ fontSize: '0.68rem', color: 'var(--text-faint)' }}>آخر 30 يوم</span>
+          <span className="font-english" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px', lineHeight: 1 }}>
+            {completedTasksPercent}%
           </span>
-          <div className="stat-info">
-            <h3 className="font-english">{totalTasks}</h3>
-            <p>الكلية</p>
-          </div>
-        </div>
-        
-        <div className="stat-card card" style={{ border: 'none', boxShadow: 'var(--shadow-sm)' }}>
-          <span className="stat-icon stat-icon-progress">
-            <Clock size={18} />
-          </span>
-          <div className="stat-info">
-            <h3 className="font-english">{inProgressTasks}</h3>
-            <p>قيد العمل</p>
+          <div style={{ width: '100%', height: '4px', background: 'var(--border-light)', borderRadius: '2px', overflow: 'hidden', marginTop: '6px' }}>
+            <div 
+              style={{ 
+                width: `${completedTasksPercent}%`, 
+                height: '100%', 
+                background: 'var(--primary)', 
+                borderRadius: '2px',
+                transition: 'width 0.4s var(--ease-out)'
+              }} 
+            />
           </div>
         </div>
 
-        <div className="stat-card card" style={{ border: 'none', boxShadow: 'var(--shadow-sm)' }}>
-          <span className="stat-icon stat-icon-done">
-            <CheckCircle2 size={18} />
+        {/* In Progress Card */}
+        <div className="card" style={{ padding: 'var(--space-4)', border: 'none', display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'right' }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>قيد العمل</span>
+          <span style={{ fontSize: '0.68rem', color: 'var(--text-faint)' }}>آخر 30 يوم</span>
+          <span className="font-english" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px', lineHeight: 1 }}>
+            {inProgressTasksPercent}%
           </span>
-          <div className="stat-info">
-            <h3 className="font-english">{completedTasks}</h3>
-            <p>مكتملة</p>
+          <div style={{ width: '100%', height: '4px', background: 'var(--border-light)', borderRadius: '2px', overflow: 'hidden', marginTop: '6px' }}>
+            <div 
+              style={{ 
+                width: `${inProgressTasksPercent}%`, 
+                height: '100%', 
+                background: 'var(--primary)', 
+                borderRadius: '2px',
+                transition: 'width 0.4s var(--ease-out)'
+              }} 
+            />
           </div>
         </div>
       </div>
 
       {/* Quick Add */}
-      <div className="quick-add-section card">
+      <div className="quick-add-section card" style={{ border: 'none' }}>
         <h3 className="section-title">إسناد مهمة سريعة</h3>
         <form onSubmit={handleQuickAddSubmit} className="quick-add-form">
           <input
@@ -169,7 +191,7 @@ export default function Dashboard() {
           />
           <div className="form-row">
             <select
-              value={quickAssignee}
+              value={quickAssignee || ''}
               onChange={(e) => setQuickAssignee(Number(e.target.value))}
               className="quick-select"
             >
@@ -186,7 +208,7 @@ export default function Dashboard() {
       </div>
 
       {/* Activity Feed */}
-      <div className="activity-section card">
+      <div className="activity-section card" style={{ border: 'none' }}>
         <div className="activity-header">
           <h3 className="section-title">الأنشطة الأخيرة</h3>
           <span className="live-badge">

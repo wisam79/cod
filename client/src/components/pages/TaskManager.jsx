@@ -30,6 +30,7 @@ export default function TaskManager() {
   const [activeFilterStatus, setActiveFilterStatus] = useState('all');
   const [activeAssigneeFilter, setActiveAssigneeFilter] = useState('all');
   const [activePriorityFilter, setActivePriorityFilter] = useState('all');
+  const [activeDateFilter, setActiveDateFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   
   const [showAddModal, setShowAddModal] = useState(false);
@@ -37,7 +38,7 @@ export default function TaskManager() {
 
   useEffect(() => {
     document.querySelector('.scrollable-content')?.scrollTo({ top: 0, behavior: 'auto' });
-  }, [activeFilterStatus, activeAssigneeFilter, activePriorityFilter]);
+  }, [activeFilterStatus, activeAssigneeFilter, activePriorityFilter, activeDateFilter]);
 
   const filteredTasks = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -45,10 +46,11 @@ export default function TaskManager() {
       const matchesStatus = activeFilterStatus === 'all' || task.status === activeFilterStatus;
       const matchesAssignee = activeAssigneeFilter === 'all' || (task.assigneeId && task.assigneeId.toString() === activeAssigneeFilter);
       const matchesPriority = activePriorityFilter === 'all' || task.priority === activePriorityFilter;
+      const matchesDate = activeDateFilter === 'all' || task.dueDate === activeDateFilter;
       const matchesSearch = !q || task.title.toLowerCase().includes(q) || (task.description && task.description.toLowerCase().includes(q));
-      return matchesStatus && matchesAssignee && matchesPriority && matchesSearch;
+      return matchesStatus && matchesAssignee && matchesPriority && matchesDate && matchesSearch;
     });
-  }, [tasks, activeFilterStatus, activeAssigneeFilter, activePriorityFilter, searchQuery]);
+  }, [tasks, activeFilterStatus, activeAssigneeFilter, activePriorityFilter, activeDateFilter, searchQuery]);
 
   const getStatusLabel = (status) => {
     switch(status) {
@@ -76,6 +78,8 @@ export default function TaskManager() {
         setActivePriorityFilter={setActivePriorityFilter}
         tasks={tasks}
         getStatusLabel={getStatusLabel}
+        activeDateFilter={activeDateFilter}
+        setActiveDateFilter={setActiveDateFilter}
       />
 
       <div className="tasks-list">
