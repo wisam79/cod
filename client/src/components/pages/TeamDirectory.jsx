@@ -389,7 +389,6 @@ export default function TeamDirectory() {
           stroke-width: 2.8;
           stroke-linecap: round;
           transition: stroke-dasharray var(--dur-slow) var(--ease-out);
-          filter: drop-shadow(0 0 3px rgba(30, 64, 175, 0.3));
         }
 
         .ring-text {
