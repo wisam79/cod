@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Avatar from '../atoms/Avatar';
-import { Search, Plus, AlertCircle } from 'lucide-react';
+import { Search, Plus, AlertCircle, SlidersHorizontal } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 
 export default function TaskFilter({ 
@@ -20,6 +20,7 @@ export default function TaskFilter({
   setActiveDateFilter
 }) {
   const [localSearch, setLocalSearch] = useState(searchQuery);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const debounceRef = useRef(null);
 
   useEffect(() => {
@@ -61,6 +62,14 @@ export default function TaskFilter({
     return days;
   }, []);
 
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (activeAssigneeFilter !== 'all') count++;
+    if (activePriorityFilter !== 'all') count++;
+    if (activeDateFilter && activeDateFilter !== 'all') count++;
+    return count;
+  }, [activeAssigneeFilter, activePriorityFilter, activeDateFilter]);
+
   const selectedDateLabel = useMemo(() => {
     if (!activeDateFilter || activeDateFilter === 'all') return 'جدول المواعيد';
     const matched = weekDays.find(w => w.dateStr === activeDateFilter);
@@ -89,116 +98,7 @@ export default function TaskFilter({
         </button>
       </div>
 
-      {/* Date title & Horizontal Scroll picker */}
-      <div className="date-picker-section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', direction: 'rtl', marginTop: 'var(--space-1)' }}>
-          <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-main)' }}>
-            {selectedDateLabel}
-          </span>
-          <button 
-            className={`filter-pill ${(!activeDateFilter || activeDateFilter === 'all') ? 'active' : ''}`}
-            onClick={() => {
-              triggerHaptic('light');
-              setActiveDateFilter('all');
-            }}
-            style={{ minHeight: '30px', height: '30px', padding: '0 12px', fontSize: '0.7rem', borderRadius: '15px' }}
-          >
-            عرض الكل
-          </button>
-        </div>
-        
-        <div className="horizontal-date-scroll" style={{ display: 'flex', gap: 'var(--space-2)', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
-          {weekDays.map((day) => {
-            const isSelected = activeDateFilter === day.dateStr;
-            return (
-              <button
-                key={day.dateStr}
-                className={`date-scroll-card ${isSelected ? 'active' : ''}`}
-                onClick={() => {
-                  triggerHaptic('selection');
-                  setActiveDateFilter(isSelected ? 'all' : day.dateStr);
-                }}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  minWidth: '56px',
-                  height: '68px',
-                  borderRadius: '16px',
-                  border: isSelected ? 'none' : '1px solid var(--border)',
-                  background: isSelected ? 'var(--primary)' : 'var(--bg-card)',
-                  color: isSelected ? '#ffffff' : 'var(--text-main)',
-                  cursor: 'pointer',
-                  flexShrink: 0,
-                  transition: 'all var(--dur-fast) var(--ease-in-out)',
-                  boxShadow: isSelected ? '0 4px 12px rgba(168, 85, 247, 0.3)' : 'var(--shadow-xs)'
-                }}
-              >
-                <span className="font-english" style={{ fontSize: '0.7rem', fontWeight: 500, color: isSelected ? 'rgba(255, 255, 255, 0.8)' : 'var(--text-muted)' }}>
-                  {day.dayNameEn}
-                </span>
-                <span className="font-english" style={{ fontSize: '1.125rem', fontWeight: 800, marginTop: '2px' }}>
-                  {day.dayNum}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Team Member Filter pills */}
-      <div className="assignee-filter-bar" style={{ marginTop: 'var(--space-1)' }}>
-        <button 
-          className={`filter-pill ${activeAssigneeFilter === 'all' ? 'active' : ''}`}
-          onClick={() => setActiveAssigneeFilter('all')}
-        >
-          الكل
-        </button>
-        {members.map(member => (
-          <button 
-            key={member.id}
-            className={`filter-pill ${activeAssigneeFilter === member.id.toString() ? 'active' : ''}`}
-            onClick={() => setActiveAssigneeFilter(member.id.toString())}
-          >
-            <Avatar src={member.avatar} alt={member.name} size="sm" className="pill-avatar" />
-            {member.name.split(' ')[0]}
-          </button>
-        ))}
-      </div>
-
-      {/* Priority Filter pills */}
-      <div className="assignee-filter-bar priority-filter-bar" style={{ marginTop: 'var(--space-2)', borderTop: '1px solid var(--border-light)', paddingTop: 'var(--space-2)' }}>
-        <span className="priority-icon-label" title="الأولوية">
-          <AlertCircle size={14} />
-        </span>
-        <button 
-          className={`filter-pill ${activePriorityFilter === 'all' ? 'active' : ''}`}
-          onClick={() => setActivePriorityFilter('all')}
-        >
-          الكل
-        </button>
-        <button 
-          className={`filter-pill ${activePriorityFilter === 'high' ? 'active' : ''}`}
-          onClick={() => setActivePriorityFilter('high')}
-        >
-          عالية
-        </button>
-        <button 
-          className={`filter-pill ${activePriorityFilter === 'medium' ? 'active' : ''}`}
-          onClick={() => setActivePriorityFilter('medium')}
-        >
-          متوسطة
-        </button>
-        <button 
-          className={`filter-pill ${activePriorityFilter === 'low' ? 'active' : ''}`}
-          onClick={() => setActivePriorityFilter('low')}
-        >
-          منخفضة
-        </button>
-      </div>
-
-      {/* Task Status Filters */}
+      {/* Task Status Filters (Always Visible) */}
       <div className="status-tabs-container">
         {['all', 'todo', 'progress', 'review', 'done'].map((status) => (
           <button
@@ -215,6 +115,144 @@ export default function TaskFilter({
           </button>
         ))}
       </div>
+
+      {/* Advanced Filters Trigger Button */}
+      <div className="filter-toggle-row">
+        <button 
+          type="button"
+          className={`advanced-filter-btn ${showAdvancedFilters ? 'active' : ''}`}
+          onClick={() => {
+            triggerHaptic('light');
+            setShowAdvancedFilters(!showAdvancedFilters);
+          }}
+        >
+          <SlidersHorizontal size={14} />
+          <span>خيارات التصفية الفائقة</span>
+          {activeFilterCount > 0 && (
+            <span className="filter-count-badge font-english">{activeFilterCount}</span>
+          )}
+        </button>
+      </div>
+
+      {/* Collapsible Advanced Filters Section */}
+      {showAdvancedFilters && (
+        <div className="advanced-filters-panel card animate-fade-in" style={{ padding: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', border: '1px solid var(--border-light)', background: 'var(--bg-card)', borderRadius: 'var(--radius-md)' }}>
+          {/* Date title & Horizontal Scroll picker */}
+          <div className="date-picker-section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', direction: 'rtl' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                📅 {selectedDateLabel}
+              </span>
+              <button 
+                className={`filter-pill ${(!activeDateFilter || activeDateFilter === 'all') ? 'active' : ''}`}
+                onClick={() => {
+                  triggerHaptic('light');
+                  setActiveDateFilter('all');
+                }}
+                style={{ minHeight: '26px', height: '26px', padding: '0 8px', fontSize: '0.65rem', borderRadius: '13px' }}
+              >
+                عرض الكل
+              </button>
+            </div>
+            
+            <div className="horizontal-date-scroll" style={{ display: 'flex', gap: 'var(--space-2)', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+              {weekDays.map((day) => {
+                const isSelected = activeDateFilter === day.dateStr;
+                return (
+                  <button
+                    key={day.dateStr}
+                    className={`date-scroll-card ${isSelected ? 'active' : ''}`}
+                    onClick={() => {
+                      triggerHaptic('selection');
+                      setActiveDateFilter(isSelected ? 'all' : day.dateStr);
+                    }}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      minWidth: '50px',
+                      height: '60px',
+                      borderRadius: '12px',
+                      border: isSelected ? 'none' : '1px solid var(--border)',
+                      background: isSelected ? 'var(--primary)' : 'var(--bg-card)',
+                      color: isSelected ? '#ffffff' : 'var(--text-main)',
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                      transition: 'all var(--dur-fast) var(--ease-in-out)',
+                      boxShadow: isSelected ? '0 4px 12px rgba(168, 85, 247, 0.2)' : 'var(--shadow-xs)'
+                    }}
+                  >
+                    <span className="font-english" style={{ fontSize: '0.65rem', fontWeight: 500, color: isSelected ? 'rgba(255, 255, 255, 0.8)' : 'var(--text-muted)' }}>
+                      {day.dayNameEn}
+                    </span>
+                    <span className="font-english" style={{ fontSize: '1rem', fontWeight: 800, marginTop: '2px' }}>
+                      {day.dayNum}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Team Member Filter pills */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', borderTop: '1px solid var(--border-light)', paddingTop: 'var(--space-2)' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>👤 المسؤول عن المهمة:</span>
+            <div className="assignee-filter-bar">
+              <button 
+                className={`filter-pill ${activeAssigneeFilter === 'all' ? 'active' : ''}`}
+                onClick={() => setActiveAssigneeFilter('all')}
+              >
+                الكل
+              </button>
+              {members.map(member => (
+                <button 
+                  key={member.id}
+                  className={`filter-pill ${activeAssigneeFilter === member.id.toString() ? 'active' : ''}`}
+                  onClick={() => setActiveAssigneeFilter(member.id.toString())}
+                >
+                  <Avatar src={member.avatar} alt={member.name} size="sm" className="pill-avatar" />
+                  {member.name.split(' ')[0]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Priority Filter pills */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', borderTop: '1px solid var(--border-light)', paddingTop: 'var(--space-2)' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <AlertCircle size={12} />
+              الأولوية:
+            </span>
+            <div className="assignee-filter-bar priority-filter-bar">
+              <button 
+                className={`filter-pill ${activePriorityFilter === 'all' ? 'active' : ''}`}
+                onClick={() => setActivePriorityFilter('all')}
+              >
+                الكل
+              </button>
+              <button 
+                className={`filter-pill ${activePriorityFilter === 'high' ? 'active' : ''}`}
+                onClick={() => setActivePriorityFilter('high')}
+              >
+                عالية
+              </button>
+              <button 
+                className={`filter-pill ${activePriorityFilter === 'medium' ? 'active' : ''}`}
+                onClick={() => setActivePriorityFilter('medium')}
+              >
+                متوسطة
+              </button>
+              <button 
+                className={`filter-pill ${activePriorityFilter === 'low' ? 'active' : ''}`}
+                onClick={() => setActivePriorityFilter('low')}
+              >
+                منخفضة
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         .task-filter-organism {
@@ -363,6 +401,54 @@ export default function TaskFilter({
         .status-tab.active .count-badge {
           background: var(--primary-light);
           color: var(--primary);
+        }
+
+        .filter-toggle-row {
+          display: flex;
+          justify-content: center;
+          width: 100%;
+        }
+
+        .advanced-filter-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: var(--space-2);
+          width: 100%;
+          min-height: 38px;
+          border-radius: var(--radius-sm);
+          border: 1px solid var(--border);
+          background: var(--bg-card);
+          color: var(--text-muted);
+          font-size: 0.75rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all var(--dur-fast) var(--ease-in-out);
+        }
+
+        .advanced-filter-btn:active {
+          transform: scale(0.98);
+        }
+
+        .advanced-filter-btn.active {
+          border-color: var(--primary);
+          color: var(--primary);
+          background: var(--primary-light);
+        }
+
+        .filter-count-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 18px;
+          height: 18px;
+          padding: 0 4px;
+          border-radius: 9px;
+          background: var(--primary);
+          color: #ffffff;
+          font-size: 0.65rem;
+          font-weight: 700;
+          margin-right: 4px;
         }
       `}</style>
     </div>

@@ -61,18 +61,21 @@ describe('TaskFilter', () => {
 
   it('renders member filter pills', () => {
     render(<TaskFilter {...defaultProps} />);
+    fireEvent.click(screen.getByText('خيارات التصفية الفائقة'));
     expect(screen.getByText('أحمد')).toBeInTheDocument();
     expect(screen.getByText('سارة')).toBeInTheDocument();
   });
 
   it('calls setActiveAssigneeFilter when member pill clicked', () => {
     render(<TaskFilter {...defaultProps} />);
+    fireEvent.click(screen.getByText('خيارات التصفية الفائقة'));
     fireEvent.click(screen.getByText('أحمد'));
     expect(defaultProps.setActiveAssigneeFilter).toHaveBeenCalledWith('1');
   });
 
   it('calls setActiveAssigneeFilter("all") when "all" pill clicked', () => {
     render(<TaskFilter {...defaultProps} />);
+    fireEvent.click(screen.getByText('خيارات التصفية الفائقة'));
     const allButtons = screen.getAllByText('الكل');
     const assigneeAll = allButtons.find(btn => btn.className.includes('filter-pill'));
     fireEvent.click(assigneeAll);
@@ -81,6 +84,7 @@ describe('TaskFilter', () => {
 
   it('highlights active assignee filter', () => {
     render(<TaskFilter {...defaultProps} activeAssigneeFilter="1" />);
+    fireEvent.click(screen.getByText('خيارات التصفية الفائقة'));
     const pills = document.querySelectorAll('.filter-pill');
     const activePill = Array.from(pills).find(p => p.textContent.includes('أحمد'));
     expect(activePill?.className).toContain('active');
