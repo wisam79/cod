@@ -17,7 +17,11 @@ const Member = sequelize.define('Member', {
     allowNull: false,
     unique: true,
     validate: {
-      isEmail: true
+      isFiveLetters(value) {
+        if (!/^[\u0600-\u06FFa-zA-Z]{5}$/.test(value)) {
+          throw new Error('Username must be exactly 5 letters.');
+        }
+      }
     }
   },
   password: {

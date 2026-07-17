@@ -193,38 +193,30 @@ export default function Login() {
             {error}
           </div>
         )}
-
         <form onSubmit={handleSubmit}>
           <Input
-            type="email"
-            placeholder="البريد الإلكتروني"
+            type="text"
+            placeholder="اسم المستخدم (5 حروف)"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            maxLength={5}
             required
           />
 
           <Input
             type="password"
-            placeholder="كلمة المرور"
+            placeholder="رمز الدخول PIN (6 أرقام)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            maxLength={6}
             required
           />
-
-          <div className="login-forgot-link">
-            <a
-              href="#/forgot-password"
-              onClick={(e) => { e.preventDefault(); setView('forgot'); }}
-            >
-              نسيت كلمة المرور؟
-            </a>
-          </div>
 
           <Button
             type="submit"
             variant="primary"
             disabled={isLoading}
-            style={{ width: '100%', marginTop: '8px' }}
+            style={{ width: '100%', marginTop: '16px' }}
           >
             {isLoading ? 'جاري التحقق...' : 'تسجيل الدخول'}
           </Button>

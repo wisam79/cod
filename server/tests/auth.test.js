@@ -24,14 +24,14 @@ describe('Auth Endpoints', () => {
         .post('/api/auth/register')
         .send({
           name: 'أحمد',
-          email: 'ahmed@example.com',
-          password: 'Password123!',
+          email: 'ahmed',
+          password: '123456',
           role: 'مطوّر'
         });
 
       expect(res.statusCode).toEqual(201);
       expect(res.body).toHaveProperty('token');
-      expect(res.body.member).toHaveProperty('email', 'ahmed@example.com');
+      expect(res.body.member).toHaveProperty('email', 'ahmed');
       expect(res.body.member).toHaveProperty('name', 'أحمد');
       expect(res.body.member).not.toHaveProperty('password');
     });
@@ -40,7 +40,7 @@ describe('Auth Endpoints', () => {
       const res = await request(app)
         .post('/api/auth/register')
         .send({
-          email: 'ahmed@example.com',
+          email: 'ahmed',
         });
 
       expect(res.statusCode).toEqual(400);
@@ -51,8 +51,8 @@ describe('Auth Endpoints', () => {
       // Register one first
       await Member.create({
         name: 'أحمد',
-        email: 'ahmed@example.com',
-        password: 'Password123!',
+        email: 'ahmed',
+        password: '123456',
         role: 'مطوّر'
       });
 
@@ -60,8 +60,8 @@ describe('Auth Endpoints', () => {
         .post('/api/auth/register')
         .send({
           name: 'أحمد ثانٍ',
-          email: 'ahmed@example.com',
-          password: 'Password456!',
+          email: 'ahmed',
+          password: '654321',
           role: 'مصمم'
         });
 
@@ -75,16 +75,16 @@ describe('Auth Endpoints', () => {
       // Seed user
       await Member.create({
         name: 'أحمد',
-        email: 'ahmed@example.com',
-        password: 'Password123!',
+        email: 'ahmed',
+        password: '123456',
         role: 'مطوّر'
       });
 
       const res = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'ahmed@example.com',
-          password: 'Password123!'
+          email: 'ahmed',
+          password: '123456'
         });
 
       expect(res.statusCode).toEqual(200);
@@ -96,20 +96,20 @@ describe('Auth Endpoints', () => {
       // Seed user
       await Member.create({
         name: 'أحمد',
-        email: 'ahmed@example.com',
-        password: 'Password123!',
+        email: 'ahmed',
+        password: '123456',
         role: 'مطوّر'
       });
 
       const res = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'ahmed@example.com',
-          password: 'WrongPassword123!'
+          email: 'ahmed',
+          password: '000000'
         });
 
       expect(res.statusCode).toEqual(401);
-      expect(res.body.error).toContain('غير صحيحة');
+      expect(res.body.error).toContain('غير صحيح');
     });
   });
 
@@ -117,19 +117,19 @@ describe('Auth Endpoints', () => {
     it('should generate a token and send a password reset email if email exists', async () => {
       await Member.create({
         name: 'أحمد',
-        email: 'ahmed@example.com',
-        password: 'Password123!',
+        email: 'ahmed',
+        password: '123456',
         role: 'مطوّر'
       });
 
       const res = await request(app)
         .post('/api/auth/forgot-password')
-        .send({ email: 'ahmed@example.com' });
+        .send({ email: 'ahmed' });
 
       expect(res.statusCode).toEqual(200);
       expect(res.body.message).toContain('تم إرسال رابط');
 
-      const member = await Member.findOne({ where: { email: 'ahmed@example.com' } });
+      const member = await Member.findOne({ where: { email: 'ahmed' } });
       expect(member.resetPasswordToken).not.toBeNull();
       expect(member.resetPasswordExpires).not.toBeNull();
     });
@@ -137,7 +137,7 @@ describe('Auth Endpoints', () => {
     it('should return security-friendly message if email does not exist', async () => {
       const res = await request(app)
         .post('/api/auth/forgot-password')
-        .send({ email: 'nonexistent@example.com' });
+        .send({ email: 'nonex' });
 
       expect(res.statusCode).toEqual(200);
       expect(res.body.message).toContain('إذا كان البريد الإلكتروني مسجلاً');
@@ -150,8 +150,8 @@ describe('Auth Endpoints', () => {
       const expiry = new Date(Date.now() + 3600000);
       await Member.create({
         name: 'أحمد',
-        email: 'ahmed@example.com',
-        password: 'Password123!',
+        email: 'ahmed',
+        password: '123456',
         role: 'مطوّر',
         resetPasswordToken: token,
         resetPasswordExpires: expiry
@@ -161,16 +161,16 @@ describe('Auth Endpoints', () => {
         .post('/api/auth/reset-password')
         .send({
           token,
-          password: 'NewPassword999!'
+          password: '111111'
         });
 
       expect(res.statusCode).toEqual(200);
       expect(res.body.message).toContain('تم إعادة تعيين كلمة المرور بنجاح');
 
-      const member = await Member.findOne({ where: { email: 'ahmed@example.com' } });
+      const member = await Member.findOne({ where: { email: 'ahmed' } });
       expect(member.resetPasswordToken).toBeNull();
       expect(member.resetPasswordExpires).toBeNull();
-      const isMatch = await member.comparePassword('NewPassword999!');
+      const isMatch = await member.comparePassword('111111');
       expect(isMatch).toBe(true);
     });
 
@@ -179,8 +179,8 @@ describe('Auth Endpoints', () => {
       const expiry = new Date(Date.now() - 3600000);
       await Member.create({
         name: 'أحمد',
-        email: 'ahmed@example.com',
-        password: 'Password123!',
+        email: 'ahmed',
+        password: '123456',
         role: 'مطوّر',
         resetPasswordToken: token,
         resetPasswordExpires: expiry
@@ -190,7 +190,7 @@ describe('Auth Endpoints', () => {
         .post('/api/auth/reset-password')
         .send({
           token,
-          password: 'NewPassword999!'
+          password: '111111'
         });
 
       expect(res.statusCode).toEqual(400);
@@ -204,8 +204,8 @@ describe('Auth Endpoints', () => {
         .post('/api/auth/register')
         .send({
           name: 'أحمد',
-          email: 'ahmed@example.com',
-          password: 'Password123!',
+          email: 'ahmed',
+          password: '123456',
           role: 'مطوّر'
         });
 
@@ -234,8 +234,8 @@ describe('Auth Endpoints', () => {
         .post('/api/auth/register')
         .send({
           name: 'أحمد',
-          email: 'ahmed@example.com',
-          password: 'Password123!',
+          email: 'ahmed',
+          password: '123456',
           role: 'مطوّر'
         });
 
@@ -245,15 +245,15 @@ describe('Auth Endpoints', () => {
         .put('/api/auth/change-password')
         .set('Authorization', `Bearer ${token}`)
         .send({
-          currentPassword: 'Password123!',
-          newPassword: 'NewPassword999!'
+          currentPassword: '123456',
+          newPassword: '111111'
         });
 
       expect(res.statusCode).toEqual(200);
       expect(res.body.message).toContain('بنجاح');
 
       const member = await Member.findByPk(registerRes.body.member.id);
-      const isMatch = await member.comparePassword('NewPassword999!');
+      const isMatch = await member.comparePassword('111111');
       expect(isMatch).toBe(true);
     });
 
@@ -262,8 +262,8 @@ describe('Auth Endpoints', () => {
         .post('/api/auth/register')
         .send({
           name: 'أحمد',
-          email: 'ahmed@example.com',
-          password: 'Password123!',
+          email: 'ahmed',
+          password: '123456',
           role: 'مطوّر'
         });
 
@@ -273,8 +273,8 @@ describe('Auth Endpoints', () => {
         .put('/api/auth/change-password')
         .set('Authorization', `Bearer ${token}`)
         .send({
-          currentPassword: 'WrongPassword123!',
-          newPassword: 'NewPassword999!'
+          currentPassword: '000000',
+          newPassword: '111111'
         });
 
       expect(res.statusCode).toEqual(400);

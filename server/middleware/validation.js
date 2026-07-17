@@ -11,18 +11,15 @@ const validateRegister = (req, res, next) => {
   if (!isString(name) || name.trim().length < 2) {
     return res.status(400).json({ error: messages.validation.nameLength });
   }
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!isString(email) || !emailRegex.test(email)) {
+  const usernameRegex = /^[\u0600-\u06FFa-zA-Z]{5}$/;
+  if (!isString(email) || !usernameRegex.test(email)) {
     return res.status(400).json({ error: messages.validation.emailInvalid });
   }
-  if (!isString(password) || password.length < 8) {
+  if (!isString(password) || password.length !== 6) {
     return res.status(400).json({ error: messages.validation.passwordLength });
   }
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasLowercase = /[a-z]/.test(password);
-  const hasNumber = /\d/.test(password);
-  const hasSpecial = /[!@#$%^&*(),.?":{}|<>\-_=+]/.test(password);
-  if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+  const pinRegex = /^[0-9]{6}$/;
+  if (!pinRegex.test(password)) {
     return res.status(400).json({ error: messages.validation.passwordStrength });
   }
   if (avatar) {
@@ -40,8 +37,8 @@ const validateRegister = (req, res, next) => {
 
 const validateLogin = (req, res, next) => {
   const { email, password } = req.body;
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!isString(email) || !emailRegex.test(email)) {
+  const usernameRegex = /^[\u0600-\u06FFa-zA-Z]{5}$/;
+  if (!isString(email) || !usernameRegex.test(email)) {
     return res.status(400).json({ error: messages.validation.emailInvalid });
   }
   if (!isString(password) || password.trim().length === 0) {
@@ -117,8 +114,8 @@ const validateComment = (req, res, next) => {
 
 const validateForgotPassword = (req, res, next) => {
   const { email } = req.body;
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!isString(email) || !emailRegex.test(email)) {
+  const usernameRegex = /^[\u0600-\u06FFa-zA-Z]{5}$/;
+  if (!isString(email) || !usernameRegex.test(email)) {
     return res.status(400).json({ error: messages.validation.emailInvalid });
   }
   next();
@@ -129,14 +126,10 @@ const validateResetPassword = (req, res, next) => {
   if (!isString(token) || token.trim().length === 0) {
     return res.status(400).json({ error: messages.validation.tokenRequired });
   }
-  if (!isString(password) || password.length < 8) {
+  if (!isString(password) || password.length !== 6) {
     return res.status(400).json({ error: messages.validation.passwordLength });
   }
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasLowercase = /[a-z]/.test(password);
-  const hasNumber = /\d/.test(password);
-  const hasSpecial = /[!@#$%^&*(),.?":{}|<>\-_=+]/.test(password);
-  if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+  if (!/^[0-9]{6}$/.test(password)) {
     return res.status(400).json({ error: messages.validation.passwordStrength });
   }
   next();
@@ -163,16 +156,12 @@ const validateProfileUpdate = (req, res, next) => {
 const validateChangePassword = (req, res, next) => {
   const { currentPassword, newPassword } = req.body;
   if (!isString(currentPassword) || currentPassword.trim().length === 0) {
-    return res.status(400).json({ error: 'كلمة المرور الحالية مطلوبة.' });
+    return res.status(400).json({ error: 'رمز الدخول PIN الحالي مطلوب.' });
   }
-  if (!isString(newPassword) || newPassword.length < 8) {
+  if (!isString(newPassword) || newPassword.length !== 6) {
     return res.status(400).json({ error: messages.validation.passwordLength });
   }
-  const hasUppercase = /[A-Z]/.test(newPassword);
-  const hasLowercase = /[a-z]/.test(newPassword);
-  const hasNumber = /\d/.test(newPassword);
-  const hasSpecial = /[!@#$%^&*(),.?":{}|<>\-_=+]/.test(newPassword);
-  if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+  if (!/^[0-9]{6}$/.test(newPassword)) {
     return res.status(400).json({ error: messages.validation.passwordStrength });
   }
   next();

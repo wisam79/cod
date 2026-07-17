@@ -1,13 +1,13 @@
 const { sequelize, Member, Task, Comment, Message, Notification, Settings } = require('./models');
 const logger = require('./utils/logger');
 
-const SEED_PASSWORD = process.env.SEED_PASSWORD || (process.env.NODE_ENV === 'production' ? '' : 'DevSeedPass@123!');
+const SEED_PASSWORD = process.env.SEED_PASSWORD || (process.env.NODE_ENV === 'production' ? '' : '123456');
 
 const INITIAL_MEMBERS = [
   { 
     id: 1, 
     name: 'جاسم يعقوب', 
-    email: 'jassem@mohemmaty.com',
+    email: 'jasem',
     password: SEED_PASSWORD,
     role: 'مصمم واجهات UI/UX', 
     avatar: 'https://ui-avatars.com/api/?name=جاسم+يعقوب&background=random&color=fff' 
@@ -15,7 +15,7 @@ const INITIAL_MEMBERS = [
   { 
     id: 2, 
     name: 'سارة أحمد', 
-    email: 'sara@mohemmaty.com',
+    email: 'sarah',
     password: SEED_PASSWORD,
     role: 'مطور فرونت-إند', 
     avatar: 'https://ui-avatars.com/api/?name=سارة+أحمد&background=random&color=fff' 
@@ -23,7 +23,7 @@ const INITIAL_MEMBERS = [
   { 
     id: 3, 
     name: 'عبدالله عمر', 
-    email: 'abdullah@mohemmaty.com',
+    email: 'abdul',
     password: SEED_PASSWORD,
     role: 'مطور باك-إند', 
     avatar: 'https://ui-avatars.com/api/?name=عبدالله+عمر&background=random&color=fff' 
@@ -31,7 +31,7 @@ const INITIAL_MEMBERS = [
   { 
     id: 4, 
     name: 'ريم خالد', 
-    email: 'reem@mohemmaty.com',
+    email: 'reema',
     password: SEED_PASSWORD,
     role: 'مديرة المنتج', 
     avatar: 'https://ui-avatars.com/api/?name=ريم+خالد&background=random&color=fff' 
@@ -39,7 +39,7 @@ const INITIAL_MEMBERS = [
   { 
     id: 5, 
     name: 'الادمن المطور', 
-    email: 'admin@mohemmaty.com',
+    email: 'admin',
     password: SEED_PASSWORD,
     role: 'الادمن المطور', 
     avatar: 'https://ui-avatars.com/api/?name=الادمن+المطور&background=random&color=fff' 

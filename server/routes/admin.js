@@ -38,19 +38,11 @@ router.post('/members', async (req, res) => {
     if (!name || typeof name !== 'string' || name.trim().length < 2) {
       return res.status(400).json({ error: 'الاسم يجب أن يكون نصاً بطول حرفين على الأقل.' });
     }
-    if (!email || typeof email !== 'string' || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-      return res.status(400).json({ error: 'البريد الإلكتروني غير صالح.' });
+    if (!email || typeof email !== 'string' || !/^[\u0600-\u06FFa-zA-Z]{5}$/.test(email)) {
+      return res.status(400).json({ error: 'اسم المستخدم غير صالح. يجب أن يتكون من 5 حروف بالضبط.' });
     }
-    if (!password || typeof password !== 'string') {
-      return res.status(400).json({ error: 'كلمة المرور مطلوبة.' });
-    }
-    
-    // Validate password strength
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(password)) {
-      return res.status(400).json({ 
-        error: 'كلمة المرور ضعيفة جداً. يجب أن تحتوي على 8 رموز كحد أدنى وتتضمن أحرف كبيرة وصغيرة وأرقام ورمز خاص.' 
-      });
+    if (!password || typeof password !== 'string' || !/^[0-9]{6}$/.test(password)) {
+      return res.status(400).json({ error: 'رمز الدخول PIN غير صالح. يجب أن يتكون من 6 أرقام بالضبط.' });
     }
 
     if (role && !VALID_ROLES.includes(role)) {
@@ -115,8 +107,8 @@ router.put('/members/:id', async (req, res) => {
       }
     }
     if (email !== undefined) {
-      if (typeof email !== 'string' || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-        return res.status(400).json({ error: 'البريد الإلكتروني غير صالح.' });
+      if (typeof email !== 'string' || !/^[\u0600-\u06FFa-zA-Z]{5}$/.test(email)) {
+        return res.status(400).json({ error: 'اسم المستخدم غير صالح. يجب أن يتكون من 5 حروف بالضبط.' });
       }
     }
     if (avatar !== undefined && avatar !== null && avatar !== '') {
@@ -144,11 +136,9 @@ router.put('/members/:id', async (req, res) => {
     if (avatar !== undefined) member.avatar = avatar;
 
     if (password && password.trim() !== '') {
-      // Validate password strength
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-      if (!passwordRegex.test(password)) {
+      if (!/^[0-9]{6}$/.test(password)) {
         return res.status(400).json({ 
-          error: 'كلمة المرور ضعيفة جداً. يجب أن تحتوي على 8 رموز كحد أدنى وتتضمن أحرف كبيرة وصغيرة وأرقام ورمز خاص.' 
+          error: 'رمز الدخول PIN غير صالح. يجب أن يتكون من 6 أرقام بالضبط.' 
         });
       }
       member.password = password; // beforeUpdate hook will handle hashing

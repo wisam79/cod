@@ -21,8 +21,8 @@ describe('Super Admin Endpoints & Settings', () => {
       .post('/api/auth/register')
       .send({
         name: 'الادمن المطور',
-        email: 'admin@mohemmaty.com',
-        password: 'MohemmatySuperAdmin2026!',
+        email: 'admin',
+        password: '123456',
         role: 'الادمن المطور'
       });
     superAdminToken = superAdminRes.body.token;
@@ -30,7 +30,7 @@ describe('Super Admin Endpoints & Settings', () => {
     // Grant the 'الادمن المطور' role to the newly created admin user in the database
     await Member.update(
       { role: 'الادمن المطور' },
-      { where: { email: 'admin@mohemmaty.com' } }
+      { where: { email: 'admin' } }
     );
 
     // Create Regular member
@@ -38,8 +38,8 @@ describe('Super Admin Endpoints & Settings', () => {
       .post('/api/auth/register')
       .send({
         name: 'أحمد العادي',
-        email: 'ahmed@mohemmaty.com',
-        password: 'MohemmatySecureP@ss123!',
+        email: 'ahmed',
+        password: '123456',
         role: 'مطور فرونت-إند'
       });
     regularToken = regularRes.body.token;
@@ -100,8 +100,8 @@ describe('Super Admin Endpoints & Settings', () => {
         .post('/api/auth/register')
         .send({
           name: 'مستخدم جديد',
-          email: 'newuser@mohemmaty.com',
-          password: 'Password123!',
+          email: 'newus',
+          password: '111111',
           role: 'مطور'
         });
 

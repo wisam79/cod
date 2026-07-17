@@ -181,7 +181,7 @@ export default function AdminDashboard() {
                   <Avatar src={member.avatar} alt={member.name} size="md" />
                   <div className="admin-member-info">
                     <h4>{member.name}</h4>
-                    <span className="admin-member-email font-english">{member.email}</span>
+                    <span className="admin-member-email font-english" style={{ fontSize: '0.75rem', fontWeight: 600 }}>@{member.email}</span>
                   </div>
                 </div>
                 
@@ -292,18 +292,20 @@ export default function AdminDashboard() {
                 required
               />
               <Input
-                label="البريد الإلكتروني"
-                type="email"
+                label="اسم المستخدم (5 حروف)"
+                type="text"
                 value={addForm.email}
                 onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
+                maxLength={5}
                 required
               />
               <Input
-                label="كلمة المرور"
+                label="رمز الدخول PIN (6 أرقام)"
                 type="password"
                 value={addForm.password}
-                placeholder="أدخل كلمة مرور قوية"
+                placeholder="أدخل 6 أرقام"
                 onChange={(e) => setAddForm({ ...addForm, password: e.target.value })}
+                maxLength={6}
                 required
               />
               <Input
@@ -367,10 +369,11 @@ export default function AdminDashboard() {
                 required
               />
               <Input
-                label="البريد الإلكتروني"
-                type="email"
+                label="اسم المستخدم (5 حروف)"
+                type="text"
                 value={editForm.email}
                 onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                maxLength={5}
                 required
               />
               <Input
@@ -405,11 +408,12 @@ export default function AdminDashboard() {
               </div>
 
               <Input
-                label="كلمة مرور جديدة (اختياري)"
+                label="رمز دخول PIN جديد (اختياري)"
                 type="password"
                 value={editForm.password}
-                placeholder="تحديث كلمة المرور"
+                placeholder="تحديث رمز الدخول"
                 onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                maxLength={6}
               />
 
               <div className="modal-actions" style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 'var(--space-3)' }}>

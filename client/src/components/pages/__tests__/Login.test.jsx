@@ -34,14 +34,14 @@ describe('Login', () => {
     expect(screen.getByText('تسجيل الدخول للمتابعة')).toBeInTheDocument();
   });
 
-  it('renders email input', () => {
+  it('renders username input', () => {
     render(<Login />);
-    expect(screen.getByPlaceholderText('البريد الإلكتروني')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('اسم المستخدم (5 حروف)')).toBeInTheDocument();
   });
 
   it('renders password input', () => {
     render(<Login />);
-    expect(screen.getByPlaceholderText('كلمة المرور')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('رمز الدخول PIN (6 أرقام)')).toBeInTheDocument();
   });
 
   it('renders submit button', () => {
@@ -53,8 +53,6 @@ describe('Login', () => {
     render(<Login />);
     expect(screen.getByText('مُهِمَّة')).toBeInTheDocument();
   });
-
-
 
   it('shows error message when error is present', () => {
     mockState.authError = 'Invalid credentials';
@@ -74,12 +72,12 @@ describe('Login', () => {
     mockState.login = mockLogin;
 
     render(<Login />);
-    fireEvent.change(screen.getByPlaceholderText('البريد الإلكتروني'), { target: { value: 'test@test.com' } });
-    fireEvent.change(screen.getByPlaceholderText('كلمة المرور'), { target: { value: 'pass123' } });
+    fireEvent.change(screen.getByPlaceholderText('اسم المستخدم (5 حروف)'), { target: { value: 'jasem' } });
+    fireEvent.change(screen.getByPlaceholderText('رمز الدخول PIN (6 أرقام)'), { target: { value: '123456' } });
     fireEvent.submit(screen.getByRole('button', { name: /تسجيل الدخول/i }).closest('form'));
 
     await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith('test@test.com', 'pass123');
+      expect(mockLogin).toHaveBeenCalledWith('jasem', '123456');
     });
   });
 });

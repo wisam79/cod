@@ -10,8 +10,8 @@ beforeAll(async () => {
   await Member.create({
     id: 1,
     name: 'جاسم يعقوب',
-    email: 'jassem@mohemmaty.com',
-    password: 'MohemmatySecureP@ss123!',
+    email: 'jasem',
+    password: '123456',
     role: 'مصمم واجهات UI/UX',
     avatar: 'https://ui-avatars.com/api/?name=Test+User&background=random&color=fff'
   });
@@ -41,7 +41,7 @@ describe('مُهِمَّتِي - اختبارات واجهة البرمجة (API
     const res = await request(app)
       .post('/api/auth/login')
       .send({
-        email: 'jassem@mohemmaty.com',
+        email: 'jasem',
         password: 'wrongpassword'
       });
     expect(res.statusCode).toEqual(401);
@@ -52,13 +52,13 @@ describe('مُهِمَّتِي - اختبارات واجهة البرمجة (API
     const res = await request(app)
       .post('/api/auth/login')
       .send({
-        email: 'jassem@mohemmaty.com',
-        password: 'MohemmatySecureP@ss123!'
+        email: 'jasem',
+        password: '123456'
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty('token');
     expect(res.body).toHaveProperty('member');
-    expect(res.body.member.email).toEqual('jassem@mohemmaty.com');
+    expect(res.body.member.email).toEqual('jasem');
   });
 
   describe('Security and Validation Checks', () => {
@@ -68,8 +68,8 @@ describe('مُهِمَّتِي - اختبارات واجهة البرمجة (API
       const loginRes = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'jassem@mohemmaty.com',
-          password: 'MohemmatySecureP@ss123!'
+          email: 'jasem',
+          password: '123456'
         });
       authToken = loginRes.body.token;
     });
@@ -79,12 +79,12 @@ describe('مُهِمَّتِي - اختبارات واجهة البرمجة (API
         .post('/api/auth/register')
         .send({
           name: 'صالح',
-          email: 'saleh@mohemmaty.com',
-          password: 'weak',
+          email: 'saleh',
+          password: '123',
           role: 'مطوّر'
         });
       expect(res.statusCode).toEqual(400);
-      expect(res.body.error).toContain('كلمة المرور');
+      expect(res.body.error).toContain('رمز الدخول PIN');
     });
 
     test('فشل التسجيل ببريد إلكتروني غير صالح', async () => {
@@ -92,12 +92,12 @@ describe('مُهِمَّتِي - اختبارات واجهة البرمجة (API
         .post('/api/auth/register')
         .send({
           name: 'صالح',
-          email: 'invalid-email',
-          password: 'Password123!',
+          email: 'invalidusername',
+          password: '123456',
           role: 'مطوّر'
         });
       expect(res.statusCode).toEqual(400);
-      expect(res.body.error).toContain('بريد إلكتروني');
+      expect(res.body.error).toContain('اسم المستخدم');
     });
 
     test('فشل التسجيل برابط صورة شخصية غير صالح', async () => {
@@ -105,8 +105,8 @@ describe('مُهِمَّتِي - اختبارات واجهة البرمجة (API
         .post('/api/auth/register')
         .send({
           name: 'صالح',
-          email: 'saleh@mohemmaty.com',
-          password: 'Password123!',
+          email: 'saleh',
+          password: '123456',
           role: 'مطوّر',
           avatar: 'not-a-valid-url'
         });
@@ -153,8 +153,8 @@ describe('مُهِمَّتِي - اختبارات واجهة البرمجة (API
         .post('/api/auth/register')
         .send({
           name: 'صالح',
-          email: 'saleh2@mohemmaty.com',
-          password: 'Password123!',
+          email: 'saleh',
+          password: '123456',
           role: 'مطوّر'
         });
       const salehToken = registerRes.body.token;
