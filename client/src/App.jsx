@@ -295,7 +295,7 @@ function App() {
   }
 
   if (!isAuthenticated) {
-    return (
+    const renderLogin = (
       <div className={`app-container ${isDarkMode ? 'dark-theme' : ''}`} style={{ overflowY: 'auto' }}>
         <React.Suspense fallback={
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
@@ -306,11 +306,22 @@ function App() {
         </React.Suspense>
       </div>
     );
+
+    if (simulateMobile && !fullscreen) {
+      return (
+        <div className={`phone-mockup-wrapper ${isDarkMode ? 'dark-theme' : ''}`}>
+          <div className="phone-notch" />
+          {renderLogin}
+          <div className="phone-home-indicator" />
+        </div>
+      );
+    }
+    return renderLogin;
   }
 
   const user = currentUser || { name: 'عضو الفريق', role: 'متصل', avatar: '' };
 
-  return (
+  const renderApp = (
     <div className={`app-container ${isDarkMode ? 'dark-theme' : ''} ${simulateMobile ? 'simulate-mobile' : ''}`}>
       <ToastContainer activeToasts={activeToasts} />
 
@@ -496,6 +507,17 @@ function App() {
       </div>
     </div>
   );
+
+  if (simulateMobile && !fullscreen) {
+    return (
+      <div className={`phone-mockup-wrapper ${isDarkMode ? 'dark-theme' : ''}`}>
+        <div className="phone-notch" />
+        {renderApp}
+        <div className="phone-home-indicator" />
+      </div>
+    );
+  }
+  return renderApp;
 }
 
 export default App;
