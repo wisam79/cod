@@ -9,34 +9,14 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
 
   const tabs = useMemo(() => {
     const base = [
-      {
-        id: 'dashboard',
-        label: 'الرئيسية',
-        icon: <LayoutGrid size={20} strokeWidth={2} />
-      },
-      {
-        id: 'tasks',
-        label: 'المهام',
-        icon: <CheckSquare size={20} strokeWidth={2} />
-      },
-      {
-        id: 'chat',
-        label: 'المحادثة',
-        icon: <MessageSquare size={20} strokeWidth={2} />
-      },
-      {
-        id: 'team',
-        label: 'الفريق',
-        icon: <Users size={20} strokeWidth={2} />
-      }
+      { id: 'dashboard', label: 'الرئيسية' },
+      { id: 'tasks', label: 'المهام' },
+      { id: 'chat', label: 'المحادثة' },
+      { id: 'team', label: 'الفريق' }
     ];
 
     if (isSuperAdmin) {
-      base.push({
-        id: 'admin',
-        label: 'الإدارة',
-        icon: <ShieldAlert size={20} strokeWidth={2} />
-      });
+      base.push({ id: 'admin', label: 'الإدارة' });
     }
 
     return base;
@@ -104,23 +84,13 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
   }, []);
 
   const handleTouchEnd = useCallback((e) => {
-    if (touchStartX.current === null) return;
-    const endX = e.changedTouches[0].clientX;
-    const endY = e.changedTouches[0].clientY;
-    const dx = endX - touchStartX.current;
-    const dy = endY - touchStartY.current;
-
-    const isHorizontal = Math.abs(dx) > Math.abs(dy);
-    if (!isHorizontal) { touchStartX.current = null; touchStartY.current = null; return; }
-
-    const nav = navRef.current;
-    const isRTL = nav ? getComputedStyle(nav).direction === 'rtl' : false;
-    const threshold = 60;
-    const velocity = Math.abs(dx);
-    const fastSwipe = velocity > 0.5;
-    if (!fastSwipe && Math.abs(dx) < threshold) { touchStartX.current = null; touchStartY.current = null; return; }
-
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStartX.current;
+    const dy = t.clientY - touchStartY.current;
+    if (Math.abs(dx) < 60 || Math.abs(dy) > 40) return;
     const idx = currentIndexRef.current;
+    const isRTL = document.documentElement.dir === 'rtl';
     let newIndex;
     if (isRTL) {
       if (dx < 0 && idx < tabs.length - 1) newIndex = idx + 1;
@@ -162,6 +132,26 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
         )}
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
+          const renderIcon = () => {
+            const size = 20;
+            const strokeWidth = isActive ? 2.4 : 2.0;
+            const fill = isActive ? "currentColor" : "none";
+            switch (tab.id) {
+              case 'dashboard':
+                return <LayoutGrid size={size} strokeWidth={strokeWidth} fill={fill} />;
+              case 'tasks':
+                return <CheckSquare size={size} strokeWidth={strokeWidth} fill={fill} />;
+              case 'chat':
+                return <MessageSquare size={size} strokeWidth={strokeWidth} fill={fill} />;
+              case 'team':
+                return <Users size={size} strokeWidth={strokeWidth} fill={fill} />;
+              case 'admin':
+                return <ShieldAlert size={size} strokeWidth={strokeWidth} fill={fill} />;
+              default:
+                return null;
+            }
+          };
+
           return (
             <button
               key={tab.id}
@@ -176,7 +166,7 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
               aria-label={tab.label}
               aria-current={isActive ? 'page' : undefined}
             >
-              <span className="nav-icon">{tab.icon}</span>
+              <span className="nav-icon">{renderIcon()}</span>
               {isActive && <span className="nav-label sr-only">{tab.label}</span>}
             </button>
           );
