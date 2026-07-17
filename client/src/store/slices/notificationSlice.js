@@ -38,7 +38,7 @@ export const createNotificationSlice = (set, get) => ({
     set({ notifications: [] });
 
     try {
-      await fbClearNotifications(currentUser?.id || '');
+      await fbClearNotifications();
     } catch (err) {
       set({ notifications: originalNotifications });
       get().addToast(`تعذر مسح الإشعارات: ${err.message}`, 'error');

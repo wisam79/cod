@@ -8,6 +8,7 @@ vi.mock('../apiClient', () => ({
   updateTask: vi.fn(),
   deleteTask: vi.fn(),
   addComment: vi.fn(),
+  onWsStatusChange: vi.fn().mockReturnValue(vi.fn()),
 }));
 
 describe('taskSlice', () => {
@@ -19,8 +20,8 @@ describe('taskSlice', () => {
       isOffline: false,
       currentUser: { id: 1, name: 'Test User' },
       activeToasts: [],
-      isLoading: false,
-      error: null,
+      dataLoading: false,
+      dataError: null,
     });
     localStorage.clear();
     vi.restoreAllMocks();
@@ -41,7 +42,7 @@ describe('taskSlice', () => {
     expect(state.tasks.length).toBe(1);
     expect(state.tasks[0].title).toBe('Task 1');
     expect(state.members.length).toBe(1);
-    expect(state.isLoading).toBe(false);
+    expect(state.dataLoading).toBe(false);
   });
 
   it('fetchInitialData caches to localStorage', async () => {
@@ -55,8 +56,9 @@ describe('taskSlice', () => {
     expect(localStorage.getItem('cached_members')).toBeDefined();
   });
 
-  it('fetchInitialData returns empty arrays on network failure', async () => {
+  it('fetchInitialData returns cached data on network failure', async () => {
     localStorage.setItem('cached_tasks', JSON.stringify([{ id: 99, title: 'Cached' }]));
+    localStorage.setItem('cached_members', JSON.stringify([{ id: 1, name: 'Cached Member' }]));
 
     const api = await import('../apiClient');
     api.fetchTasks.mockRejectedValueOnce(new Error('Network error'));
@@ -65,10 +67,22 @@ describe('taskSlice', () => {
     await useAppStore.getState().fetchInitialData();
     const state = useAppStore.getState();
 
-    // .catch(() => []) swallows errors and returns empty arrays
+    expect(state.tasks).toEqual([{ id: 99, title: 'Cached' }]);
+    expect(state.members).toEqual([{ id: 1, name: 'Cached Member' }]);
+    expect(state.dataLoading).toBe(false);
+  });
+
+  it('fetchInitialData returns empty arrays on network failure when no cache exists', async () => {
+    const api = await import('../apiClient');
+    api.fetchTasks.mockRejectedValueOnce(new Error('Network error'));
+    api.fetchMembers.mockRejectedValueOnce(new Error('Network error'));
+
+    await useAppStore.getState().fetchInitialData();
+    const state = useAppStore.getState();
+
     expect(state.tasks).toEqual([]);
     expect(state.members).toEqual([]);
-    expect(state.isLoading).toBe(false);
+    expect(state.dataLoading).toBe(false);
   });
 
   it('addTask adds task when online', async () => {
@@ -144,7 +158,7 @@ describe('taskSlice', () => {
     const api = await import('../apiClient');
     api.addComment.mockResolvedValueOnce({});
     await useAppStore.getState().addCommentToTask(1, 'great work');
-    expect(api.addComment).toHaveBeenCalledWith(1, 'great work', 1);
+    expect(api.addComment).toHaveBeenCalledWith(1, 'great work');
   });
 
   it('deleteTask removes task optimistically', async () => {

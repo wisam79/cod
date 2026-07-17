@@ -45,12 +45,13 @@ const isLocalhost = (url) => {
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
+    // Allow requests with no origin (mobile apps, curl, server-to-server)
+    if (!origin && process.env.NODE_ENV !== 'production') return callback(null, true);
+    if (!origin) return callback(null, false);
     if (
       process.env.NODE_ENV !== 'production' || 
       isLocalhost(origin) || 
-      allowedOrigins.includes(origin) ||
-      origin.endsWith('.vercel.app')
+      allowedOrigins.includes(origin)
     ) {
       return callback(null, true);
     } else {
@@ -65,7 +66,7 @@ app.use(cors({
 app.use('/api/', apiLimiter);
 
 // Body Parser
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
 
 // HTTP Parameter Pollution protection
 app.use(hpp());
@@ -180,7 +181,7 @@ const path = require('path');
 // Serve static frontend in production or on Glitch
 const isProduction = process.env.NODE_ENV === 'production' || !!process.env.PROJECT_DOMAIN;
 if (isProduction) {
-  app.use(express.static(path.join(__dirname, '../client/dist')));
+  app.use(express.static(path.join(__dirname, '../client/dist'), { maxAge: '1d', immutable: true }));
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api/')) return next();
     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
@@ -234,5 +235,25 @@ const isVercel = !!process.env.VERCEL;
 if (process.env.NODE_ENV !== 'test' && !isVercel) {
   startServer();
 }
+
+// Graceful shutdown handler
+const gracefulShutdown = (signal) => {
+  logger.info(`Received ${signal}. Starting graceful shutdown...`);
+  server.close(() => {
+    logger.info('HTTP server closed.');
+    sequelize.close().then(() => {
+      logger.info('Database connection closed.');
+      process.exit(0);
+    }).catch(() => process.exit(1));
+  });
+  // Force close after 10 seconds
+  setTimeout(() => {
+    logger.error('Forced shutdown after timeout.');
+    process.exit(1);
+  }, 10000);
+};
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 module.exports = app;

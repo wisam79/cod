@@ -1,8 +1,9 @@
-import { onTasksChange, onMessagesChange, onNotificationsChange, disconnectWS } from '../apiClient';
+import { onTasksChange, onMessagesChange, onNotificationsChange, disconnectWS, onWsStatusChange } from '../apiClient';
 
 export const createWSSlice = (set, get) => ({
   wsStatus: 'disconnected',
   unsubscribers: [],
+  wsStatusUnsub: null,
   sessionToken: null,
 
   initRealtimeListeners: () => {
@@ -34,7 +35,7 @@ export const createWSSlice = (set, get) => ({
       
       set((state) => ({ notifications: [newNotification, ...state.notifications] }));
 
-      if (Notification.permission === 'granted') {
+      if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('مُهِمَّة - إشعار جديد', {
           body: newNotification.text,
           icon: '/app-icon.png'
@@ -43,19 +44,27 @@ export const createWSSlice = (set, get) => ({
       get().addToast(newNotification.text);
     });
 
+    const unsubWsStatus = onWsStatusChange((status) => {
+      if (get().sessionToken !== session) return;
+      set({ wsStatus: status });
+    });
+
     set({
       unsubscribers: [unsub1, unsub2, unsub3],
-      wsStatus: 'connected'
+      wsStatusUnsub: unsubWsStatus,
     });
   },
 
   cleanupRealtimeListeners: () => {
-    const { unsubscribers } = get();
+    const { unsubscribers, wsStatusUnsub } = get();
     unsubscribers.forEach(unsub => {
       try { unsub(); } catch { /* ignore */ }
     });
+    if (wsStatusUnsub) {
+      try { wsStatusUnsub(); } catch { /* ignore */ }
+    }
     disconnectWS();
-    set({ unsubscribers: [], wsStatus: 'disconnected', sessionToken: null });
+    set({ unsubscribers: [], wsStatusUnsub: null, wsStatus: 'disconnected', sessionToken: null });
   },
 
   initWebSocket: () => {

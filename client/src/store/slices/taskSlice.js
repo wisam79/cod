@@ -3,20 +3,20 @@ import { fetchTasks, addTask as fbAddTask, updateTask as fbUpdateTask, deleteTas
 export const createTaskSlice = (set, get) => ({
   tasks: [],
   members: [],
-  isLoading: false,
-  error: null,
+  dataLoading: false,
+  dataError: null,
 
   fetchInitialData: async () => {
-    set({ isLoading: true, error: null });
+    set({ dataLoading: true, dataError: null });
     try {
       const [tasks, members] = await Promise.all([
-        fetchTasks().catch(() => []),
-        fetchMembers().catch(() => []),
+        fetchTasks(),
+        fetchMembers(),
       ]);
 
-      set({ tasks, members, isLoading: false });
+      set({ tasks, members: members || [], dataLoading: false });
       localStorage.setItem('cached_tasks', JSON.stringify(tasks));
-      localStorage.setItem('cached_members', JSON.stringify(members));
+      localStorage.setItem('cached_members', JSON.stringify(members || []));
     } catch (err) {
       const cachedTasks = localStorage.getItem('cached_tasks');
       const cachedMembers = localStorage.getItem('cached_members');
@@ -29,11 +29,11 @@ export const createTaskSlice = (set, get) => ({
         set({
           tasks: parsedTasks,
           members: parsedMembers,
-          isLoading: false,
-          error: 'تعذر الاتصال بالخادم. تم تحميل البيانات المخزنة مؤقتاً.'
+          dataLoading: false,
+          dataError: 'تعذر الاتصال بالخادم. تم تحميل البيانات المخزنة مؤقتاً.'
         });
       } else {
-        set({ isLoading: false, error: err.message });
+        set({ dataLoading: false, dataError: err.message || 'حدث خطأ في تحميل البيانات.' });
       }
     }
   },
@@ -87,7 +87,7 @@ export const createTaskSlice = (set, get) => ({
       return;
     }
     try {
-      await fbAddComment(taskId, text, currentUser?.id || '');
+      await fbAddComment(taskId, text);
     } catch (err) {
       get().addToast(`تعذر إضافة التعليق: ${err.message}`, 'error');
     }

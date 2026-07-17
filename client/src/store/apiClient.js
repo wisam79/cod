@@ -25,11 +25,11 @@ export async function loginUser(email, password) {
   return handleResponse(res);
 }
 
-export async function registerUser(name, email, password, role) {
+export async function registerUser(name, email, password) {
   const res = await fetch(`${API_URL}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, password, role })
+    body: JSON.stringify({ name, email, password })
   });
   return handleResponse(res);
 }
@@ -283,7 +283,7 @@ function startPollingFallback() {
         }
       }
     } catch (e) {
-      console.warn('Polling fallback warning:', e);
+      // Polling error silently ignored
     }
   }, 6000);
 }
@@ -350,8 +350,11 @@ export function disconnectWS() {
     ws.close();
     ws = null;
   }
-  clearAllSubscribers();
+  reconnectAttempts = 0;
+  lastMsgId = 0;
+  lastNotifId = 0;
   notifyWsStatus('disconnected');
+  clearAllSubscribers();
 }
 
 export function onTasksChange(callback) {

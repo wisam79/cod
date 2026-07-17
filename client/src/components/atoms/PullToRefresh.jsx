@@ -28,7 +28,7 @@ export default function PullToRefresh({ onRefresh, children, isRefreshing: exter
     e.preventDefault();
     const diff = e.touches[0].clientY - startY.current;
     if (diff <= 0) {
-      if (pullDistance !== 0) setPullDistance(0);
+      setPullDistance(0);
       firedThresholdHaptic.current = false;
       return;
     }
@@ -42,7 +42,7 @@ export default function PullToRefresh({ onRefresh, children, isRefreshing: exter
     } else if (!reached && firedThresholdHaptic.current) {
       firedThresholdHaptic.current = false;
     }
-  }, [pullDistance]);
+  }, []);
 
   const handleTouchStart = useCallback((e) => {
     const t = e.touches[0];

@@ -27,7 +27,7 @@ export const createChatSlice = (set, get) => ({
       return;
     }
     try {
-      await fbSendMessage(text, currentUser?.id || '');
+      await fbSendMessage(text);
     } catch (err) {
       get().addToast(`تعذر إرسال الرسالة: ${err.message}`, 'error');
     }

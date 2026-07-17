@@ -7,7 +7,9 @@ import ErrorBoundary from './components/atoms/ErrorBoundary.jsx'
 
 // Global error handler for unhandled promise rejections
 window.addEventListener('unhandledrejection', (event) => {
-  console.warn('Unhandled promise rejection:', event.reason);
+  if (import.meta.env.DEV) {
+    console.warn('Unhandled promise rejection:', event.reason);
+  }
 });
 
 // Register Service Worker for PWA

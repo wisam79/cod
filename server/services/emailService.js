@@ -1,5 +1,10 @@
 const logger = require('../utils/logger');
 
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
 const FROM_EMAIL = process.env.FROM_EMAIL || 'no-reply@mohemmaty.com';
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
@@ -121,7 +126,7 @@ async function sendPasswordResetEmail(to, name, resetUrl) {
         <p style="color: #64748b; font-size: 14px; margin-top: 4px;">نظام إدارة المهام للفريق</p>
       </div>
       
-      <p>مرحباً <strong>${name}</strong>،</p>
+      <p>مرحباً <strong>${escapeHtml(name)}</strong>،</p>
       
       <p>لقد تلقينا طلباً لإعادة تعيين كلمة المرور الخاصة بحسابك في تطبيق مهمتي. يمكنك القيام بذلك عن طريق الضغط على الزر أدناه:</p>
       
@@ -159,7 +164,7 @@ async function sendVerificationEmail(to, name, verificationUrl) {
         <p style="color: #64748b; font-size: 14px; margin-top: 4px;">نظام إدارة المهام للفريق</p>
       </div>
       
-      <p>مرحباً <strong>${name}</strong>،</p>
+      <p>مرحباً <strong>${escapeHtml(name)}</strong>،</p>
       
       <p>شكراً لتسجيلك في تطبيق مهمتي. لتفعيل حسابك والبدء في استخدام التطبيق، يرجى الضغط على الزر أدناه:</p>
       

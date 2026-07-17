@@ -4,11 +4,11 @@ export const createAuthSlice = (set, get) => ({
   token: null,
   currentUser: null,
   isAuthenticated: false,
-  isLoading: false,
-  error: null,
+  authLoading: false,
+  authError: null,
 
   login: async (email, password) => {
-    set({ isLoading: true, error: null });
+    set({ authLoading: true, authError: null });
     try {
       const user = await loginUser(email, password);
       localStorage.setItem('auth_token', user.token);
@@ -18,7 +18,7 @@ export const createAuthSlice = (set, get) => ({
         token: user.token,
         currentUser: userData,
         isAuthenticated: true,
-        isLoading: false
+        authLoading: false
       });
       get().addToast(`مرحباً بك مجدداً، ${user.member.name}!`, 'success');
       await get().fetchInitialData();
@@ -27,7 +27,7 @@ export const createAuthSlice = (set, get) => ({
         setTimeout(() => Notification.requestPermission(), 2000);
       }
     } catch (err) {
-      set({ isLoading: false, error: err.message || 'خطأ في تسجيل الدخول' });
+      set({ authLoading: false, authError: err.message || 'خطأ في تسجيل الدخول' });
       throw err;
     }
   },
@@ -60,7 +60,7 @@ export const createAuthSlice = (set, get) => ({
   },
 
   fetchCurrentUser: async () => {
-    set({ isLoading: true, error: null });
+    set({ authLoading: true, authError: null });
     try {
       let settled = false;
       const unsubscribe = onAuthChange(async (user) => {
@@ -69,7 +69,7 @@ export const createAuthSlice = (set, get) => ({
         unsubscribe();
         if (!user) {
           localStorage.removeItem('auth_token');
-          set({ token: null, currentUser: null, isAuthenticated: false, isLoading: false });
+          set({ token: null, currentUser: null, isAuthenticated: false, authLoading: false });
           return;
         }
         try {
@@ -80,27 +80,26 @@ export const createAuthSlice = (set, get) => ({
             token,
             currentUser: userData,
             isAuthenticated: true,
-            isLoading: false
+            authLoading: false
           });
           await get().fetchInitialData();
           get().initRealtimeListeners();
         } catch (err) {
-          console.error('Failed to restore session:', err);
+          if (import.meta.env.DEV) console.error('Failed to restore session:', err);
           let offlineUser = null;
           try { offlineUser = JSON.parse(localStorage.getItem('offline_user')); } catch (_) {}
           if (offlineUser) {
             set({
               token: null,
               currentUser: offlineUser,
-              isAuthenticated: true,
-              isLoading: false
+              isAuthenticated: false,
+              authLoading: false
             });
-            await get().fetchInitialData();
-            get().initRealtimeListeners();
+            get().fetchInitialData().catch(() => {});
           } else {
             localStorage.removeItem('auth_token');
             localStorage.removeItem('offline_user');
-            set({ token: null, currentUser: null, isAuthenticated: false, isLoading: false });
+            set({ token: null, currentUser: null, isAuthenticated: false, authLoading: false });
           }
         }
       });
@@ -115,28 +114,28 @@ export const createAuthSlice = (set, get) => ({
               set({
                 token: null,
                 currentUser: offlineUser,
-                isAuthenticated: true,
-                isLoading: false
+                isAuthenticated: false,
+                authLoading: false
               });
               get().fetchInitialData().catch(() => {});
-              get().initRealtimeListeners();
             } else {
-              set({ isLoading: false, isAuthenticated: false });
+              set({ authLoading: false, isAuthenticated: false });
             }
-            resolve();
           }
+          resolve();
         }, 6000);
-        
+
+        const originalResolve = resolve;
         const checkSettled = setInterval(() => {
           if (settled) {
             clearInterval(checkSettled);
             clearTimeout(timeoutId);
-            resolve();
+            originalResolve();
           }
-        }, 100);
+        }, 500);
       });
     } catch {
-      set({ isLoading: false, isAuthenticated: false });
+      set({ authLoading: false, isAuthenticated: false });
     }
   },
 

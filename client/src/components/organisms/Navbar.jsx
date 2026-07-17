@@ -4,29 +4,30 @@ import { Home, CheckSquare, MessageSquare, Users, ShieldAlert } from 'lucide-rea
 import { triggerHaptic } from '../../utils/haptics';
 
 export default function Navbar({ activeTab, setActiveTab, currentUser }) {
-  const isSuperAdmin = currentUser?.role && (currentUser.role.includes('الادمن المطور') || currentUser.role.includes('Super Admin'));
+  const isSuperAdminRole = (role) => role && (role.includes('الادمن المطور') || role.includes('Super Admin'));
+  const isSuperAdmin = isSuperAdminRole(currentUser?.role);
 
   const tabs = useMemo(() => {
     const base = [
       {
         id: 'dashboard',
         label: 'الرئيسية',
-        icon: <Home size={20} strokeWidth={2.5} />
+        icon: <Home size={20} strokeWidth={2} />
       },
       {
         id: 'tasks',
         label: 'المهام',
-        icon: <CheckSquare size={20} strokeWidth={2.5} />
+        icon: <CheckSquare size={20} strokeWidth={2} />
       },
       {
         id: 'chat',
         label: 'المحادثة',
-        icon: <MessageSquare size={20} strokeWidth={2.5} />
+        icon: <MessageSquare size={20} strokeWidth={2} />
       },
       {
         id: 'team',
         label: 'الفريق',
-        icon: <Users size={20} strokeWidth={2.5} />
+        icon: <Users size={20} strokeWidth={2} />
       }
     ];
 
@@ -34,7 +35,7 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
       base.push({
         id: 'admin',
         label: 'الإدارة',
-        icon: <ShieldAlert size={20} strokeWidth={2.5} />
+        icon: <ShieldAlert size={20} strokeWidth={2} />
       });
     }
 
@@ -48,9 +49,6 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
   const currentIndex = useMemo(() => tabs.findIndex(t => t.id === activeTab), [activeTab, tabs]);
   useEffect(() => { currentIndexRef.current = currentIndex; }, [currentIndex]);
 
-  /* Animated pill indicator position. We measure each tab with ResizeObserver/onLayout
-     and animate via CSS transforms. width tracks the active item width so inactive items
-     stay compact, matching iOS segmented control. */
   const navRef = useRef(null);
   const itemsRef = useRef({});
   const [indicator, setIndicator] = useState({ x: 0, w: 0, ready: false });
@@ -115,7 +113,6 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
     const idx = currentIndexRef.current;
     let newIndex;
     if (isRTL) {
-      // RTL: swipe left goes forward (next), swipe right goes back.
       if (dx < 0 && idx < tabs.length - 1) newIndex = idx + 1;
       else if (dx > 0 && idx > 0) newIndex = idx - 1;
     } else {
@@ -179,8 +176,8 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
       <style>{`
         .bottom-navbar-wrapper {
           position: absolute;
-          bottom: 24px;
-          bottom: calc(24px + var(--safe-bottom, 0px));
+          bottom: var(--space-5);
+          bottom: calc(var(--space-5) + var(--safe-bottom, 0px));
           left: 0;
           right: 0;
           display: flex;
@@ -195,46 +192,42 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
           display: flex;
           justify-content: space-around;
           align-items: center;
-          background-color: rgba(30, 64, 175, 0.85);
-          padding: 6px;
-          border-radius: 40px;
+          background-color: var(--bg-card);
+          border: 1px solid var(--border);
+          padding: var(--space-1);
+          border-radius: var(--radius-lg);
           width: 92%;
           max-width: 460px;
-          box-shadow:
-            0 16px 32px rgba(30, 64, 175, 0.28),
-            0 6px 14px rgba(0, 0, 0, 0.08),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(24px) saturate(180%);
-          -webkit-backdrop-filter: blur(24px) saturate(180%);
+          box-shadow: var(--shadow-md);
           position: relative;
           isolation: isolate;
         }
         
         .nav-indicator {
           position: absolute;
-          top: 6px;
-          bottom: 6px;
+          top: var(--space-1);
+          bottom: var(--space-1);
           left: 0;
-          background: #ffffff;
-          border-radius: 40px;
-          transition: transform var(--dur-base) var(--ease-ios), width var(--dur-base) var(--ease-ios);
+          background: var(--primary);
+          border-radius: var(--radius-md);
+          transition: transform var(--nav-pill-shift) var(--ease-out), width var(--nav-pill-shift) var(--ease-out);
           z-index: 0;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+          box-shadow: var(--shadow-xs);
         }
 
         .nav-item {
           background: transparent;
           border: none;
-          color: rgba(255, 255, 255, 0.6);
+          color: var(--text-muted);
           padding: 10px 14px;
           min-height: var(--tap-target);
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          transition: color var(--dur-base) var(--ease-quick);
-          border-radius: 999px;
-          gap: 6px;
+          transition: color var(--dur-fast) var(--ease-in-out);
+          border-radius: var(--radius-md);
+          gap: var(--space-2);
           -webkit-tap-highlight-color: transparent;
           touch-action: manipulation;
           position: relative;
@@ -247,40 +240,33 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
         }
 
         .nav-item.active {
-          color: var(--primary);
+          color: #ffffff;
         }
 
         .nav-icon {
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: transform var(--dur-base) var(--ease-spring);
-        }
-
-        .nav-item.active .nav-icon {
-          transform: scale(1.08);
         }
 
         .nav-label {
-          font-size: 0.85rem;
+          font-size: 0.8125rem;
           font-weight: 700;
           white-space: nowrap;
           max-width: 120px;
           overflow: hidden;
           text-overflow: ellipsis;
-          animation: navSlideIn var(--dur-base) var(--ease-ios) forwards;
+          animation: navLabelIn var(--dur-base) var(--ease-out) forwards;
         }
 
-        @keyframes navSlideIn {
+        @keyframes navLabelIn {
           from {
             max-width: 0;
             opacity: 0;
-            transform: translateX(-4px);
           }
           to {
             max-width: 120px;
             opacity: 1;
-            transform: translateX(0);
           }
         }
 
@@ -292,9 +278,9 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
         }
 
         .app-container.dark-theme .bottom-navbar {
-          background-color: rgba(30, 41, 59, 0.85);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+          background-color: var(--bg-card);
+          border-color: var(--border);
+          box-shadow: var(--shadow-lg);
         }
 
         .app-container.dark-theme .nav-indicator {
@@ -302,7 +288,6 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
         }
 
         .app-container.dark-theme .nav-item.active {
-          background-color: transparent !important;
           color: #ffffff;
         }
       `}</style>

@@ -77,13 +77,13 @@ export default function ChatRoom() {
   return (
     <PullToRefresh onRefresh={handleRefresh} isRefreshing={refreshing}>
     <div className="chat-room-view">
-      <div className="chat-banner card">
-        <div className="chat-banner-info">
-          <h3>
-            <MessageSquare size={16} style={{ verticalAlign: 'middle', marginLeft: '6px', color: 'var(--primary)' }} />
-            المجموعة العامة للفريق
-          </h3>
-          <p>قناة للتواصل العام ومشاركة تحديثات العمل اليومية الفورية.</p>
+      <div className="chat-header card">
+        <div className="chat-header-content">
+          <MessageSquare size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+          <div className="chat-header-text">
+            <h3>المجموعة العامة</h3>
+            <p>{members.length} أعضاء</p>
+          </div>
         </div>
       </div>
 
@@ -91,10 +91,10 @@ export default function ChatRoom() {
         {messages.length === 0 && (
           <div className="chat-empty-state">
             <div className="empty-state-icon">
-              <MessageSquare size={28} />
+              <MessageSquare size={24} />
             </div>
             <p className="empty-title">لا توجد رسائل بعد</p>
-            <p className="empty-subtitle">ابدأ المحادثة مع فريقك الآن — اكتب أول رسالة في الأسفل.</p>
+            <p className="empty-subtitle">ابدأ المحادثة مع فريقك.</p>
           </div>
         )}
         {messages.map((msg) => {
@@ -115,14 +115,14 @@ export default function ChatRoom() {
         <input 
           ref={inputRef}
           type="text" 
-          placeholder="اكتب رسالتك هنا..." 
+          placeholder="اكتب رسالتك..." 
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           required
           autoComplete="off"
         />
-        <button type="submit" className="btn btn-primary btn-chat-send" aria-label="إرسال رسالة">
-          <Send size={18} style={{ transform: 'rotate(180deg)' }} />
+        <button type="submit" className="btn btn-primary chat-send-btn" aria-label="إرسال رسالة">
+          <Send size={16} style={{ transform: 'rotate(180deg)' }} />
         </button>
       </form>
 
@@ -134,34 +134,39 @@ export default function ChatRoom() {
           position: relative;
         }
 
-        .chat-banner {
-          padding: 14px 20px;
-          text-align: right;
-          background: var(--bg-card);
-          margin-bottom: 12px;
+        .chat-header {
+          padding: var(--space-3) var(--space-4);
+          margin-bottom: var(--space-3);
+          background: var(--primary-gradient);
+          color: #fff;
+          border: none;
+          box-shadow: 0 2px 8px rgba(30, 64, 175, 0.2);
         }
 
-        .chat-banner h3 {
-          font-size: 0.95rem;
-          font-weight: 800;
-          color: var(--text-main);
-          margin-bottom: 4px;
+        .chat-header-content {
           display: flex;
           align-items: center;
+          gap: var(--space-3);
         }
 
-        .chat-banner p {
-          font-size: 0.75rem;
-          color: var(--text-muted);
+        .chat-header-text h3 {
+          font-size: 0.9375rem;
+          font-weight: 700;
+          color: #fff;
+        }
+
+        .chat-header-text p {
+          font-size: 0.6875rem;
+          color: rgba(255, 255, 255, 0.75);
         }
 
         .messages-container {
           flex: 1;
           overflow-y: auto;
-          padding: 8px 4px 80px 4px;
+          padding: var(--space-2) var(--space-1) 80px var(--space-1);
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: var(--space-1);
           text-align: right;
           -webkit-overflow-scrolling: touch;
           overscroll-behavior: contain;
@@ -174,56 +179,62 @@ export default function ChatRoom() {
           align-items: center;
           justify-content: center;
           text-align: center;
-          gap: 12px;
-          padding: 60px 24px;
+          gap: var(--space-3);
+          padding: var(--space-12) var(--space-6);
           color: var(--text-muted);
         }
 
         .messages-container::-webkit-scrollbar {
-          width: 4px;
+          width: 3px;
         }
         .messages-container::-webkit-scrollbar-thumb {
-          background: rgba(0, 0, 0, 0.05);
-          border-radius: 4px;
+          background: var(--border-light);
+          border-radius: 2px;
         }
 
         .chat-input-form {
           position: absolute;
-          bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+          bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
           left: 0;
           right: 0;
           display: flex;
-          gap: 8px;
+          gap: var(--space-2);
           background: var(--bg-app);
-          padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
-          border-top: 1px solid var(--border);
+          padding: var(--space-3) var(--space-3) calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+          border-top: 1px solid var(--border-light);
           z-index: 10;
-          transition: transform 0.2s ease;
+          transition: transform var(--dur-fast) var(--ease-in-out);
         }
 
         .chat-input-form input {
           flex: 1;
-          padding: 12px 16px;
-          border-radius: 16px;
+          padding: 10px var(--space-3);
+          border-radius: var(--radius-lg);
           border: 1px solid var(--border);
           outline: none;
-          font-size: 0.85rem;
+          font-size: 0.875rem;
           text-align: right;
           background: var(--bg-card);
+          color: var(--text-main);
+          height: var(--tap-target);
+          transition: border-color var(--dur-fast) var(--ease-in-out), box-shadow var(--dur-fast) var(--ease-in-out);
         }
 
         .chat-input-form input:focus {
           border-color: var(--primary);
+          box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
         }
 
-        .btn-chat-send {
+        .chat-send-btn {
           width: 44px;
           height: 44px;
-          border-radius: 16px;
+          border-radius: var(--radius-lg);
           padding: 0;
           display: flex;
           align-items: center;
           justify-content: center;
+          background: var(--primary-gradient) !important;
+          box-shadow: 0 2px 8px rgba(30, 64, 175, 0.25);
         }
       `}</style>
     </div>

@@ -11,7 +11,7 @@ import {
   UserPlus, 
   AlertCircle, 
   Plus, 
-  Zap 
+  TrendingUp 
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -67,89 +67,101 @@ export default function Dashboard() {
   const getNotifIcon = (type) => {
     switch (type) {
       case 'chat':
-        return <MessageSquare size={16} className="text-primary" style={{ color: 'var(--primary)' }} />;
+        return <MessageSquare size={14} />;
       case 'status':
-        return <RefreshCw size={16} className="text-status" style={{ color: 'var(--status-review)' }} />;
+        return <RefreshCw size={14} />;
       case 'comment':
-        return <MessageSquare size={16} className="text-primary" style={{ color: 'var(--primary)' }} />;
+        return <MessageSquare size={14} />;
       case 'assignment':
-        return <UserPlus size={16} className="text-success" style={{ color: 'var(--priority-low)' }} />;
+        return <UserPlus size={14} />;
       default:
-        return <AlertCircle size={16} className="text-muted" style={{ color: 'var(--text-muted)' }} />;
+        return <AlertCircle size={14} />;
     }
   };
+
+  const progressPercent = myTasks.length ? Math.round((myCompleted / myTasks.length) * 100) : 0;
 
   return (
     <PullToRefresh onRefresh={handleRefresh} isRefreshing={refreshing}>
     <div className="dashboard-view">
-      <div className="welcome-banner card">
-        <div className="banner-content">
-          <div className="banner-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-            <Zap size={18} fill="currentColor" />
-            <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800' }}>الإنتاجية اليومية</h2>
+      {/* Progress Banner */}
+      <div className="progress-banner" style={{
+        background: 'var(--primary-gradient)',
+        borderRadius: 'var(--radius-lg)',
+        padding: 'var(--space-5)',
+        textAlign: 'right',
+        color: '#fff',
+        boxShadow: '0 4px 16px rgba(30, 64, 175, 0.25)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        <div style={{ position: 'absolute', top: '-20px', left: '-20px', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
+        <div style={{ position: 'absolute', bottom: '-30px', right: '-10px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
+        <div className="banner-top">
+          <div className="banner-title" style={{ color: 'rgba(255,255,255,0.9)' }}>
+            <TrendingUp size={16} />
+            <h2 style={{ color: '#fff', margin: 0 }}>الإنتاجية اليومية</h2>
           </div>
-          
-          <div className="banner-stats" style={{ display: 'flex', gap: '16px', margin: '8px 0', fontSize: '0.8rem', color: 'var(--text-main)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--status-progress)' }}></span>
-              <span>المتبقي: <strong>{myPending}</strong></span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--status-done)' }}></span>
-              <span>المكتمل: <strong>{myCompleted}</strong></span>
-            </div>
+          <span className="banner-percent font-english" style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 800 }}>{progressPercent}%</span>
+        </div>
+        <div className="banner-bar-track" style={{ background: 'rgba(255,255,255,0.2)', height: '6px', borderRadius: '3px', overflow: 'hidden', marginBottom: 'var(--space-3)' }}>
+          <div 
+            className="banner-bar-fill" 
+            style={{ width: `${progressPercent}%`, background: '#fff', height: '100%', borderRadius: '3px', transition: 'width 0.4s var(--ease-out)' }}
+          />
+        </div>
+        <div className="banner-stats" style={{ display: 'flex', gap: 'var(--space-5)', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.85)' }}>
+          <div className="banner-stat" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'rgba(255,255,255,0.5)', flexShrink: 0 }} />
+            <span>المتبقي: <strong className="font-english">{myPending}</strong></span>
           </div>
-
-          <div className="progress-bar-container" style={{ margin: '8px 0 4px 0' }}>
-            <div 
-              className="progress-bar-fill" 
-              style={{ width: `${myTasks.length ? (myCompleted / myTasks.length) * 100 : 0}%` }}
-            ></div>
+          <div className="banner-stat" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#fff', flexShrink: 0 }} />
+            <span>المكتمل: <strong className="font-english">{myCompleted}</strong></span>
           </div>
-          <span className="progress-percentage" style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-            {myTasks.length ? Math.round((myCompleted / myTasks.length) * 100) : 0}% مكتمل
-          </span>
         </div>
       </div>
 
+      {/* Stats Grid */}
       <div className="stats-grid">
-        <div className="stat-card card">
-          <span className="stat-icon all">
-            <BarChart3 size={20} />
+        <div className="stat-card card" style={{ border: 'none', boxShadow: 'var(--shadow-sm)' }}>
+          <span className="stat-icon stat-icon-all">
+            <BarChart3 size={18} />
           </span>
           <div className="stat-info">
-            <h3>{totalTasks}</h3>
-            <p>المهام الكلية</p>
+            <h3 className="font-english">{totalTasks}</h3>
+            <p>الكلية</p>
           </div>
         </div>
         
-        <div className="stat-card card">
-          <span className="stat-icon progress">
-            <Clock size={20} />
+        <div className="stat-card card" style={{ border: 'none', boxShadow: 'var(--shadow-sm)' }}>
+          <span className="stat-icon stat-icon-progress">
+            <Clock size={18} />
           </span>
           <div className="stat-info">
-            <h3>{inProgressTasks}</h3>
+            <h3 className="font-english">{inProgressTasks}</h3>
             <p>قيد العمل</p>
           </div>
         </div>
 
-        <div className="stat-card card">
-          <span className="stat-icon completed">
-            <CheckCircle2 size={20} />
+        <div className="stat-card card" style={{ border: 'none', boxShadow: 'var(--shadow-sm)' }}>
+          <span className="stat-icon stat-icon-done">
+            <CheckCircle2 size={18} />
           </span>
           <div className="stat-info">
-            <h3>{completedTasks}</h3>
-            <p>المكتملة</p>
+            <h3 className="font-english">{completedTasks}</h3>
+            <p>مكتملة</p>
           </div>
         </div>
       </div>
 
-      <div className="quick-add-task card">
+      {/* Quick Add */}
+      <div className="quick-add-section card">
         <h3 className="section-title">إسناد مهمة سريعة</h3>
         <form onSubmit={handleQuickAddSubmit} className="quick-add-form">
           <input
             type="text"
-            placeholder="اكتب اسم المهمة الجديدة هنا..."
+            placeholder="اكتب اسم المهمة..."
             value={quickTitle}
             onChange={(e) => setQuickTitle(e.target.value)}
             className="quick-input"
@@ -158,14 +170,14 @@ export default function Dashboard() {
           <div className="form-row">
             <select
               value={quickAssignee}
-              onChange={(e) => setQuickAssignee(e.target.value)}
+              onChange={(e) => setQuickAssignee(Number(e.target.value))}
               className="quick-select"
             >
               {members.map(m => (
                 <option key={m.id} value={m.id}>إسناد إلى: {m.name}</option>
               ))}
             </select>
-            <button type="submit" className="btn btn-primary btn-quick-add" style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'center' }}>
+            <button type="submit" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'center' }}>
               <Plus size={16} />
               إضافة
             </button>
@@ -173,23 +185,24 @@ export default function Dashboard() {
         </form>
       </div>
 
-      <div className="recent-activity card">
+      {/* Activity Feed */}
+      <div className="activity-section card">
         <div className="activity-header">
           <h3 className="section-title">الأنشطة الأخيرة</h3>
-          <span className="live-indicator">
-            <span className="live-dot"></span>
+          <span className="live-badge">
+            <span className="live-dot" />
             مباشر
           </span>
         </div>
         <div className="activity-list">
           {notifications.slice(0, 4).map((notif, index) => (
             <div key={notif.id || index} className="activity-item">
-              <div className="activity-badge-icon">
+              <div className="activity-icon-wrap">
                 {getNotifIcon(notif.type)}
               </div>
               <div className="activity-details">
                 <p>{notif.text}</p>
-                <span className="activity-time">{notif.time || 'الآن'}</span>
+                <span className="activity-time font-english">{notif.time || 'الآن'}</span>
               </div>
             </div>
           ))}
@@ -203,167 +216,154 @@ export default function Dashboard() {
         .dashboard-view {
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: var(--space-4);
         }
 
-        .welcome-banner {
-          background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
-          color: #FFFFFF;
-          border: none;
-          text-align: right;
-          padding: 24px;
+        .banner-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: var(--space-3);
           position: relative;
-          overflow: hidden;
+          z-index: 1;
         }
 
-        .welcome-banner h2 {
-          color: #FFFFFF;
-          font-size: 1.3rem;
-          font-weight: 800;
+        .banner-title {
+          display: flex;
+          align-items: center;
+          gap: var(--space-2);
         }
 
-        .welcome-banner p {
-          font-size: 0.85rem;
-          margin-bottom: 16px;
-          opacity: 0.9;
-        }
-
-        .progress-bar-container {
-          background-color: rgba(255, 255, 255, 0.2);
-          height: 8px;
-          border-radius: 4px;
-          overflow: hidden;
-          margin-bottom: 6px;
-        }
-
-        .progress-bar-fill {
-          background-color: #FFFFFF;
-          height: 100%;
-          border-radius: 4px;
-          transition: width 0.5s ease-out;
-        }
-
-        .progress-percentage {
-          font-size: 0.75rem;
+        .banner-title h2 {
+          font-size: 0.9375rem;
           font-weight: 700;
-          opacity: 0.9;
-          font-family: var(--font-english);
+          margin: 0;
         }
 
+        .banner-stats {
+          position: relative;
+          z-index: 1;
+        }
+
+        /* Stats Grid */
         .stats-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 12px;
+          gap: var(--space-3);
         }
 
         .stat-card {
-          padding: 16px 12px;
+          padding: var(--space-4) var(--space-3);
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 10px;
+          gap: var(--space-3);
           text-align: center;
+          transition: transform var(--dur-fast) var(--ease-in-out), box-shadow var(--dur-fast) var(--ease-in-out);
+        }
+
+        .stat-card:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-md) !important;
         }
 
         .stat-icon {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 38px;
-          height: 38px;
-          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          border-radius: var(--radius-md);
         }
 
-        .stat-icon.all {
+        .stat-icon-all {
           background-color: var(--primary-light);
           color: var(--primary);
         }
 
-        .stat-icon.progress {
-          background-color: rgba(180, 83, 9, 0.08);
-          color: var(--priority-medium);
+        .stat-icon-progress {
+          background-color: var(--warning-light);
+          color: var(--warning);
         }
 
-        .stat-icon.completed {
-          background-color: rgba(4, 120, 87, 0.08);
-          color: var(--priority-low);
+        .stat-icon-done {
+          background-color: var(--success-light);
+          color: var(--success);
         }
 
         .stat-info h3 {
-          font-size: 1.25rem;
+          font-size: 1.5rem;
           font-weight: 800;
           color: var(--text-main);
-          line-height: 1.1;
+          line-height: 1;
           margin-bottom: 2px;
-          font-family: var(--font-english);
         }
 
         .stat-info p {
-          font-size: 0.7rem;
+          font-size: 0.6875rem;
           color: var(--text-muted);
-          font-weight: 700;
+          font-weight: 600;
         }
 
-        .quick-add-task {
-          padding: 20px;
+        /* Quick Add */
+        .quick-add-section {
+          padding: var(--space-5);
           text-align: right;
         }
 
         .section-title {
-          font-size: 0.95rem;
-          font-weight: 800;
+          font-size: 0.9375rem;
+          font-weight: 700;
           color: var(--text-main);
-          margin-bottom: 14px;
+          margin-bottom: var(--space-3);
         }
 
         .quick-add-form {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: var(--space-3);
         }
 
         .quick-input {
           width: 100%;
-          padding: 12px 14px;
-          border-radius: 14px;
+          padding: 10px var(--space-3);
+          border-radius: var(--radius-md);
           border: 1px solid var(--border);
-          font-size: 0.85rem;
+          font-size: 0.875rem;
           outline: none;
           text-align: right;
-          background-color: var(--bg-app);
-          transition: border-color 0.2s;
+          background-color: var(--bg-card);
+          color: var(--text-main);
+          height: var(--tap-target);
+          transition: border-color var(--dur-fast) var(--ease-in-out), box-shadow var(--dur-fast) var(--ease-in-out);
         }
 
         .quick-input:focus {
           border-color: var(--primary);
+          box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
         }
 
         .form-row {
           display: flex;
-          gap: 8px;
+          gap: var(--space-2);
         }
 
         .quick-select {
           flex: 1;
-          padding: 12px;
-          border-radius: 14px;
+          padding: 10px var(--space-3);
+          border-radius: var(--radius-md);
           border: 1px solid var(--border);
-          font-size: 0.8rem;
+          font-size: 0.8125rem;
           outline: none;
-          background-color: var(--bg-app);
+          background-color: var(--bg-card);
           text-align: right;
+          color: var(--text-main);
+          height: 40px;
         }
 
-        .btn-quick-add {
-          padding: 12px 20px;
-          border-radius: 14px;
-          font-size: 0.85rem;
-          font-weight: 700;
-          cursor: pointer;
-        }
-
-        .recent-activity {
-          padding: 20px;
+        /* Activity Feed */
+        .activity-section {
+          padding: var(--space-5);
           text-align: right;
         }
 
@@ -371,83 +371,94 @@ export default function Dashboard() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 14px;
+          margin-bottom: var(--space-3);
         }
 
         .activity-header .section-title {
           margin-bottom: 0;
         }
 
-        .live-indicator {
-          font-size: 0.75rem;
+        .live-badge {
+          font-size: 0.6875rem;
           font-weight: 700;
-          color: var(--priority-low);
+          color: var(--success);
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: var(--space-1);
+          background: var(--success-light);
+          padding: 2px 8px;
+          border-radius: var(--radius-sm);
         }
 
         .live-dot {
           width: 6px;
           height: 6px;
-          background-color: var(--priority-low);
+          background-color: var(--success);
           border-radius: 50%;
-          animation: pulse-green 1.5s infinite;
-        }
-
-        @keyframes pulse-green {
-          0% { transform: scale(0.9); opacity: 0.6; }
-          50% { transform: scale(1.2); opacity: 1; }
-          100% { transform: scale(0.9); opacity: 0.6; }
+          animation: pulse-indicator 1.5s infinite;
         }
 
         .activity-list {
           display: flex;
           flex-direction: column;
-          gap: 12px;
         }
 
         .activity-item {
           display: flex;
-          gap: 12px;
+          gap: var(--space-3);
           align-items: flex-start;
+          padding: var(--space-3) 0;
+          border-bottom: 1px solid var(--border-light);
+          transition: background-color var(--dur-fast) var(--ease-in-out);
         }
 
-        .activity-badge-icon {
-          background-color: var(--bg-app);
-          border: 1px solid var(--border);
+        .activity-item:last-child {
+          border-bottom: none;
+        }
+
+        .activity-item:hover {
+          background-color: var(--bg-elevated);
+          border-radius: var(--radius-sm);
+          margin: 0 calc(var(--space-2) * -1);
+          padding-left: var(--space-2);
+          padding-right: var(--space-2);
+        }
+
+        .activity-icon-wrap {
           width: 32px;
           height: 32px;
-          border-radius: 50%;
+          border-radius: var(--radius-md);
+          background: var(--primary-light);
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
+          color: var(--primary);
         }
 
         .activity-details {
           flex: 1;
+          min-width: 0;
         }
 
         .activity-details p {
-          font-size: 0.8rem;
+          font-size: 0.8125rem;
           color: var(--text-main);
           line-height: 1.4;
         }
 
         .activity-time {
-          font-size: 0.7rem;
-          color: var(--text-muted);
+          font-size: 0.6875rem;
+          color: var(--text-faint);
           display: block;
           margin-top: 2px;
-          font-family: var(--font-english);
         }
 
         .empty-state {
           text-align: center;
           color: var(--text-muted);
-          font-size: 0.8rem;
-          padding: 20px 0;
+          font-size: 0.8125rem;
+          padding: var(--space-5) 0;
         }
       `}</style>
     </div>

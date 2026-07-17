@@ -27,6 +27,12 @@ describe('Super Admin Endpoints & Settings', () => {
       });
     superAdminToken = superAdminRes.body.token;
 
+    // Grant the 'الادمن المطور' role to the newly created admin user in the database
+    await Member.update(
+      { role: 'الادمن المطور' },
+      { where: { email: 'admin@mohemmaty.com' } }
+    );
+
     // Create Regular member
     const regularRes = await request(app)
       .post('/api/auth/register')

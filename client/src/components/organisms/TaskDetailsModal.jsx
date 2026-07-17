@@ -78,14 +78,25 @@ export default function TaskDetailsModal({
 
   const taskInStore = tasks.find(t => t.id === task.id) || task;
 
-
-
   const handleAddComment = (e) => {
     e.preventDefault();
     if (!commentText.trim()) return;
     triggerHaptic('light');
     addCommentToTask(task.id, commentText);
     setCommentText('');
+  };
+
+  const selectStyle = {
+    width: '100%',
+    padding: '10px var(--space-3)',
+    borderRadius: 'var(--radius-md)',
+    border: '1px solid var(--border)',
+    backgroundColor: 'var(--bg-card)',
+    outline: 'none',
+    fontSize: '0.875rem',
+    fontWeight: '700',
+    height: 'var(--tap-target)',
+    transition: 'border-color var(--dur-fast) var(--ease-in-out)'
   };
 
   return (
@@ -97,6 +108,8 @@ export default function TaskDetailsModal({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        role="dialog"
+        aria-modal="true"
       >
         <div className="sheet-modal-handle" />
         <div className="modal-header">
@@ -127,6 +140,7 @@ export default function TaskDetailsModal({
                     updateTaskStatus(task.id, e.target.value);
                   }, 300);
                 }}
+                style={selectStyle}
                 className={`status-select status-${taskInStore.status}`}
               >
                 <option value="todo">في الانتظار</option>
@@ -159,8 +173,10 @@ export default function TaskDetailsModal({
                 <Info size={12} />
                 الأولوية:
               </span>
-              <span className={`val badge badge-priority-${taskInStore.priority}`}>
-                {translatePriority(taskInStore.priority)}
+              <span className="val">
+                <span className={`badge badge-priority-${taskInStore.priority}`}>
+                  {translatePriority(taskInStore.priority)}
+                </span>
               </span>
             </div>
           </div>
@@ -216,7 +232,7 @@ export default function TaskDetailsModal({
             onClick: () => {
               triggerHaptic('error');
               deleteTask(task.id);
-              onClose();
+              handleClose();
             },
             destructive: true,
             icon: <Trash2 size={18} style={{ marginLeft: 6 }} />,

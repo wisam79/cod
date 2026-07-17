@@ -99,9 +99,14 @@ const validateComment = (req, res, next) => {
   if (trimmed.length === 0) {
     return res.status(400).json({ error: messages.validation.commentTextRequired });
   }
-  // Extra sanitization check for empty HTML-only comments
-  const noHtml = trimmed.replace(/<[^>]*>/g, '').trim();
-  if (noHtml.length === 0) {
+  // Extra sanitization check for empty HTML-only comments using xss library
+  const xss = require('xss');
+  const cleanText = xss(trimmed, {
+    whiteList: {},
+    stripIgnoreTag: true,
+    stripIgnoreTagBody: ['script', 'style']
+  }).trim();
+  if (cleanText.length === 0) {
     return res.status(400).json({ error: messages.validation.commentTextRequired });
   }
   if (text.length > 1000) {

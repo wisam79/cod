@@ -5,6 +5,7 @@ vi.mock('../apiClient', () => ({
   onTasksChange: vi.fn().mockReturnValue(vi.fn()),
   onMessagesChange: vi.fn().mockReturnValue(vi.fn()),
   onNotificationsChange: vi.fn().mockReturnValue(vi.fn()),
+  onWsStatusChange: vi.fn((cb) => { cb('connected'); return vi.fn(); }),
   disconnectWS: vi.fn(),
 }));
 

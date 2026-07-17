@@ -74,7 +74,7 @@ router.post('/register', validateRegister, async (req, res) => {
       name,
       email,
       password,
-      role: role || 'عضو جديد',
+      role: 'عضو جديد',
       avatar: defaultAvatar
     });
 

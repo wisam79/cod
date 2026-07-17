@@ -18,6 +18,7 @@ vi.mock('../apiClient', () => ({
   onTasksChange: vi.fn().mockReturnValue(vi.fn()),
   onMessagesChange: vi.fn().mockReturnValue(vi.fn()),
   onNotificationsChange: vi.fn().mockReturnValue(vi.fn()),
+  onWsStatusChange: vi.fn().mockReturnValue(vi.fn()),
 }));
 
 describe('Integration: Store + API interactions', () => {
@@ -27,8 +28,10 @@ describe('Integration: Store + API interactions', () => {
       token: null,
       currentUser: null,
       isAuthenticated: false,
-      isLoading: false,
-      error: null,
+      authLoading: false,
+      authError: null,
+      dataLoading: false,
+      dataError: null,
       tasks: [],
       members: [],
       messages: [],

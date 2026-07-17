@@ -5,7 +5,9 @@ import Input from '../atoms/Input';
 import { forgotPassword, resetPassword } from '../../store/apiClient';
 
 export default function Login() {
-  const { login, isLoading, error } = useAppStore();
+  const login = useAppStore(s => s.login);
+  const isLoading = useAppStore(s => s.authLoading);
+  const error = useAppStore(s => s.authError);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -101,8 +103,8 @@ export default function Login() {
         <div className="login-card card">
           <h3>استعادة كلمة المرور</h3>
 
-          {forgotError && <div className="login-error-alert">{forgotError}</div>}
-          {forgotSuccess && <div className="login-success-alert">{forgotSuccess}</div>}
+          {forgotError && <div className="login-alert login-alert-error">{forgotError}</div>}
+          {forgotSuccess && <div className="login-alert login-alert-success">{forgotSuccess}</div>}
 
           <form onSubmit={handleForgotSubmit}>
             <Input
@@ -117,17 +119,16 @@ export default function Login() {
               type="submit"
               variant="primary"
               disabled={forgotLoading}
-              style={{ width: '100%', marginTop: '10px' }}
+              style={{ width: '100%', marginTop: '8px' }}
             >
               {forgotLoading ? 'جاري الإرسال...' : 'إرسال رابط الاستعادة'}
             </Button>
           </form>
 
-          <div style={{ textAlign: 'center', marginTop: '16px' }}>
+          <div className="login-back-link">
             <a
               href="#/"
               onClick={(e) => { e.preventDefault(); setView('login'); setForgotError(''); setForgotSuccess(''); }}
-              style={{ color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.85rem', textDecoration: 'none' }}
             >
               العودة لتسجيل الدخول
             </a>
@@ -141,8 +142,8 @@ export default function Login() {
         <div className="login-card card">
           <h3>إعادة تعيين كلمة المرور</h3>
 
-          {resetError && <div className="login-error-alert">{resetError}</div>}
-          {resetSuccess && <div className="login-success-alert">{resetSuccess}</div>}
+          {resetError && <div className="login-alert login-alert-error">{resetError}</div>}
+          {resetSuccess && <div className="login-alert login-alert-success">{resetSuccess}</div>}
 
           <form onSubmit={handleResetSubmit}>
             <Input
@@ -165,17 +166,16 @@ export default function Login() {
               type="submit"
               variant="primary"
               disabled={resetLoading}
-              style={{ width: '100%', marginTop: '10px' }}
+              style={{ width: '100%', marginTop: '8px' }}
             >
               {resetLoading ? 'جاري الحفظ...' : 'حفظ كلمة المرور الجديدة'}
             </Button>
           </form>
 
-          <div style={{ textAlign: 'center', marginTop: '16px' }}>
+          <div className="login-back-link">
             <a
               href="#/"
               onClick={(e) => { e.preventDefault(); window.location.hash = '#/'; setView('login'); setResetError(''); setResetSuccess(''); }}
-              style={{ color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.85rem', textDecoration: 'none' }}
             >
               العودة لتسجيل الدخول
             </a>
@@ -186,17 +186,13 @@ export default function Login() {
 
     return (
       <div className="login-card card">
-        <h3>تسجيل الدخول للمتابعة</h3>
+        <h3>تسجيل الدخول</h3>
 
         {error && (
-          <div className="login-error-alert">
+          <div className="login-alert login-alert-error">
             {error}
           </div>
         )}
-
-        <div className="login-hint">
-          للأدمن: <strong>admin@mohemmaty.com</strong>
-        </div>
 
         <form onSubmit={handleSubmit}>
           <Input
@@ -215,11 +211,10 @@ export default function Login() {
             required
           />
 
-          <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '-4px 0 16px 0' }}>
+          <div className="login-forgot-link">
             <a
               href="#/forgot-password"
               onClick={(e) => { e.preventDefault(); setView('forgot'); }}
-              style={{ color: 'var(--primary)', fontSize: '0.8rem', textDecoration: 'none', fontWeight: '600' }}
             >
               نسيت كلمة المرور؟
             </a>
@@ -229,38 +224,28 @@ export default function Login() {
             type="submit"
             variant="primary"
             disabled={isLoading}
-            style={{ width: '100%', marginTop: '10px' }}
+            style={{ width: '100%', marginTop: '8px' }}
           >
             {isLoading ? 'جاري التحقق...' : 'تسجيل الدخول'}
           </Button>
         </form>
+
+
       </div>
     );
   };
 
   return (
     <div className="login-view animate-fade-in text-right">
-      <div className="login-bg-decor" aria-hidden="true">
-        <span className="login-blob login-blob-1" />
-        <span className="login-blob login-blob-2" />
-      </div>
-
       <div className="login-logo-container">
-        <div className="login-logo-svg-wrapper login-logo-float">
-          <svg width="64" height="64" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="60" height="60" rx="18" fill="url(#logoGrad)" />
+        <div className="login-logo-icon">
+          <svg width="56" height="56" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="60" height="60" rx="14" fill="var(--primary)" />
             <path d="M42 20L25.5 36.5L18 29" stroke="white" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx="42" cy="18" r="4" fill="#DBEAFE" />
-            <defs>
-              <linearGradient id="logoGrad" x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#3b82f6" />
-                <stop offset="1" stopColor="#1e40af" />
-              </linearGradient>
-            </defs>
           </svg>
         </div>
         <h2>مُهِمَّة</h2>
-        <p>تطبيق إدارة المهام التفاعلي للفريق</p>
+        <p>تسجيل الدخول للمتابعة</p>
       </div>
 
       {renderCardContent()}
@@ -272,223 +257,95 @@ export default function Login() {
           align-items: center;
           justify-content: center;
           min-height: calc(100vh - 100px);
-          padding: 20px;
-          gap: 24px;
+          padding: var(--space-5);
+          gap: var(--space-6);
           position: relative;
-          z-index: 1;
-        }
-
-        .login-bg-decor {
-          position: absolute;
-          inset: 0;
-          overflow: hidden;
-          z-index: -1;
-          pointer-events: none;
-        }
-
-        .login-blob {
-          position: absolute;
-          border-radius: 50%;
-          filter: blur(50px);
-          opacity: 0.45;
-          animation: blobFloat 14s ease-in-out infinite;
-        }
-
-        .login-blob-1 {
-          width: 240px;
-          height: 240px;
-          background: var(--primary-light);
-          top: -60px;
-          right: -40px;
-        }
-
-        .login-blob-2 {
-          width: 280px;
-          height: 280px;
-          background: rgba(59, 130, 246, 0.18);
-          bottom: -80px;
-          left: -60px;
-          animation-delay: -7s;
-        }
-
-        @keyframes blobFloat {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(20px, -30px) scale(1.08); }
-          66% { transform: translate(-15px, 20px) scale(0.95); }
-        }
-
-        .login-logo-float {
-          animation: logoFloat 4s ease-in-out infinite;
-        }
-
-        @keyframes logoFloat {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
+          background: radial-gradient(ellipse at top, rgba(30, 64, 175, 0.06) 0%, transparent 60%);
         }
 
         .login-logo-container {
           text-align: center;
         }
 
-        .logo-emoji {
-          font-size: 3rem;
-          display: block;
-          margin-bottom: 8px;
+        .login-logo-icon {
+          margin-bottom: var(--space-3);
+          display: inline-flex;
+          filter: drop-shadow(0 4px 12px rgba(30, 64, 175, 0.25));
         }
 
         .login-logo-container h2 {
-          font-size: 1.6rem;
+          font-size: 1.375rem;
           font-weight: 900;
-          color: var(--primary);
+          color: var(--text-main);
+          margin-bottom: var(--space-1);
         }
 
         .login-logo-container p {
-          font-size: 0.85rem;
+          font-size: 0.8125rem;
           color: var(--text-muted);
-          margin-top: 4px;
         }
 
         .login-card {
-          width: 90%;
-          padding: 24px 20px;
+          width: 92%;
+          max-width: 380px;
+          padding: var(--space-7) var(--space-6);
+          box-shadow: var(--shadow-lg);
+          border-radius: var(--radius-xl);
         }
 
         .login-card h3 {
-          font-size: 1.05rem;
-          font-weight: 800;
+          font-size: 1.0625rem;
+          font-weight: 700;
           color: var(--text-main);
-          margin-bottom: 20px;
+          margin-bottom: var(--space-5);
           text-align: center;
         }
 
-        .login-error-alert {
-          background-color: #ffebe6;
-          color: #ff3300;
-          padding: 10px;
-          border-radius: 12px;
-          font-size: 0.8rem;
-          font-weight: 700;
-          margin-bottom: 16px;
-          text-align: center;
-          border: 1px solid #ffccd0;
-        }
-        .login-success-alert {
-          background-color: #e6ffed;
-          color: #047857;
-          padding: 10px;
-          border-radius: 12px;
-          font-size: 0.8rem;
-          font-weight: 700;
-          margin-bottom: 16px;
-          text-align: center;
-          border: 1px solid #d1fad7;
-        }
-        .login-hint {
-          text-align: center;
-          font-size: 0.8rem;
-          color: var(--text-muted);
-          margin-bottom: 12px;
-          padding: 8px 12px;
-          background: rgba(99, 102, 241, 0.06);
-          border-radius: 10px;
-          border: 1px dashed var(--border);
-        }
-
-        .login-divider {
-          text-align: center;
-          margin: 16px 0;
-          position: relative;
-        }
-
-        .login-divider::before {
-          content: "";
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: 50%;
-          height: 1px;
-          background-color: var(--border);
-          z-index: 1;
-        }
-
-        .login-divider span {
-          background-color: var(--bg-card);
-          padding: 0 10px;
-          font-size: 0.75rem;
-          color: var(--text-muted);
-          position: relative;
-          z-index: 2;
-        }
-
-        :root {
-          --google-btn-bg: #ffffff;
-          --google-btn-hover: #f8f9fa;
-          --google-btn-border: #dadce0;
-        }
-
-        @media (prefers-color-scheme: dark) {
-          :root {
-            --google-btn-bg: #2d2d2d;
-            --google-btn-hover: #3a3a3a;
-            --google-btn-border: #4a4a4a;
-          }
-        }
-
-        .google-signin-btn {
-          width: 100%;
-          display: flex !important;
-          align-items: center;
-          justify-content: center;
-          gap: 12px;
-          padding: 12px 16px !important;
-          margin-top: 4px;
-          background-color: var(--google-btn-bg) !important;
-          border: 1.5px solid var(--google-btn-border) !important;
-          border-radius: 14px !important;
-          transition: all 0.2s ease !important;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .google-signin-btn:hover:not(:disabled) {
-          background-color: var(--google-btn-hover) !important;
-          border-color: #c4c7cc !important;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(66, 133, 244, 0.15);
-        }
-
-        .google-signin-btn:active:not(:disabled) {
-          transform: translateY(0);
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .google-signin-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .google-icon-wrapper {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 22px;
-          height: 22px;
-          background: #fff;
-          border-radius: 4px;
-          padding: 1px;
-          flex-shrink: 0;
-        }
-
-        @media (prefers-color-scheme: dark) {
-          .google-icon-wrapper {
-            background: #fff;
-          }
-        }
-
-        .google-btn-text {
+        .login-alert {
+          padding: var(--space-3);
+          border-radius: var(--radius-md);
+          font-size: 0.8125rem;
           font-weight: 600;
-          font-size: 0.95rem;
-          color: var(--text-main);
-          letter-spacing: -0.01em;
+          margin-bottom: var(--space-4);
+          text-align: center;
+          border-right: 3px solid;
+        }
+
+        .login-alert-error {
+          background-color: var(--danger-light);
+          color: var(--danger);
+          border-right-color: var(--danger);
+        }
+
+        .login-alert-success {
+          background-color: var(--success-light);
+          color: var(--success);
+          border-right-color: var(--success);
+        }
+
+        .login-forgot-link {
+          display: flex;
+          justify-content: flex-start;
+          margin: -4px 0 var(--space-3) 0;
+        }
+
+        .login-forgot-link a,
+        .login-back-link a {
+          color: var(--primary);
+          font-size: 0.8125rem;
+          text-decoration: none;
+          font-weight: 600;
+          transition: opacity var(--dur-fast) var(--ease-in-out);
+        }
+
+        .login-forgot-link a:hover,
+        .login-back-link a:hover {
+          opacity: 0.8;
+        }
+
+        .login-back-link {
+          text-align: center;
+          margin-top: var(--space-4);
         }
       `}</style>
     </div>

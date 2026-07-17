@@ -3,6 +3,7 @@ import { useAppStore } from '../useAppStore';
 
 vi.mock('../apiClient', () => ({
   clearNotifications: vi.fn().mockResolvedValue(undefined),
+  onWsStatusChange: vi.fn().mockReturnValue(vi.fn()),
 }));
 
 describe('notificationSlice', () => {

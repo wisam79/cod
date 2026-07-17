@@ -11,6 +11,7 @@ vi.mock('../apiClient', () => ({
   onTasksChange: vi.fn().mockReturnValue(vi.fn()),
   onMessagesChange: vi.fn().mockReturnValue(vi.fn()),
   onNotificationsChange: vi.fn().mockReturnValue(vi.fn()),
+  onWsStatusChange: vi.fn().mockReturnValue(vi.fn()),
 }));
 
 describe('authSlice', () => {
@@ -19,8 +20,8 @@ describe('authSlice', () => {
       token: null,
       currentUser: null,
       isAuthenticated: false,
-      isLoading: false,
-      error: null,
+      authLoading: false,
+      authError: null,
       tasks: [],
       members: [],
       messages: [],
@@ -48,7 +49,7 @@ describe('authSlice', () => {
     expect(state.isAuthenticated).toBe(true);
     expect(state.token).toBe('jwt-token-123');
     expect(state.currentUser.name).toBe('أحمد');
-    expect(state.isLoading).toBe(false);
+    expect(state.authLoading).toBe(false);
   });
 
   it('login stores token in localStorage', async () => {
@@ -85,8 +86,8 @@ describe('authSlice', () => {
     const state = useAppStore.getState();
 
     expect(state.isAuthenticated).toBe(false);
-    expect(state.error).toBe('Invalid credentials');
-    expect(state.isLoading).toBe(false);
+    expect(state.authError).toBe('Invalid credentials');
+    expect(state.authLoading).toBe(false);
   });
 
   it('login shows success toast', async () => {

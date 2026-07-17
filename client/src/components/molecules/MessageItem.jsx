@@ -8,47 +8,55 @@ export default function MessageItem({ message, members, isCurrentUser }) {
     avatar: ''
   };
 
-  const bubbleStyle = {
-    maxWidth: '75%',
-    padding: '12px 16px',
-    borderRadius: isCurrentUser ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-    backgroundColor: isCurrentUser ? 'var(--accent-light)' : 'var(--bg-card)',
-    border: isCurrentUser ? 'none' : '1px solid var(--border)',
-    color: 'var(--text-main)',
-    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.04)',
-  };
-
   return (
     <div 
       style={{
         display: 'flex',
         flexDirection: isCurrentUser ? 'row-reverse' : 'row',
-        gap: '10px',
+        gap: 'var(--space-2)',
         alignItems: 'flex-end',
-        marginBottom: '15px'
+        marginBottom: 'var(--space-3)'
       }}
       className={`message-item ${isCurrentUser ? 'my-message' : ''}`}
     >
       <Avatar src={sender.avatar} alt={sender.name} size="sm" />
-      <div style={bubbleStyle}>
+      <div style={{
+        maxWidth: '75%',
+        padding: 'var(--space-3) var(--space-4)',
+        borderRadius: isCurrentUser ? '12px 12px 4px 12px' : '12px 12px 12px 4px',
+        backgroundColor: isCurrentUser ? 'var(--primary-light)' : 'var(--bg-card)',
+        border: isCurrentUser ? '1px solid rgba(30, 64, 175, 0.12)' : '1px solid var(--border-light)',
+        color: 'var(--text-main)',
+        boxShadow: 'var(--shadow-xs)',
+      }}>
         {!isCurrentUser && (
-          <div style={{ fontWeight: '700', fontSize: '0.8rem', color: 'var(--primary)', marginBottom: '4px' }}>
+          <div style={{ fontWeight: '700', fontSize: '0.75rem', color: 'var(--primary)', marginBottom: '3px' }}>
             {sender.name}
           </div>
         )}
-        <div style={{ fontSize: '0.9rem', lineHeight: '1.4', wordBreak: 'break-word' }}>
+        <div style={{ fontSize: '0.875rem', lineHeight: '1.5', wordBreak: 'break-word' }}>
           {message.text}
         </div>
         <div 
           style={{ 
-            fontSize: '0.7rem', 
-            color: 'var(--text-muted)', 
+            fontSize: '0.6875rem', 
+            color: 'var(--text-faint)', 
             textAlign: 'left', 
             marginTop: '4px',
-            direction: 'ltr'
+            direction: 'ltr',
+            fontFamily: 'var(--font-english)',
+            fontVariantNumeric: 'tabular-nums'
           }}
         >
-          {new Date(message.createdAt || message.time || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          {(() => {
+            try {
+              const dateValue = message.createdAt || message.time;
+              const date = new Date(dateValue);
+              return isNaN(date.getTime()) ? 'الآن' : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } catch {
+              return 'الآن';
+            }
+          })()}
         </div>
       </div>
     </div>

@@ -2,16 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default function Badge({ type, content, className = '' }) {
-  return (
-    <span className={`badge badge-${type || 'default'} ${className}`}>
-      {content}
-    </span>
-  );
+  const badgeClass = `badge badge-${type || 'default'} ${className}`.trim();
+  return <span className={badgeClass}>{content}</span>;
 }
 
 Badge.propTypes = {
   type: PropTypes.string,
-  content: PropTypes.node.isRequired,
+  content: PropTypes.node,
   className: PropTypes.string
 };
-

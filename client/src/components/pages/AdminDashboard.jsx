@@ -2,19 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import Button from '../atoms/Button';
 import Input from '../atoms/Input';
+import Avatar from '../atoms/Avatar';
 import { triggerHaptic } from '../../utils/haptics';
 
 export default function AdminDashboard() {
-  const {
-    adminMembers,
-    adminSettings,
-    loadAdminMembers,
-    updateMemberDetails,
-    deleteMember,
-    loadAdminSettings,
-    saveAdminSettings,
-    currentUser
-  } = useAppStore();
+  const adminMembers = useAppStore(s => s.adminMembers);
+  const adminSettings = useAppStore(s => s.adminSettings);
+  const loadAdminMembers = useAppStore(s => s.loadAdminMembers);
+  const updateMemberDetails = useAppStore(s => s.updateMemberDetails);
+  const deleteMember = useAppStore(s => s.deleteMember);
+  const loadAdminSettings = useAppStore(s => s.loadAdminSettings);
+  const saveAdminSettings = useAppStore(s => s.saveAdminSettings);
+  const currentUser = useAppStore(s => s.currentUser);
 
   const [activeTab, setActiveTab] = useState('members'); // 'members' or 'settings'
   const [editingMember, setEditingMember] = useState(null);
@@ -112,7 +111,7 @@ export default function AdminDashboard() {
     <div className="admin-dashboard-container animate-fade-in text-right">
       <div className="admin-header">
         <h1>لوحة الإدارة الشاملة ⚙️</h1>
-        <p>مرحباً بك في وحدة التحكم الإدارية الفائقة بالنظام.</p>
+        <p>وحدة التحكم الإدارية الفائقة بالنظام.</p>
       </div>
 
       <div className="admin-tabs">
@@ -120,88 +119,73 @@ export default function AdminDashboard() {
           className={`admin-tab-btn ${activeTab === 'members' ? 'active' : ''}`}
           onClick={() => { triggerHaptic('light'); setActiveTab('members'); }}
         >
-          👥 إدارة حسابات الأعضاء
+          👥 الحسابات
         </button>
         <button
           className={`admin-tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
           onClick={() => { triggerHaptic('light'); setActiveTab('settings'); }}
         >
-          🔧 إعدادات التطبيق العامة
+          🔧 الإعدادات
         </button>
       </div>
 
       {activeTab === 'members' && (
-        <div className="admin-tab-content card-glass">
+        <div className="admin-tab-content">
           <div className="section-title-container">
-            <h2>قائمة مستخدمي التطبيق ({adminMembers.length})</h2>
+            <h2>أعضاء النظام ({adminMembers.length})</h2>
           </div>
 
-          <div className="members-table-wrapper">
-            <table className="members-table">
-              <thead>
-                <tr>
-                  <th>العضو</th>
-                  <th>البريد الإلكتروني</th>
-                  <th>الدور الوظيفي</th>
-                  <th>تاريخ التسجيل</th>
-                  <th>الإجراءات</th>
-                </tr>
-              </thead>
-              <tbody>
-                {adminMembers.map((member) => (
-                  <tr key={member.id}>
-                    <td>
-                      <div className="member-info-cell">
-                        <img src={member.avatar || 'https://ui-avatars.com/api/?name=User'} alt={member.name} className="member-avatar-img" />
-                        <span className="member-name-text">{member.name}</span>
-                      </div>
-                    </td>
-                    <td>{member.email}</td>
-                    <td>
-                      <span className={`role-badge ${member.role === 'الادمن المطور' ? 'super' : member.role === 'مديرة المنتج' ? 'manager' : ''}`}>
-                        {member.role || 'عضو عادي'}
-                      </span>
-                    </td>
-                    <td>{new Date(member.createdAt).toLocaleDateString('ar-EG')}</td>
-                    <td>
-                      <div className="actions-cell">
-                        <Button variant="secondary" size="sm" onClick={() => { triggerHaptic('light'); handleEditClick(member); }}>
-                          تعديل 📝
-                        </Button>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          disabled={member.id === currentUser.id}
-                          onClick={() => { triggerHaptic('error'); handleDeleteClick(member.id); }}
-                        >
-                          حذف 🗑️
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="members-card-list">
+            {adminMembers.map((member) => (
+              <div key={member.id} className="admin-member-card card">
+                <div className="admin-member-header">
+                  <Avatar src={member.avatar} alt={member.name} size="md" />
+                  <div className="admin-member-info">
+                    <h4>{member.name}</h4>
+                    <span className="admin-member-email font-english">{member.email}</span>
+                  </div>
+                </div>
+                
+                <div className="admin-member-body">
+                  <span className={`role-badge ${member.role === 'الادمن المطور' ? 'super' : member.role === 'مديرة المنتج' ? 'manager' : ''}`}>
+                    {member.role || 'عضو عادي'}
+                  </span>
+                  <span className="join-date font-english">{new Date(member.createdAt).toLocaleDateString('ar-EG')}</span>
+                </div>
+
+                <div className="admin-member-actions">
+                  <Button variant="secondary" size="sm" onClick={() => { triggerHaptic('light'); handleEditClick(member); }} style={{ height: '32px' }}>
+                    تعديل 📝
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    disabled={member.id === currentUser?.id}
+                    onClick={() => { triggerHaptic('error'); handleDeleteClick(member.id); }}
+                    style={{ height: '32px' }}
+                  >
+                    حذف 🗑️
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
       {activeTab === 'settings' && (
-        <div className="admin-tab-content card-glass">
-          <div className="section-title-container">
-            <h2>إعدادات النظام العامة</h2>
-          </div>
-
-          <form onSubmit={handleSettingsSubmit} className="admin-settings-form">
+        <div className="admin-tab-content">
+          <form onSubmit={handleSettingsSubmit} className="admin-settings-form card">
             <div className="settings-group">
               <div className="toggle-row">
                 <div className="toggle-info">
-                  <span className="label-title">السماح بتسجيل الحسابات الجديدة:</span>
-                  <span className="label-desc">تمكين الأعضاء من إنشاء حسابات ذاتية من الخارج.</span>
+                  <span className="label-title">التسجيل المفتوح:</span>
+                  <span className="label-desc">تمكين إنشاء حسابات جديدة من الخارج.</span>
                 </div>
                 <div
                   className={`toggle-switch ${settingsForm.allowUserRegistration ? 'active' : ''}`}
                   onClick={() => { triggerHaptic('light'); setSettingsForm({ ...settingsForm, allowUserRegistration: !settingsForm.allowUserRegistration }); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); triggerHaptic('light'); setSettingsForm({ ...settingsForm, allowUserRegistration: !settingsForm.allowUserRegistration }); } }}
                   role="switch"
                   aria-checked={settingsForm.allowUserRegistration}
                   tabIndex={0}
@@ -214,12 +198,13 @@ export default function AdminDashboard() {
             <div className="settings-group">
               <div className="toggle-row">
                 <div className="toggle-info">
-                  <span className="label-title">تفعيل وضع الصيانة ⚠️:</span>
-                  <span className="label-desc">حظر دخول المستخدمين العاديين والمدراء والسماح للأدمن المطور فقط.</span>
+                  <span className="label-title">وضع الصيانة ⚠️:</span>
+                  <span className="label-desc">حظر دخول المستخدمين باستثناء الأدمن المطور.</span>
                 </div>
                 <div
                   className={`toggle-switch ${settingsForm.maintenanceMode ? 'active' : ''}`}
                   onClick={() => { triggerHaptic('light'); setSettingsForm({ ...settingsForm, maintenanceMode: !settingsForm.maintenanceMode }); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); triggerHaptic('light'); setSettingsForm({ ...settingsForm, maintenanceMode: !settingsForm.maintenanceMode }); } }}
                   role="switch"
                   aria-checked={settingsForm.maintenanceMode}
                   tabIndex={0}
@@ -229,20 +214,20 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="settings-group">
-              <span className="label-title">الحد الأقصى للمهام المفتوحة لكل عضو:</span>
-              <span className="label-desc">الحد الأقصى لعدد المهام غير المكتملة التي يمكن إسنادها لعضو واحد في نفس الوقت.</span>
+            <div className="settings-group" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+              <span className="label-title">الحد الأقصى للمهام لكل عضو:</span>
+              <span className="label-desc">المهام المفتوحة التي يمكن إسنادها لعضو واحد.</span>
               <Input
                 type="number"
                 value={settingsForm.maxTasksPerUser}
                 onChange={(e) => setSettingsForm({ ...settingsForm, maxTasksPerUser: e.target.value })}
                 min="1"
                 required
-                style={{ maxWidth: '150px', marginTop: '10px' }}
+                style={{ maxWidth: '120px', marginTop: '10px' }}
               />
             </div>
 
-            <Button type="submit" variant="primary" disabled={isSubmitting} style={{ marginTop: '20px' }}>
+            <Button type="submit" variant="primary" disabled={isSubmitting} style={{ marginTop: '10px', width: '100%' }}>
               {isSubmitting ? 'جاري حفظ الإعدادات...' : 'حفظ الإعدادات 💾'}
             </Button>
           </form>
@@ -251,13 +236,13 @@ export default function AdminDashboard() {
 
       {/* Edit Member Modal */}
       {editingMember && (
-        <div className="modal-backdrop">
-          <div className="modal-content card-glass">
+        <div className="modal-backdrop" onClick={() => setEditingMember(null)}>
+          <div className="modal-content card" onClick={(e) => e.stopPropagation()} style={{ width: '92%', maxWidth: '380px' }}>
             <div className="modal-header">
-              <h3>تعديل بيانات العضو: {editingMember.name}</h3>
+              <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, margin: 0 }}>تعديل: {editingMember.name}</h3>
             </div>
-            {editError && <div className="error-message alert-red">{editError}</div>}
             <form onSubmit={handleEditSubmit} className="modal-form">
+              {editError && <div className="error-message alert-red">{editError}</div>}
               <Input
                 label="الاسم الكامل"
                 value={editForm.name}
@@ -276,12 +261,23 @@ export default function AdminDashboard() {
                 value={editForm.avatar}
                 onChange={(e) => setEditForm({ ...editForm, avatar: e.target.value })}
               />
-              <div className="input-group">
-                <label className="input-label">الدور الوظيفي</label>
+              
+              <div className="custom-input-wrapper">
+                <label className="custom-input-label">الدور الوظيفي</label>
                 <select
                   value={editForm.role}
                   onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
-                  className="role-select"
+                  style={{
+                    width: '100%',
+                    padding: '10px var(--space-3)',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--border)',
+                    backgroundColor: 'var(--bg-card)',
+                    color: 'var(--text-main)',
+                    fontSize: '0.875rem',
+                    height: 'var(--tap-target)',
+                    outline: 'none'
+                  }}
                   required
                 >
                   <option value="">اختر دوراً...</option>
@@ -290,19 +286,20 @@ export default function AdminDashboard() {
                   ))}
                 </select>
               </div>
+
               <Input
-                label="كلمة مرور جديدة (اتركه فارغاً لعدم التغيير)"
+                label="كلمة مرور جديدة (اختياري)"
                 type="password"
                 value={editForm.password}
                 placeholder="تحديث كلمة المرور"
                 onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
               />
 
-              <div className="modal-actions">
-                <Button type="submit" variant="primary" disabled={isSubmitting}>
-                  {isSubmitting ? 'جاري التعديل...' : 'حفظ التعديلات'}
+              <div className="modal-actions" style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 'var(--space-3)' }}>
+                <Button type="submit" variant="primary" disabled={isSubmitting} style={{ flex: 1 }}>
+                  حفظ
                 </Button>
-                <Button type="button" variant="secondary" onClick={() => setEditingMember(null)}>
+                <Button type="button" variant="secondary" onClick={() => setEditingMember(null)} style={{ flex: 1 }}>
                   إلغاء
                 </Button>
               </div>
@@ -313,181 +310,154 @@ export default function AdminDashboard() {
 
       <style>{`
         .admin-dashboard-container {
-          padding: 24px;
-          max-width: 1200px;
-          margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-4);
         }
         .admin-header h1 {
-          font-family: 'IBM Plex Sans Arabic', sans-serif;
-          color: #f3f4f6;
-          margin-bottom: 8px;
+          font-size: 1.125rem;
+          font-weight: 700;
+          color: var(--text-main);
+          margin-bottom: 4px;
         }
         .admin-header p {
-          color: #9ca3af;
+          font-size: 0.75rem;
+          color: var(--text-muted);
         }
         .admin-tabs {
           display: flex;
-          gap: 16px;
-          margin: 24px 0;
-          border-bottom: 1.5px dashed #4b5563;
-          padding-bottom: 12px;
+          gap: var(--space-2);
+          background: var(--bg-elevated);
+          padding: 3px;
+          border-radius: var(--radius-md);
         }
         .admin-tab-btn {
+          flex: 1;
           background: none;
           border: none;
-          color: #9ca3af;
-          font-size: 16px;
-          font-weight: 500;
+          color: var(--text-muted);
+          font-size: 0.8125rem;
+          font-weight: 600;
           cursor: pointer;
-          padding: 8px 16px;
-          border-radius: 8px;
-          transition: all 0.2s ease;
-          font-family: 'IBM Plex Sans Arabic', sans-serif;
-        }
-        .admin-tab-btn:hover {
-          color: #f3f4f6;
-          background: rgba(255, 255, 255, 0.05);
+          padding: var(--space-2) var(--space-1);
+          border-radius: var(--radius-sm);
+          transition: all var(--dur-fast) var(--ease-in-out);
+          min-height: 36px;
         }
         .admin-tab-btn.active {
-          color: #3b82f6;
-          background: rgba(59, 130, 246, 0.1);
+          background: var(--bg-card);
+          color: var(--text-main);
+          font-weight: 700;
+          box-shadow: var(--shadow-xs);
         }
-        .card-glass {
-          background: rgba(30, 41, 59, 0.4);
-          backdrop-filter: blur(12px);
-          border: 1.5px solid rgba(255, 255, 255, 0.05);
-          border-radius: 16px;
-          padding: 24px;
+        .admin-tab-content {
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-3);
         }
-        .members-table-wrapper {
-          overflow-x: auto;
-          margin-top: 16px;
+        .section-title-container h2 {
+          font-size: 0.875rem;
+          font-weight: 700;
+          color: var(--text-main);
         }
-        .members-table {
-          width: 100%;
-          border-collapse: collapse;
-          text-align: right;
+        .members-card-list {
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-3);
+          padding-bottom: 80px;
         }
-        .members-table th, .members-table td {
-          padding: 14px 16px;
-          border-bottom: 1.5px solid rgba(255, 255, 255, 0.05);
+        .admin-member-card {
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-3);
+          padding: var(--space-4);
         }
-        .members-table th {
-          color: #9ca3af;
-          font-weight: 500;
-        }
-        .member-info-cell {
+        .admin-member-header {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: var(--space-3);
         }
-        .member-avatar-img {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          object-fit: cover;
-          border: 1.5px solid rgba(255, 255, 255, 0.1);
+        .admin-member-info h4 {
+          font-size: 0.875rem;
+          font-weight: 700;
+          color: var(--text-main);
+        }
+        .admin-member-email {
+          font-size: 0.75rem;
+          color: var(--text-faint);
+        }
+        .admin-member-body {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-top: 1px solid var(--border-light);
+          border-bottom: 1px solid var(--border-light);
+          padding: var(--space-2) 0;
+        }
+        .join-date {
+          font-size: 0.6875rem;
+          color: var(--text-faint);
         }
         .role-badge {
           display: inline-block;
-          padding: 4px 10px;
-          border-radius: 20px;
-          font-size: 13px;
-          background: rgba(255, 255, 255, 0.05);
-          color: #d1d5db;
+          padding: 2px 8px;
+          border-radius: var(--radius-xs);
+          font-size: 0.6875rem;
+          font-weight: 700;
+          background: var(--bg-elevated);
+          color: var(--text-muted);
         }
         .role-badge.super {
-          background: rgba(239, 68, 68, 0.15);
-          color: #ef4444;
-          border: 1px solid rgba(239, 68, 68, 0.2);
+          background: var(--danger-light);
+          color: var(--danger);
         }
         .role-badge.manager {
-          background: rgba(245, 158, 11, 0.15);
-          color: #f59e0b;
-          border: 1px solid rgba(245, 158, 11, 0.2);
+          background: var(--warning-light);
+          color: var(--warning);
         }
-        .actions-cell {
+        .admin-member-actions {
           display: flex;
-          gap: 8px;
+          gap: var(--space-2);
+        }
+        .admin-member-actions button {
+          flex: 1;
         }
         .admin-settings-form {
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: var(--space-4);
+          padding: var(--space-5);
         }
         .settings-group {
-          padding-bottom: 16px;
-          border-bottom: 1.5px solid rgba(255, 255, 255, 0.05);
+          padding-bottom: var(--space-4);
+          border-bottom: 1px solid var(--border-light);
         }
-        .toggle-label {
+        .toggle-row {
           display: flex;
-          flex-direction: column;
-          position: relative;
-          cursor: pointer;
+          justify-content: space-between;
+          align-items: center;
         }
         .label-title {
-          font-size: 16px;
-          font-weight: 600;
-          color: #f3f4f6;
+          font-size: 0.875rem;
+          font-weight: 700;
+          color: var(--text-main);
+          display: block;
         }
         .label-desc {
-          font-size: 13px;
-          color: #9ca3af;
-          margin-top: 4px;
-        }
-        .settings-checkbox {
-          position: absolute;
-          left: 0;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 48px;
-          height: 24px;
-          cursor: pointer;
-        }
-        .modal-backdrop {
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.6);
-          backdrop-filter: blur(4px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-        }
-        .modal-content {
-          width: 100%;
-          max-width: 500px;
-          box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5);
-        }
-        .modal-header h3 {
-          margin-bottom: 16px;
-          font-family: 'IBM Plex Sans Arabic', sans-serif;
-        }
-        .modal-form {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-        .role-select {
-          width: 100%;
-          background: #1f2937;
-          border: 1.5px solid #374151;
-          color: #f3f4f6;
-          border-radius: 8px;
-          padding: 10px;
-          font-family: 'IBM Plex Sans Arabic', sans-serif;
-          margin-top: 6px;
-        }
-        .modal-actions {
-          display: flex;
-          gap: 12px;
-          margin-top: 16px;
+          font-size: 0.75rem;
+          color: var(--text-muted);
+          margin-top: 2px;
+          display: block;
         }
         .error-message {
-          padding: 10px;
-          border-radius: 8px;
-          margin-bottom: 12px;
-          font-size: 14px;
+          padding: var(--space-2) var(--space-3);
+          border-radius: var(--radius-md);
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-align: center;
+          background-color: var(--danger-light);
+          color: var(--danger);
+          border-right: 3px solid var(--danger);
         }
       `}</style>
     </div>

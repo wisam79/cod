@@ -23,6 +23,10 @@ const Message = sequelize.define('Message', {
     type: DataTypes.STRING,
     allowNull: true
   }
+}, {
+  indexes: [
+    { fields: ['senderId'] }
+  ]
 });
 
 module.exports = Message;

@@ -13,8 +13,10 @@ describe('مُهِمَّتِي - اختبارات Zustand Store Slices', () => {
       messages: [],
       notifications: [],
       activeToasts: [],
-      isLoading: false,
-      error: null,
+      authLoading: false,
+      authError: null,
+      dataLoading: false,
+      dataError: null,
       wsStatus: 'disconnected'
     });
   });

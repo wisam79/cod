@@ -25,6 +25,11 @@ function hashString(str) {
 export default function Avatar({ src, alt, size = 'md', className = '' }) {
   const [error, setError] = useState(false);
 
+  // Reset error state when src changes
+  React.useEffect(() => {
+    setError(false);
+  }, [src]);
+
   const style = {
     sm: { width: '32px', height: '32px', borderRadius: '50%' },
     md: { width: '40px', height: '40px', borderRadius: '50%' },

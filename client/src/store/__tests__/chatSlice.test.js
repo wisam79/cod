@@ -4,6 +4,7 @@ import { useAppStore } from '../useAppStore';
 vi.mock('../apiClient', () => ({
   fetchMessages: vi.fn().mockResolvedValue([]),
   addMessage: vi.fn(),
+  onWsStatusChange: vi.fn().mockReturnValue(vi.fn()),
 }));
 
 describe('chatSlice', () => {
@@ -57,7 +58,7 @@ describe('chatSlice', () => {
     const api = await import('../apiClient');
     api.addMessage.mockResolvedValueOnce({});
     await useAppStore.getState().sendMessage('مرحباً بالجميع');
-    expect(api.addMessage).toHaveBeenCalledWith('مرحباً بالجميع', 1);
+    expect(api.addMessage).toHaveBeenCalledWith('مرحباً بالجميع');
   });
 
   it('sendMessage blocks when offline', async () => {

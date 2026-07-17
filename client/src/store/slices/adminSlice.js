@@ -69,8 +69,8 @@ export const createAdminSlice = (set, get) => ({
       const result = await updateAdminSettings(settingsData);
       set({
         adminSettings: {
-          allowUserRegistration: result.settings.allowUserRegistration === 'true',
-          maintenanceMode: result.settings.maintenanceMode === 'true',
+          allowUserRegistration: result.settings.allowUserRegistration === 'true' || result.settings.allowUserRegistration === true,
+          maintenanceMode: result.settings.maintenanceMode === 'true' || result.settings.maintenanceMode === true,
           maxTasksPerUser: parseInt(result.settings.maxTasksPerUser, 10)
         }
       });

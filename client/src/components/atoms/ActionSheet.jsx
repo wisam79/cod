@@ -52,11 +52,9 @@ export default function ActionSheet({ isOpen, onClose, title, actions = [], canc
       style={{
         position: 'fixed', inset: 0, zIndex: 5000,
         display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
-        background: 'rgba(0,0,0,0.4)',
+        background: 'rgba(0,0,0,0.5)',
         opacity: animClass === 'action-sheet-visible' ? 1 : 0,
-        transition: 'opacity 0.25s ease',
-        backdropFilter: 'blur(4px)',
-        WebkitBackdropFilter: 'blur(4px)',
+        transition: 'opacity 0.2s ease',
       }}
     >
       <div
@@ -67,31 +65,34 @@ export default function ActionSheet({ isOpen, onClose, title, actions = [], canc
         onTouchEnd={handleTouchEnd}
         style={{
           width: '100%', maxWidth: 420, background: 'var(--bg-app)',
-          borderRadius: '20px 20px 0 0', padding: '12px 16px calc(16px + env(safe-area-inset-bottom, 0px))',
+          borderRadius: 'var(--radius-xl) var(--radius-xl) 0 0', 
+          borderTop: '1px solid var(--border)',
+          padding: '12px 16px calc(16px + env(safe-area-inset-bottom, 0px))',
           transform: `translateY(${animClass === 'action-sheet-visible' ? 0 : '100%'})`,
-          transition: animClass === 'action-sheet-hiding' ? 'transform 0.2s ease' : 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          transition: animClass === 'action-sheet-hiding' ? 'transform 0.2s ease' : 'transform 0.25s var(--ease-out)',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-          <div style={{ width: 36, height: 5, borderRadius: 3, background: 'var(--border)' }} />
+          <div style={{ width: 32, height: 4, borderRadius: 2, background: 'var(--border)' }} />
         </div>
         {title && (
-          <div style={{ textAlign: 'center', padding: '8px 0 12px', fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)' }}>
+          <div style={{ textAlign: 'center', padding: '8px 0 12px', fontSize: '0.8125rem', fontWeight: '600', color: 'var(--text-muted)' }}>
             {title}
           </div>
         )}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {actions.map((action, i) => (
             <button
               key={i}
               onClick={() => handleAction(action)}
               style={{
-                width: '100%', padding: '14px 16px', border: 'none', borderRadius: 14,
-                background: action.destructive ? 'rgba(255, 51, 0, 0.08)' : 'var(--bg-card)',
-                color: action.destructive ? '#ff3300' : 'var(--text-main)',
-                fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer',
+                width: '100%', padding: '12px 16px', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-md)',
+                background: action.destructive ? 'var(--danger-light)' : 'var(--bg-card)',
+                color: action.destructive ? 'var(--danger)' : 'var(--text-main)',
+                fontSize: '0.875rem', fontWeight: '700', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                transition: 'all 0.12s ease',
+                transition: 'all var(--dur-fast) var(--ease-in-out)',
+                minHeight: 'var(--tap-target)'
               }}
             >
               {action.icon}{action.label}
@@ -101,10 +102,11 @@ export default function ActionSheet({ isOpen, onClose, title, actions = [], canc
         <button
           onClick={handleClose}
           style={{
-            width: '100%', marginTop: 8, padding: '14px 16px', border: 'none', borderRadius: 14,
+            width: '100%', marginTop: 8, padding: '12px 16px', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)',
             background: 'var(--bg-card)', color: 'var(--text-main)',
-            fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer',
-            transition: 'all 0.12s ease',
+            fontSize: '0.875rem', fontWeight: '700', cursor: 'pointer',
+            transition: 'all var(--dur-fast) var(--ease-in-out)',
+            minHeight: 'var(--tap-target)'
           }}
         >
           {cancelText}

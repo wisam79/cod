@@ -8,7 +8,6 @@ export default function NotificationDrawer({ isOpen, onClose, notifications, onC
   const touchStartX = useRef(null);
   const touchStartY = useRef(null);
   const drawerRef = useRef(null);
-  const startedOnHandleRef = useRef(false);
   const [isClosing, setIsClosing] = useState(false);
 
   const requestClose = React.useCallback(() => {
@@ -17,7 +16,7 @@ export default function NotificationDrawer({ isOpen, onClose, notifications, onC
     setTimeout(() => {
       setIsClosing(false);
       onClose();
-    }, 220);
+    }, 200);
   }, [onClose]);
 
   useEffect(() => {
@@ -33,23 +32,14 @@ export default function NotificationDrawer({ isOpen, onClose, notifications, onC
     const t = e.touches[0];
     touchStartX.current = t.clientX;
     touchStartY.current = t.clientY;
-    // A swipe starts from the drawer edge (first 32px) — measuring where the
-    // drawer lives avoids hijacking horizontal scrolls inside the list.
-    startedOnHandleRef.current = false;
-    if (drawerRef.current) {
-      const r = drawerRef.current.getBoundingClientRect();
-      const isRTL = getComputedStyle(drawerRef.current).direction === 'rtl';
-      const edge = isRTL ? (window.innerWidth - r.right) : r.left;
-      startedOnHandleRef.current = edge <= 32;
-    }
   };
 
   const handleTouchMove = (e) => {
     if (touchStartX.current === null || !drawerRef.current) return;
     const dx = touchStartX.current - e.touches[0].clientX;
     const dy = e.touches[0].clientY - touchStartY.current;
-    if (Math.abs(dy) > Math.abs(dx)) return; // vertical scroll on the list
-    if (dx <= 0) return; // only allow "pull toward the parked edge"
+    if (Math.abs(dy) > Math.abs(dx)) return;
+    if (dx <= 0) return;
     const clamped = Math.min(dx, 280);
     drawerRef.current.style.transform = `translateX(-${clamped}px)`;
     drawerRef.current.style.opacity = String(Math.max(1 - clamped / 320, 0));
@@ -58,8 +48,7 @@ export default function NotificationDrawer({ isOpen, onClose, notifications, onC
   const handleTouchEnd = (e) => {
     if (touchStartX.current === null || !drawerRef.current) return;
     const dx = touchStartX.current - e.changedTouches[0].clientX;
-    const vx = Math.abs(e.changedTouches[0].velocityX ?? 0);
-    const shouldDismiss = dx > 100 || (dx > 40 && vx > 0.4);
+    const shouldDismiss = dx > 100;
     drawerRef.current.style.transform = '';
     drawerRef.current.style.opacity = '';
     touchStartX.current = null;
@@ -73,7 +62,7 @@ export default function NotificationDrawer({ isOpen, onClose, notifications, onC
     <div className="drawer-overlay" onClick={requestClose}>
       <div
         ref={drawerRef}
-        className={`drawer-content card text-right ${isClosing ? 'drawer-closing' : ''}`}
+        className={`drawer-content text-right ${isClosing ? 'drawer-closing' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-label="مركز التنبيهات"
@@ -85,22 +74,22 @@ export default function NotificationDrawer({ isOpen, onClose, notifications, onC
       >
         <div className="drawer-header">
           <h2>
-            <Bell size={18} style={{ verticalAlign: 'middle', marginLeft: '8px' }} />
+            <Bell size={16} style={{ verticalAlign: 'middle', marginLeft: '8px' }} />
             مركز التنبيهات
           </h2>
-          <button className="close-btn pressable" onClick={requestClose} aria-label="إغلاق">
-            <X size={16} />
+          <button className="close-btn" onClick={requestClose} aria-label="إغلاق">
+            <X size={14} />
           </button>
         </div>
 
         <div className="drawer-actions">
           {notifications.length > 0 && (
             <button
-              className="btn-clear-all pressable"
+              className="btn-clear-all"
               onClick={() => { triggerHaptic('light'); onClear(); }}
               style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
             >
-              <Trash2 size={14} />
+              <Trash2 size={13} />
               مسح الإشعارات
             </button>
           )}
@@ -125,44 +114,43 @@ export default function NotificationDrawer({ isOpen, onClose, notifications, onC
           bottom: 0;
           left: 0;
           right: 0;
-          background: rgba(15, 23, 42, 0.45);
+          background: rgba(0, 0, 0, 0.5);
           z-index: 1000;
           display: flex;
-          justify-content: flex-start; /* slides from left in LTR, right in RTL via logical properties */
-          animation: iosOverlayFade 0.22s var(--ease-ios) forwards;
+          justify-content: flex-start;
+          animation: iosOverlayFade var(--dur-base) var(--ease-in-out) forwards;
         }
 
         .drawer-content {
           width: 84%;
-          max-width: 360px;
+          max-width: 340px;
           height: 100%;
           max-height: 100vh;
           overflow: hidden;
-          border-radius: 0 24px 24px 0;
+          border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: var(--space-3);
           text-align: right;
-          padding: 24px 16px;
+          padding: var(--space-5) var(--space-4);
           background-color: var(--bg-app);
           border-right: 1px solid var(--border);
-          box-shadow: 18px 0 40px rgba(15, 23, 42, 0.18);
-          animation: slideFromLeft 0.32s var(--ease-ios) forwards;
-          transition: transform 0.3s var(--ease-ios), opacity 0.2s var(--ease-quick);
+          box-shadow: var(--shadow-lg);
+          animation: slideFromLeft var(--dur-slow) var(--ease-out) forwards;
+          transition: transform var(--dur-slow) var(--ease-out), opacity var(--dur-base) var(--ease-in-out);
         }
 
-        /* RTL: anchor on the visual right side */
         html[dir="rtl"] .drawer-overlay { justify-content: flex-end; }
         html[dir="rtl"] .drawer-content {
-          border-radius: 24px 0 0 24px;
+          border-radius: var(--radius-xl) 0 0 var(--radius-xl);
           border-right: none;
           border-left: 1px solid var(--border);
-          box-shadow: -18px 0 40px rgba(15, 23, 42, 0.18);
+          box-shadow: var(--shadow-lg);
           animation-name: slideFromRight;
         }
 
         .drawer-content.drawer-closing {
-          animation: slideOutLeft 0.22s var(--ease-quick) forwards;
+          animation: slideOutLeft var(--dur-base) var(--ease-in-out) forwards;
         }
         html[dir="rtl"] .drawer-content.drawer-closing {
           animation-name: slideOutRight;
@@ -172,13 +160,13 @@ export default function NotificationDrawer({ isOpen, onClose, notifications, onC
           display: flex;
           justify-content: space-between;
           align-items: center;
-          border-bottom: 1px solid var(--border);
-          padding-bottom: 12px;
+          border-bottom: 1px solid var(--border-light);
+          padding-bottom: var(--space-3);
         }
 
         .drawer-header h2 {
-          font-size: 1rem;
-          font-weight: 800;
+          font-size: 0.9375rem;
+          font-weight: 700;
           display: flex;
           align-items: center;
         }
@@ -194,16 +182,20 @@ export default function NotificationDrawer({ isOpen, onClose, notifications, onC
           border: none;
           color: var(--text-muted);
           font-size: 0.75rem;
-          font-weight: 700;
+          font-weight: 600;
           cursor: pointer;
-          padding: 8px 10px;
-          border-radius: 10px;
-          min-height: 36px;
+          padding: var(--space-2) var(--space-3);
+          border-radius: var(--radius-sm);
+          min-height: 38px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background var(--dur-fast) var(--ease-in-out), color var(--dur-fast) var(--ease-in-out);
         }
 
         .btn-clear-all:hover {
-          color: var(--primary);
-          background: var(--primary-light);
+          color: var(--danger);
+          background: var(--danger-light);
         }
 
         .drawer-list {
@@ -212,34 +204,34 @@ export default function NotificationDrawer({ isOpen, onClose, notifications, onC
           -webkit-overflow-scrolling: touch;
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: var(--space-2);
           padding-bottom: calc(40px + var(--safe-bottom, 0px));
         }
 
         .drawer-item {
           display: flex;
-          gap: 10px;
+          gap: var(--space-3);
           align-items: flex-start;
-          padding: 10px;
+          padding: var(--space-3);
           background: var(--bg-card);
-          border-radius: 16px;
-          box-shadow: var(--shadow-sm);
-          border: 1px solid var(--border);
+          border-radius: var(--radius-md);
+          box-shadow: var(--shadow-xs);
+          border: 1px solid var(--border-light);
         }
 
         .drawer-item-icon {
-          font-size: 1.1rem;
+          font-size: 1rem;
         }
 
         .drawer-item-details p {
-          font-size: 0.8rem;
+          font-size: 0.8125rem;
           line-height: 1.4;
           color: var(--text-main);
         }
 
         .drawer-item-time {
-          font-size: 0.65rem;
-          color: var(--text-muted);
+          font-size: 0.6875rem;
+          color: var(--text-faint);
           display: block;
           margin-top: 2px;
         }
@@ -247,8 +239,8 @@ export default function NotificationDrawer({ isOpen, onClose, notifications, onC
         .drawer-empty-state {
           text-align: center;
           color: var(--text-muted);
-          font-size: 0.85rem;
-          padding: 40px 0;
+          font-size: 0.8125rem;
+          padding: var(--space-10) 0;
         }
 
         @keyframes slideOutLeft {

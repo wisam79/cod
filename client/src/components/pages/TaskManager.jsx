@@ -108,6 +108,42 @@ export default function TaskManager() {
         )}
       </div>
 
+      {/* Desktop Kanban Board View */}
+      <div className="kanban-board-desktop">
+        {['todo', 'progress', 'review', 'done'].map(status => {
+          const statusTasks = filteredTasks.filter(t => t.status === status);
+          return (
+            <div key={status} className="kanban-column">
+              <div className="kanban-column-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span className={`kanban-status-dot status-${status}`} />
+                  <h3>{getStatusLabel(status)}</h3>
+                </div>
+                <span className="kanban-count-badge font-english">{statusTasks.length}</span>
+              </div>
+              <div className="kanban-column-tasks">
+                {statusTasks.map(task => {
+                  const assignee = members.find(m => m.id === task.assigneeId) || { name: 'غير محدد', avatar: '' };
+                  return (
+                    <TaskCard 
+                      key={task.id}
+                      task={task}
+                      assignee={assignee}
+                      onSelect={setSelectedTask}
+                    />
+                  );
+                })}
+                {statusTasks.length === 0 && (
+                  <div className="kanban-empty-column" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80px', border: '1px dashed var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-faint)', fontSize: '0.75rem' }}>
+                    لا توجد مهام
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       <AddTaskModal 
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
@@ -130,140 +166,91 @@ export default function TaskManager() {
         .task-manager-view {
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: var(--space-4);
         }
 
-        .task-manager-view .task-header-row {
-          display: flex;
-          gap: 10px;
-          align-items: center;
-        }
-
-        .task-manager-view .search-box {
-          flex: 1;
-          position: relative;
-        }
-
-        .task-manager-view .search-box input {
-          width: 100%;
-          padding: 12px 40px 12px 16px;
-          border-radius: 16px;
-          border: 1px solid var(--border);
-          background-color: var(--bg-card);
-          font-size: 0.9rem;
-          outline: none;
-          text-align: right;
-        }
-
-        .task-manager-view .search-box input:focus {
-          border-color: var(--primary);
-        }
-
-        .task-manager-view .search-icon {
-          position: absolute;
-          right: 14px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: var(--text-muted);
-          pointer-events: none;
-        }
-
-        .task-manager-view .btn-add-fab {
-          padding: 12px 20px;
-          border-radius: 16px;
-          font-size: 0.85rem;
-          white-space: nowrap;
-        }
-
-        .task-manager-view .assignee-filter-bar {
-          display: flex;
-          gap: 8px;
-          overflow-x: auto;
-          padding: 4px 0;
-          scrollbar-width: none;
-        }
-
-        .task-manager-view .assignee-filter-bar::-webkit-scrollbar {
+        .kanban-board-desktop {
           display: none;
         }
 
-        .task-manager-view .filter-pill {
-          background-color: var(--bg-card);
-          border: 1px solid var(--border);
-          color: var(--text-main);
-          padding: 6px 14px;
-          border-radius: 20px;
-          font-size: 0.8rem;
-          font-weight: 700;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          white-space: nowrap;
-          transition: all 0.2s ease;
-        }
+        @media (min-width: 769px) {
+          .task-manager-view .tasks-list {
+            display: none !important;
+          }
 
-        .task-manager-view .filter-pill.active {
-          background-color: var(--primary-light);
-          border-color: var(--primary);
-          color: var(--primary);
-        }
+          .kanban-board-desktop {
+            display: flex !important;
+            gap: var(--space-4);
+            flex: 1;
+            overflow-x: auto;
+            align-items: flex-start;
+            padding-bottom: var(--space-6);
+            height: calc(100vh - 180px);
+          }
 
-        .task-manager-view .pill-avatar {
-          width: 18px;
-          height: 18px;
-          border-radius: 50%;
-        }
+          .kanban-column {
+            flex: 1;
+            min-width: 250px;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            max-height: 100%;
+          }
 
-        .task-manager-view .status-tabs-container {
-          display: flex;
-          background-color: var(--primary-light);
-          padding: 4px;
-          border-radius: 14px;
-          gap: 2px;
-        }
+          .kanban-column:last-child {
+            border-left: none;
+          }
 
-        .task-manager-view .status-tab {
-          flex: 1;
-          background: none;
-          border: none;
-          color: var(--text-muted);
-          padding: 10px 4px;
-          font-size: 0.75rem;
-          font-weight: 700;
-          cursor: pointer;
-          border-radius: 10px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 4px;
-          transition: all 0.2s ease;
-        }
+          .kanban-column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-3) var(--space-3);
+            border-bottom: 1px solid var(--border-light);
+          }
 
-        .task-manager-view .status-tab.active {
-          background-color: #FFFFFF;
-          color: var(--primary);
-          box-shadow: var(--shadow-sm);
-        }
+          .kanban-column-header h3 {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0;
+          }
 
-        .task-manager-view .count-badge {
-          font-size: 0.65rem;
-          background-color: rgba(0, 0, 0, 0.05);
-          color: var(--text-main);
-          padding: 1px 6px;
-          border-radius: 8px;
-          font-family: var(--font-english);
-        }
+          .kanban-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+          }
+          .kanban-status-dot.status-todo { background-color: var(--status-todo); }
+          .kanban-status-dot.status-progress { background-color: var(--status-progress); }
+          .kanban-status-dot.status-review { background-color: var(--status-review); }
+          .kanban-status-dot.status-done { background-color: var(--status-done); }
 
-        .task-manager-view .status-tab.active .count-badge {
-          background-color: var(--primary-light);
-          color: var(--primary);
+          .kanban-count-badge {
+            background-color: var(--bg-elevated);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: var(--radius-xs);
+          }
+
+          .kanban-column-tasks {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-2);
+            overflow-y: auto;
+            flex: 1;
+          }
         }
 
         .task-manager-view .tasks-list {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: var(--space-3);
           overflow-y: auto;
           flex: 1;
           padding-bottom: 80px;
@@ -273,15 +260,20 @@ export default function TaskManager() {
 
         .task-manager-view .task-card {
           text-align: right;
-          padding: 16px;
+          padding: var(--space-4);
           display: flex;
           flex-direction: column;
-          gap: 8px;
-          transition: transform 0.2s, box-shadow 0.2s;
+          gap: var(--space-2);
+          transition: transform var(--dur-fast) var(--ease-in-out), box-shadow var(--dur-fast) var(--ease-in-out);
+          border: none;
         }
 
         .task-manager-view .task-card:active {
           transform: scale(0.98);
+        }
+
+        .task-manager-view .task-card:hover {
+          box-shadow: var(--shadow-md);
         }
 
         .task-manager-view .task-card-header {
@@ -296,14 +288,14 @@ export default function TaskManager() {
           border-radius: 50%;
         }
 
-        .task-manager-view .task-status-dot.status-todo { background-color: #888; }
-        .task-manager-view .task-status-dot.status-progress { background-color: var(--primary); }
-        .task-manager-view .task-status-dot.status-review { background-color: #cc8800; }
-        .task-manager-view .task-status-dot.status-done { background-color: #009933; }
+        .task-manager-view .task-status-dot.status-todo { background-color: var(--status-todo); }
+        .task-manager-view .task-status-dot.status-progress { background-color: var(--status-progress); }
+        .task-manager-view .task-status-dot.status-review { background-color: var(--status-review); }
+        .task-manager-view .task-status-dot.status-done { background-color: var(--status-done); }
 
         .task-manager-view .task-title {
-          font-size: 0.95rem;
-          font-weight: 800;
+          font-size: 0.9rem;
+          font-weight: 700;
           color: var(--text-main);
         }
 
@@ -321,30 +313,26 @@ export default function TaskManager() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          border-top: 1px solid var(--border);
-          padding-top: 12px;
-          margin-top: 4px;
+          border-top: 1px solid var(--border-light);
+          padding-top: var(--space-3);
+          margin-top: var(--space-1);
         }
 
         .task-manager-view .task-meta {
           display: flex;
-          gap: 12px;
+          gap: var(--space-3);
           align-items: center;
         }
 
-        .task-manager-view .due-date {
-          font-size: 0.7rem;
-          color: var(--text-muted);
+        .task-manager-view .due-date,
+        .task-manager-view .comment-count {
+          font-size: 0.6875rem;
+          color: var(--text-faint);
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 3px;
           font-family: var(--font-english);
-        }
-
-        .task-manager-view .comment-indicator {
-          font-size: 0.7rem;
-          color: var(--text-muted);
-          font-weight: 700;
+          font-variant-numeric: tabular-nums;
         }
 
         .task-manager-view .assignee-avatar-wrapper {
@@ -352,67 +340,62 @@ export default function TaskManager() {
         }
 
         .task-manager-view .assignee-avatar {
-          width: 24px;
-          height: 24px;
+          width: 28px !important;
+          height: 28px !important;
           border-radius: 50%;
-          border: 1.5px solid #FFFFFF;
-          box-shadow: var(--shadow-sm);
-        }
-
-        .task-manager-view .empty-state-card {
-          text-align: center;
-          padding: 40px 20px;
-          color: var(--text-muted);
-          font-size: 0.85rem;
+          border: 2px solid var(--bg-card);
+          box-shadow: var(--shadow-xs);
         }
 
         .task-manager-view .task-detail-body {
           display: flex;
           flex-direction: column;
-          gap: 14px;
+          gap: var(--space-4);
           overflow-y: auto;
           flex: 1;
+          padding: var(--space-4);
         }
 
         .task-manager-view .detail-task-title {
-          font-size: 1.05rem;
-          font-weight: 800;
+          font-size: 1rem;
+          font-weight: 700;
           color: var(--text-main);
         }
 
         .task-manager-view .detail-task-desc {
-          font-size: 0.95rem;
+          font-size: 0.875rem;
           color: var(--text-main);
           line-height: 1.6;
-          background-color: var(--bg-app);
-          padding: 12px;
-          border-radius: 16px;
+          background-color: var(--bg-elevated);
+          padding: var(--space-3);
+          border-radius: var(--radius-md);
+          border: 1px solid var(--border-light);
         }
 
         .task-manager-view .detail-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 10px;
-          background-color: var(--bg-app);
-          padding: 12px;
-          border-radius: 16px;
-          border: 1px solid var(--border);
+          gap: var(--space-3);
+          background-color: var(--bg-elevated);
+          padding: var(--space-3);
+          border-radius: var(--radius-md);
+          border: 1px solid var(--border-light);
         }
 
         .task-manager-view .detail-item {
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: var(--space-1);
         }
 
         .task-manager-view .detail-item .label {
-          font-size: 0.7rem;
-          color: var(--text-muted);
-          font-weight: 700;
+          font-size: 0.6875rem;
+          color: var(--text-faint);
+          font-weight: 600;
         }
 
         .task-manager-view .detail-item .val {
-          font-size: 0.8rem;
+          font-size: 0.8125rem;
           font-weight: 700;
           color: var(--text-main);
         }
@@ -420,32 +403,33 @@ export default function TaskManager() {
         .task-manager-view .status-select {
           border: none;
           background: none;
-          font-size: 0.8rem;
+          font-size: 0.8125rem;
           font-weight: 700;
           outline: none;
           cursor: pointer;
           width: fit-content;
+          color: var(--text-main);
         }
 
-        .task-manager-view .status-select.status-todo { color: #888; }
-        .task-manager-view .status-select.status-progress { color: var(--primary); }
-        .task-manager-view .status-select.status-review { color: #cc8800; }
-        .task-manager-view .status-select.status-done { color: #009933; }
+        .task-manager-view .status-select.status-todo { color: var(--status-todo); }
+        .task-manager-view .status-select.status-progress { color: var(--status-progress); }
+        .task-manager-view .status-select.status-review { color: var(--status-review); }
+        .task-manager-view .status-select.status-done { color: var(--status-done); }
 
         .task-manager-view .detail-comments-section {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: var(--space-3);
           flex: 1;
-          min-height: 200px;
+          min-height: 180px;
         }
 
         .task-manager-view .detail-comments-section h4 {
-          font-size: 0.85rem;
-          font-weight: 800;
+          font-size: 0.875rem;
+          font-weight: 700;
           color: var(--text-main);
-          border-bottom: 1px solid var(--border);
-          padding-bottom: 6px;
+          border-bottom: 1px solid var(--border-light);
+          padding-bottom: var(--space-2);
         }
 
         .task-manager-view .comments-list {
@@ -453,32 +437,35 @@ export default function TaskManager() {
           overflow-y: auto;
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: var(--space-3);
           padding: 2px;
         }
 
         .task-manager-view .no-comments {
           text-align: center;
           color: var(--text-muted);
-          font-size: 0.8rem;
-          padding: 20px 0;
+          font-size: 0.8125rem;
+          padding: var(--space-5) 0;
         }
 
         .task-manager-view .comment-form {
           display: flex;
-          gap: 8px;
-          margin-top: 8px;
+          gap: var(--space-2);
+          margin-top: var(--space-2);
         }
 
         .task-manager-view .comment-form input {
           flex: 1;
-          padding: 12px 14px;
-          border-radius: 14px;
+          padding: 10px var(--space-3);
+          border-radius: var(--radius-md);
           border: 1px solid var(--border);
-          background-color: var(--bg-app);
-          font-size: 0.85rem;
+          background-color: var(--bg-elevated);
+          font-size: 0.875rem;
           outline: none;
           text-align: right;
+          height: var(--tap-target);
+          color: var(--text-main);
+          transition: border-color var(--dur-fast) var(--ease-in-out);
         }
 
         .task-manager-view .comment-form input:focus {
@@ -486,36 +473,42 @@ export default function TaskManager() {
         }
 
         .task-manager-view .comment-form .btn {
-          padding: 12px;
-          border-radius: 14px;
+          padding: var(--space-3);
+          border-radius: var(--radius-md);
           aspect-ratio: 1;
           display: flex;
           align-items: center;
           justify-content: center;
+          height: var(--tap-target);
         }
 
         .task-manager-view .modal-footer-actions {
-          border-top: 1px solid var(--border);
-          padding-top: 12px;
+          border-top: 1px solid var(--border-light);
+          padding-top: var(--space-3);
           margin-top: auto;
         }
 
         .task-manager-view .btn-delete-task {
-          background-color: #ffe5db;
-          color: #ff3300;
+          background-color: var(--danger-light);
+          color: var(--danger);
           width: 100%;
-          padding: 12px;
-          font-size: 0.85rem;
-          border-radius: 14px;
-          border: none;
+          padding: var(--space-3);
+          font-size: 0.875rem;
+          border-radius: var(--radius-md);
+          border: 1px solid rgba(185, 28, 28, 0.12);
           font-weight: 700;
           cursor: pointer;
-          transition: opacity 0.2s;
+          transition: opacity var(--dur-fast) var(--ease-in-out);
+          min-height: var(--tap-target);
         }
 
         .task-manager-view .btn-delete-task:hover {
           opacity: 0.9;
         }
+
+        .badge-priority-high { background-color: var(--priority-high-bg); color: var(--priority-high); padding: 3px 8px; border-radius: var(--radius-xs); font-size: 0.6875rem; font-weight: 700; }
+        .badge-priority-medium { background-color: var(--priority-medium-bg); color: var(--priority-medium); padding: 3px 8px; border-radius: var(--radius-xs); font-size: 0.6875rem; font-weight: 700; }
+        .badge-priority-low { background-color: var(--priority-low-bg); color: var(--priority-low); padding: 3px 8px; border-radius: var(--radius-xs); font-size: 0.6875rem; font-weight: 700; }
       `}</style>
     </div>
     </PullToRefresh>

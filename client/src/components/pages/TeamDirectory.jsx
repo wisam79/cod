@@ -4,10 +4,11 @@ import { useAppStore } from '../../store/useAppStore';
 import Avatar from '../atoms/Avatar';
 
 export default function TeamDirectory() {
-  const { members, tasks, currentUser } = useAppStore();
+  const members = useAppStore(s => s.members);
+  const tasks = useAppStore(s => s.tasks);
+  const currentUser = useAppStore(s => s.currentUser);
   const [selectedMember, setSelectedMember] = useState(null);
 
-  // Helper to count tasks for a member
   const getMemberTaskStats = (memberId) => {
     const memberTasks = tasks.filter(t => t.assigneeId === memberId);
     const completed = memberTasks.filter(t => t.status === 'done').length;
@@ -22,179 +23,183 @@ export default function TeamDirectory() {
   };
 
   const user = currentUser || members[0] || { id: 0, name: 'جاري التحميل...' };
-
-  // If viewing a member's full profile (mockup Screen 3 style)
-  if (selectedMember) {
-    return (
-      <div className="member-profile-view animate-fade-in text-right">
-        {/* Back button */}
-        <button className="back-profile-btn" onClick={() => setSelectedMember(null)}>
-          <ArrowRight size={16} className="back-arrow" /> العودة إلى قائمة الفريق
-        </button>
-
-        {/* Profile Card */}
-        <div className="profile-hero-card card">
-          <div className="profile-header">
-            <Avatar src={selectedMember.avatar} alt={selectedMember.name} size="lg" className="profile-avatar-large" />
-            <div className="profile-title-info">
-              <h3>{selectedMember.name}</h3>
-              <p>{selectedMember.role}</p>
-            </div>
-            
-            {/* progress circle */}
-            <div className="circular-progress-wrapper">
-              <svg viewBox="0 0 36 36" className="circular-chart orange">
-                <path className="circle-bg"
-                  d="M18 2.0845
-                    a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-                <path className="circle"
-                  strokeDasharray={`${selectedMember.progressPercent}, 100`}
-                  d="M18 2.0845
-                    a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-                <text x="18" y="20.35" className="percentage">{selectedMember.progressPercent}%</text>
-              </svg>
-              <span className="circle-label">إنجاز المهام</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Account Section */}
-        <h4 className="settings-section-title">بيانات العمل</h4>
-        <div className="settings-list card">
-          <div className="settings-item">
-            <span className="settings-item-label">المهام النشطة حالياً</span>
-            <span className="settings-item-value font-english highlight-value">{selectedMember.active} مهام</span>
-          </div>
-          <div className="settings-item">
-            <span className="settings-item-label">المهام المكتملة</span>
-            <span className="settings-item-value font-english">{selectedMember.completed} مهام</span>
-          </div>
-          <div className="settings-item">
-            <span className="settings-item-label">الدور الوظيفي في الفريق</span>
-            <span className="settings-item-value">{selectedMember.role}</span>
-          </div>
-        </div>
-
-        {/* General Section */}
-        <h4 className="settings-section-title">إجراءات التواصل</h4>
-        <div className="settings-list card">
-          <div className="settings-item clickable">
-            <div className="settings-item-left">
-              <Mail size={16} style={{ verticalAlign: 'middle', marginLeft: '8px', color: 'var(--primary)' }} />
-              <span>إرسال بريد إلكتروني</span>
-            </div>
-            <ChevronLeft size={14} className="arrow-right" />
-          </div>
-          <div className="settings-item clickable">
-            <div className="settings-item-left">
-              <Phone size={16} style={{ verticalAlign: 'middle', marginLeft: '8px', color: 'var(--primary)' }} />
-              <span>اتصال هاتفي مباشر</span>
-            </div>
-            <ChevronLeft size={14} className="arrow-right" />
-          </div>
-          <div className="settings-item clickable">
-            <div className="settings-item-left">
-              <MessageSquare size={16} style={{ verticalAlign: 'middle', marginLeft: '8px', color: 'var(--primary)' }} />
-              <span>إرسال رسالة خاصة (تواصل فرعي)</span>
-            </div>
-            <ChevronLeft size={14} className="arrow-right" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Active User Stat (J. Jacob style header)
   const currentUserStats = getMemberTaskStats(user.id);
 
   return (
-    <div className="team-directory-view animate-fade-in text-right">
-      {/* Current Logged In User Profile Banner (Inspired by Screen 3 Profile card) */}
-      <div className="current-user-card card clickable" onClick={() => handleMemberClick(user)}>
-        <div className="profile-compact-header">
-          <Avatar src={user.avatar} alt={user.name} size="md" className="profile-avatar-compact" />
-          <div className="profile-compact-info">
-            <h3>{user.name} (أنت)</h3>
-            <p>{user.role}</p>
-          </div>
-          <div className="mini-ring-progress">
-            <svg viewBox="0 0 36 36" className="circular-chart orange">
-              <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path className="circle" strokeDasharray={`${currentUserStats.progressPercent}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <text x="18" y="20.35" className="percentage">{currentUserStats.progressPercent}%</text>
-            </svg>
-          </div>
-        </div>
-        <div className="card-tap-hint">اضغط لعرض ملفك الشخصي بالكامل ➔</div>
-      </div>
+    <div className="team-directory-wrapper" style={{ height: '100%' }}>
+      {selectedMember ? (
+        <div className="member-profile-view animate-fade-in text-right">
+          <button className="back-btn" onClick={() => setSelectedMember(null)}>
+            <ArrowRight size={14} />
+            العودة
+          </button>
 
-      <h3 className="section-title">أعضاء الفريق العملي ({members.length})</h3>
-
-      {/* Members List */}
-      <div className="team-members-list">
-        {members.map(member => {
-          const stats = getMemberTaskStats(member.id);
-          return (
-            <div key={member.id} className="member-card card animate-slide-up" onClick={() => handleMemberClick(member)}>
-              <div className="member-card-content">
-                <Avatar src={member.avatar} alt={member.name} size="md" className="member-list-avatar" />
-                <div className="member-list-info">
-                  <h4>{member.name}</h4>
-                  <p>{member.role}</p>
-                </div>
+          <div className="profile-hero card">
+            <div className="profile-hero-content">
+              <Avatar src={selectedMember.avatar} alt={selectedMember.name} size="lg" className="profile-avatar-lg" />
+              <div className="profile-hero-info">
+                <h3>{selectedMember.name}</h3>
+                <p>{selectedMember.role}</p>
               </div>
-
-              {/* Workload Progress Bar */}
-              <div className="member-workload">
-                <div className="workload-text">
-                  <span>عبء العمل الحالي:</span>
-                  <span className="font-english">{stats.active} مهام جارية</span>
-                </div>
-                <div className="workload-bar-container">
-                  <div 
-                    className="workload-bar-fill" 
-                    style={{ 
-                      width: `${Math.min((stats.active / 5) * 100, 100)}%`,
-                      backgroundColor: stats.active > 3 ? 'var(--priority-high)' : stats.active > 1 ? 'var(--priority-medium)' : 'var(--priority-low)'
-                    }}
-                  ></div>
-                </div>
-              </div>
-              
-              <div className="member-card-footer font-english">
-                <span>مكتملة: {stats.completed}</span>
-                <span>نسبة الإنجاز: {stats.progressPercent}%</span>
+              <div className="progress-ring-wrap">
+                <svg viewBox="0 0 36 36" className="progress-ring" width="48" height="48">
+                  <path className="ring-bg" fill="none"
+                    d="M18 2.0845
+                      a 15.9155 15.9155 0 0 1 0 31.831
+                      a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <path className="ring-fill" fill="none"
+                    strokeDasharray={`${selectedMember.progressPercent}, 100`}
+                    d="M18 2.0845
+                      a 15.9155 15.9155 0 0 1 0 31.831
+                      a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <text x="18" y="20.35" className="ring-text font-english">{selectedMember.progressPercent}%</text>
+                </svg>
+                <span className="ring-label">الإنجاز</span>
               </div>
             </div>
-          );
-        })}
-      </div>
+          </div>
+
+          <h4 className="settings-section-title">بيانات العمل</h4>
+          <div className="settings-list card">
+            <div className="settings-item">
+              <span className="settings-item-label">المهام النشطة</span>
+              <span className="settings-item-value font-english" style={{ color: 'var(--primary)', fontWeight: 700 }}>{selectedMember.active}</span>
+            </div>
+            <div className="settings-item">
+              <span className="settings-item-label">المكتملة</span>
+              <span className="settings-item-value font-english">{selectedMember.completed}</span>
+            </div>
+            <div className="settings-item">
+              <span className="settings-item-label">الدور الوظيفي</span>
+              <span className="settings-item-value">{selectedMember.role}</span>
+            </div>
+          </div>
+
+          <h4 className="settings-section-title">إجراءات التواصل</h4>
+          <div className="settings-list card">
+            <div className="settings-item clickable">
+              <div className="settings-item-left">
+                <Mail size={14} style={{ color: 'var(--primary)' }} />
+                <span>بريد إلكتروني</span>
+              </div>
+              <ChevronLeft size={14} className="chevron-icon" />
+            </div>
+            <div className="settings-item clickable">
+              <div className="settings-item-left">
+                <Phone size={14} style={{ color: 'var(--primary)' }} />
+                <span>اتصال هاتفي</span>
+              </div>
+              <ChevronLeft size={14} className="chevron-icon" />
+            </div>
+            <div className="settings-item clickable">
+              <div className="settings-item-left">
+                <MessageSquare size={14} style={{ color: 'var(--primary)' }} />
+                <span>رسالة خاصة</span>
+              </div>
+              <ChevronLeft size={14} className="chevron-icon" />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="team-directory-view animate-fade-in text-right">
+          <div className="current-user-card card" onClick={() => handleMemberClick(user)} style={{ cursor: 'pointer' }}>
+            <div className="profile-compact-header">
+              <Avatar src={user.avatar} alt={user.name} size="md" />
+              <div className="profile-compact-info">
+                <h3>{user.name} (أنت)</h3>
+                <p>{user.role}</p>
+              </div>
+              <div className="mini-ring">
+                <svg viewBox="0 0 36 36" className="progress-ring" width="36" height="36">
+                  <path className="ring-bg" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path className="ring-fill" fill="none" strokeDasharray={`${currentUserStats.progressPercent}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <text x="18" y="20.35" className="ring-text font-english">{currentUserStats.progressPercent}%</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <h3 className="section-title">أعضاء الفريق ({members.length})</h3>
+
+          <div className="team-members-list">
+            {members.map(member => {
+              const stats = getMemberTaskStats(member.id);
+              return (
+                <div key={member.id} className="member-card card" onClick={() => handleMemberClick(member)} style={{ cursor: 'pointer' }}>
+                  <div className="member-card-content">
+                    <Avatar src={member.avatar} alt={member.name} size="md" />
+                    <div className="member-list-info">
+                      <h4>{member.name}</h4>
+                      <p>{member.role}</p>
+                    </div>
+                  </div>
+
+                  <div className="member-workload">
+                    <div className="workload-text">
+                      <span>عبء العمل:</span>
+                      <span className="font-english">{stats.active} مهام</span>
+                    </div>
+                    <div className="workload-bar-track">
+                      <div 
+                        className="workload-bar-fill" 
+                        style={{ 
+                          width: `${Math.min((stats.active / 5) * 100, 100)}%`,
+                          backgroundColor: stats.active > 3 ? 'var(--priority-high)' : stats.active > 1 ? 'var(--priority-medium)' : 'var(--success)'
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="member-card-footer font-english">
+                    <span>مكتملة: {stats.completed}</span>
+                    <span>الإنجاز: {stats.progressPercent}%</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <style>{`
         .team-directory-view {
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: var(--space-4);
         }
 
         .text-right {
           text-align: right;
         }
 
-        /* Current logged in user card styling */
         .current-user-card {
-          border-left: 4px solid var(--primary);
-          padding: 16px;
+          border: none;
+          background: var(--primary-gradient);
+          color: #fff;
+          box-shadow: 0 4px 16px rgba(30, 64, 175, 0.25);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .current-user-card::before {
+          content: '';
+          position: absolute;
+          top: -30px;
+          right: -30px;
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.1);
         }
 
         .profile-compact-header {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: var(--space-3);
+          position: relative;
+          z-index: 1;
         }
 
         .profile-compact-info {
@@ -202,60 +207,79 @@ export default function TeamDirectory() {
         }
 
         .profile-compact-info h3 {
-          font-size: 0.95rem;
-          font-weight: 800;
-          color: var(--text-main);
+          font-size: 0.9375rem;
+          font-weight: 700;
+          color: #fff;
         }
 
         .profile-compact-info p {
           font-size: 0.75rem;
-          color: var(--text-muted);
+          color: rgba(255, 255, 255, 0.75);
         }
 
-        .mini-ring-progress {
+        .mini-ring {
           width: 36px;
           height: 36px;
         }
 
-        .card-tap-hint {
-          font-size: 0.7rem;
-          color: var(--primary);
-          font-weight: 700;
-          margin-top: 10px;
-          border-top: 1px dashed var(--border);
-          padding-top: 6px;
+        .mini-ring .ring-text {
+          fill: #fff;
+        }
+
+        .mini-ring .ring-bg {
+          stroke: rgba(255, 255, 255, 0.25);
+        }
+
+        .mini-ring .ring-fill {
+          stroke: #fff;
         }
 
         .section-title {
-          font-size: 0.95rem;
-          font-weight: 800;
-          margin-top: 8px;
+          font-size: 0.9375rem;
+          font-weight: 700;
+          margin-top: var(--space-2);
         }
 
         .team-members-list {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: var(--space-3);
         }
 
         .member-card {
-          cursor: pointer;
+          transition: transform var(--dur-fast) var(--ease-in-out), box-shadow var(--dur-fast) var(--ease-in-out);
+          border: none;
         }
 
         .member-card:hover {
           transform: translateY(-2px);
-          box-shadow: var(--shadow-md);
+          box-shadow: var(--shadow-md) !important;
+        }
+
+        .member-card:active {
+          transform: scale(0.98);
         }
 
         .member-card-content {
           display: flex;
           align-items: center;
-          gap: 12px;
-          margin-bottom: 12px;
+          gap: var(--space-3);
+          margin-bottom: var(--space-3);
+        }
+
+        .member-list-info h4 {
+          font-size: 0.875rem;
+          font-weight: 700;
+          color: var(--text-main);
+        }
+
+        .member-list-info p {
+          font-size: 0.75rem;
+          color: var(--text-muted);
         }
 
         .member-workload {
-          margin-bottom: 10px;
+          margin-bottom: var(--space-3);
         }
 
         .workload-text {
@@ -263,14 +287,14 @@ export default function TeamDirectory() {
           justify-content: space-between;
           font-size: 0.75rem;
           color: var(--text-muted);
-          font-weight: 700;
-          margin-bottom: 4px;
+          font-weight: 600;
+          margin-bottom: var(--space-1);
         }
 
-        .workload-bar-container {
+        .workload-bar-track {
           width: 100%;
-          height: 6px;
-          background: var(--border);
+          height: 5px;
+          background: var(--bg-elevated);
           border-radius: 3px;
           overflow: hidden;
         }
@@ -278,119 +302,119 @@ export default function TeamDirectory() {
         .workload-bar-fill {
           height: 100%;
           border-radius: 3px;
-          transition: width 0.3s ease;
+          transition: width var(--dur-slow) var(--ease-out);
         }
 
         .member-card-footer {
           display: flex;
           justify-content: space-between;
-          font-size: 0.7rem;
+          font-size: 0.6875rem;
           color: var(--text-muted);
-          border-top: 1px solid var(--border);
-          padding-top: 8px;
+          border-top: 1px solid var(--border-light);
+          padding-top: var(--space-2);
         }
 
-        /* MEMBER PROFILE VIEW */
-        .back-profile-btn {
+        .back-btn {
           background: none;
           border: none;
           color: var(--primary);
-          font-weight: 700;
-          font-size: 0.85rem;
+          font-weight: 600;
+          font-size: 0.8125rem;
           cursor: pointer;
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          margin-bottom: 16px;
-          transition: transform 0.2s;
+          gap: var(--space-2);
+          margin-bottom: var(--space-4);
+          min-height: 44px;
+          transition: opacity var(--dur-fast) var(--ease-in-out);
         }
 
-        .back-profile-btn:active {
-          transform: translateX(3px);
+        .back-btn:active {
+          opacity: 0.7;
         }
 
-        .profile-hero-card {
-          padding: 24px;
+        .profile-hero {
+          padding: var(--space-6);
           text-align: center;
+          box-shadow: var(--shadow-md);
         }
 
-        .profile-header {
+        .profile-hero-content {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 12px;
+          gap: var(--space-3);
         }
 
-        .profile-avatar-large {
+        .profile-avatar-lg {
           border: 3px solid var(--primary-light);
-          box-shadow: var(--shadow-sm);
+          box-shadow: 0 2px 12px rgba(30, 64, 175, 0.15);
         }
 
-        .profile-title-info h3 {
-          font-size: 1.15rem;
-          font-weight: 800;
+        .profile-hero-info h3 {
+          font-size: 1.0625rem;
+          font-weight: 700;
           color: var(--text-main);
           margin-bottom: 2px;
         }
 
-        .profile-title-info p {
-          font-size: 0.8rem;
+        .profile-hero-info p {
+          font-size: 0.75rem;
           color: var(--text-muted);
         }
 
-        /* Circular progress chart style */
-        .circular-progress-wrapper {
+        .progress-ring-wrap {
           display: flex;
           flex-direction: column;
           align-items: center;
-          margin-top: 8px;
-          width: 80px;
+          margin-top: var(--space-2);
+          width: 72px;
         }
 
-        .circular-chart {
+        .progress-ring {
           display: block;
           max-width: 100%;
-          max-height: 52px;
+          max-height: 48px;
         }
 
-        .circle-bg {
+        .ring-bg {
           fill: none;
-          stroke: var(--border);
+          stroke: var(--border-light);
           stroke-width: 2.8;
         }
 
-        .circle {
+        .ring-fill {
           fill: none;
           stroke: var(--primary);
           stroke-width: 2.8;
           stroke-linecap: round;
-          transition: stroke-dasharray 0.3s ease;
+          transition: stroke-dasharray var(--dur-slow) var(--ease-out);
+          filter: drop-shadow(0 0 3px rgba(30, 64, 175, 0.3));
         }
 
-        .percentage {
+        .ring-text {
           fill: var(--text-main);
-          font-family: var(--font-english);
           font-size: 8px;
-          font-weight: 800;
+          font-weight: 700;
           text-anchor: middle;
         }
 
-        .circle-label {
-          font-size: 0.65rem;
+        .ring-label {
+          font-size: 0.625rem;
           color: var(--text-muted);
-          font-weight: 700;
-          margin-top: 4px;
+          font-weight: 600;
+          margin-top: var(--space-1);
         }
 
         .settings-section-title {
-          font-size: 0.85rem;
-          font-weight: 800;
+          font-size: 0.8125rem;
+          font-weight: 700;
           color: var(--text-muted);
-          margin: 16px 8px 8px 0;
+          margin: var(--space-4) var(--space-2) var(--space-2) 0;
         }
 
         .settings-list {
-          padding: 8px 16px;
+          padding: var(--space-2) var(--space-4);
           display: flex;
           flex-direction: column;
         }
@@ -399,8 +423,8 @@ export default function TeamDirectory() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 12px 0;
-          border-bottom: 1px solid var(--border);
+          padding: var(--space-4) 0;
+          border-bottom: 1px solid var(--border-light);
         }
 
         .settings-item:last-child {
@@ -409,40 +433,42 @@ export default function TeamDirectory() {
 
         .settings-item.clickable {
           cursor: pointer;
-          transition: opacity 0.2s;
+          transition: background-color var(--dur-fast) var(--ease-in-out), border-radius var(--dur-fast) var(--ease-in-out);
+          margin: 0 calc(var(--space-3) * -1);
+          padding-left: var(--space-3);
+          padding-right: var(--space-3);
+          border-radius: var(--radius-md);
+        }
+
+        .settings-item.clickable:hover {
+          background-color: var(--bg-elevated);
         }
 
         .settings-item.clickable:active {
-          opacity: 0.6;
+          transform: scale(0.98);
         }
 
         .settings-item-label {
-          font-size: 0.85rem;
+          font-size: 0.8125rem;
           color: var(--text-main);
         }
 
         .settings-item-value {
-          font-size: 0.8rem;
+          font-size: 0.8125rem;
           color: var(--text-muted);
-        }
-
-        .highlight-value {
-          color: var(--primary);
-          font-weight: 700;
         }
 
         .settings-item-left {
           display: flex;
           align-items: center;
-          gap: 10px;
-          font-size: 0.85rem;
-          font-weight: 700;
+          gap: var(--space-3);
+          font-size: 0.8125rem;
+          font-weight: 600;
           color: var(--text-main);
         }
 
-        .arrow-right {
-          font-size: 0.6rem;
-          color: var(--text-muted);
+        .chevron-icon {
+          color: var(--text-faint);
         }
       `}</style>
     </div>

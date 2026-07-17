@@ -34,9 +34,12 @@ describe('TaskFilter', () => {
   });
 
   it('calls setSearchQuery on search input change', () => {
+    vi.useFakeTimers();
     render(<TaskFilter {...defaultProps} />);
     fireEvent.change(screen.getByPlaceholderText('البحث عن مهمة...'), { target: { value: 'test' } });
+    vi.advanceTimersByTime(300);
     expect(defaultProps.setSearchQuery).toHaveBeenCalledWith('test');
+    vi.useRealTimers();
   });
 
   it('renders add button', () => {

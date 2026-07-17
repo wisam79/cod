@@ -7,7 +7,7 @@ import { triggerHaptic, resetHapticDedupe } from '../../utils/haptics';
 export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
-  const [newAssignee, setNewAssignee] = useState(members[0]?.id || 1);
+  const [newAssignee, setNewAssignee] = useState(members[0]?.id ?? null);
   const [newPriority, setNewPriority] = useState('medium');
   const [newDueDate, setNewDueDate] = useState('');
   const [isClosing, setIsClosing] = useState(false);
@@ -68,15 +68,11 @@ export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
     if (touchStartY.current === null || !modalRef.current) return;
     const dy = e.touches[0].clientY - touchStartY.current;
     const dx = e.touches[0].clientX - touchStartX.current;
-    // Only treat as drag-down-to-dismiss when pull is mostly vertical
     if (dy <= 0 || Math.abs(dx) > Math.abs(dy)) return;
     const clamped = Math.min(dy, 240);
-    const scale = Math.max(1 - clamped / 1200, 0.96);
+    const scale = Math.max(1 - clamped / 1200, 0.98);
     modalRef.current.style.transform = `translateY(${clamped}px) scale(${scale})`;
     modalRef.current.style.opacity = String(Math.max(1 - clamped / 500, 0));
-    if (overlayRef.current) {
-      overlayRef.current.style.opacity = String(Math.max(1 - clamped / 400, 0));
-    }
   }, []);
 
   const handleTouchEnd = useCallback((e) => {
@@ -89,12 +85,10 @@ export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
     if (Math.abs(dy) > Math.abs(dx) && shouldDismiss) {
       modalRef.current.style.transform = '';
       modalRef.current.style.opacity = '';
-      if (overlayRef.current) overlayRef.current.style.opacity = '';
       handleClose();
     } else {
       modalRef.current.style.transform = '';
       modalRef.current.style.opacity = '';
-      if (overlayRef.current) overlayRef.current.style.opacity = '';
     }
     touchStartY.current = null;
     touchStartX.current = null;
@@ -124,7 +118,20 @@ export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
     setNewDesc('');
     setNewPriority('medium');
     setNewDueDate('');
-    onClose();
+    handleClose();
+  };
+
+  const selectStyle = {
+    width: '100%',
+    padding: '10px var(--space-3)',
+    borderRadius: 'var(--radius-md)',
+    border: '1px solid var(--border)',
+    backgroundColor: 'var(--bg-card)',
+    outline: 'none',
+    fontSize: '0.875rem',
+    color: 'var(--text-main)',
+    height: 'var(--tap-target)',
+    transition: 'border-color var(--dur-fast) var(--ease-in-out)'
   };
 
   return (
@@ -148,7 +155,7 @@ export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
         <div className="sheet-modal-handle" />
         <div className="modal-header">
           <h2 id="add-task-title">إضافة مهمة جديدة</h2>
-          <button className="close-btn pressable" onClick={handleClose} aria-label="إغلاق">
+          <button className="close-btn" onClick={handleClose} aria-label="إغلاق">
             <X size={16} />
           </button>
         </div>
@@ -169,13 +176,13 @@ export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
             onChange={(e) => setNewDesc(e.target.value)}
           />
 
-          <div className="form-row" style={{ display: 'flex', gap: '10px' }}>
+          <div className="form-row" style={{ display: 'flex', gap: 'var(--space-3)' }}>
             <div className="input-group" style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)' }}>المسؤول عنها</label>
+              <label style={{ display: 'block', marginBottom: 'var(--space-2)', fontSize: '0.8125rem', fontWeight: '600', color: 'var(--text-muted)' }}>المسؤول</label>
               <select
                 value={newAssignee}
-                onChange={(e) => setNewAssignee(e.target.value)}
-                style={{ width: '100%', padding: '12px', borderRadius: '15px', border: '1.5px solid var(--border)', backgroundColor: 'var(--bg-app)', outline: 'none', fontSize: '0.85rem', color: 'var(--text-main)' }}
+                onChange={(e) => setNewAssignee(Number(e.target.value))}
+                style={selectStyle}
               >
                 {members.map(m => (
                   <option key={m.id} value={m.id}>{m.name}</option>
@@ -184,11 +191,11 @@ export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
             </div>
 
             <div className="input-group" style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)' }}>الأولوية</label>
+              <label style={{ display: 'block', marginBottom: 'var(--space-2)', fontSize: '0.8125rem', fontWeight: '600', color: 'var(--text-muted)' }}>الأولوية</label>
               <select
                 value={newPriority}
                 onChange={(e) => setNewPriority(e.target.value)}
-                style={{ width: '100%', padding: '12px', borderRadius: '15px', border: '1.5px solid var(--border)', backgroundColor: 'var(--bg-app)', outline: 'none', fontSize: '0.85rem', color: 'var(--text-main)' }}
+                style={selectStyle}
               >
                 <option value="high">عالية</option>
                 <option value="medium">متوسطة</option>
@@ -197,7 +204,7 @@ export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
             </div>
           </div>
 
-          <div style={{ marginTop: '16px' }}>
+          <div style={{ marginTop: 'var(--space-3)' }}>
             <Input
               type="date"
               label="تاريخ الاستحقاق"
@@ -206,7 +213,7 @@ export default function AddTaskModal({ isOpen, onClose, onSubmit, members }) {
             />
           </div>
 
-          <Button type="submit" variant="primary" style={{ width: '100%', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+          <Button type="submit" variant="primary" style={{ width: '100%', marginTop: 'var(--space-3)', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
             <Plus size={16} />
             إضافة المهمة
           </Button>

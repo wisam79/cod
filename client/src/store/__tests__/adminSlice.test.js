@@ -9,6 +9,7 @@ vi.mock('../apiClient', () => ({
   updateAdminSettings: vi.fn(),
   fetchMembers: vi.fn().mockResolvedValue([]),
   fetchTasks: vi.fn().mockResolvedValue([]),
+  onWsStatusChange: vi.fn().mockReturnValue(vi.fn()),
 }));
 
 describe('adminSlice', () => {

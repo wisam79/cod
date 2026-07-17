@@ -5,8 +5,6 @@ const { authenticate } = require('../middleware/auth');
 const { isSuperAdmin } = require('../middleware/superAdmin');
 const logger = require('../utils/logger');
 const messages = require('../utils/messages');
-const bcrypt = require('bcryptjs');
-
 const VALID_ROLES = ['مصمم واجهات UI/UX', 'مطور فرونت-إند', 'مطور باك-إند', 'مديرة المنتج', 'الادمن المطور'];
 
 // All routes here require being logged in and being a Super Admin (الادمن المطور)
@@ -37,6 +35,26 @@ router.put('/members/:id', async (req, res) => {
     const memberId = req.params.id;
     const { name, email, password, role, avatar } = req.body;
 
+    // Validate inputs
+    if (name !== undefined) {
+      if (typeof name !== 'string' || name.trim().length < 2) {
+        return res.status(400).json({ error: 'الاسم يجب أن يكون نصاً بطول حرفين على الأقل.' });
+      }
+    }
+    if (email !== undefined) {
+      if (typeof email !== 'string' || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+        return res.status(400).json({ error: 'البريد الإلكتروني غير صالح.' });
+      }
+    }
+    if (avatar !== undefined && avatar !== null && avatar !== '') {
+      if (typeof avatar !== 'string') {
+        return res.status(400).json({ error: 'رابط الصورة الرمزية غير صالح.' });
+      }
+      try { new URL(avatar); } catch {
+        return res.status(400).json({ error: 'رابط الصورة الرمزية غير صالح.' });
+      }
+    }
+
     const member = await Member.findByPk(memberId);
     if (!member) {
       return res.status(404).json({ error: 'العضو غير موجود.' });
@@ -60,8 +78,7 @@ router.put('/members/:id', async (req, res) => {
           error: 'كلمة المرور ضعيفة جداً. يجب أن تحتوي على 8 رموز كحد أدنى وتتضمن أحرف كبيرة وصغيرة وأرقام ورمز خاص.' 
         });
       }
-      const salt = await bcrypt.genSalt(10);
-      member.password = await bcrypt.hash(password, salt);
+      member.password = password; // beforeUpdate hook will handle hashing
     }
 
     await member.save();
@@ -104,12 +121,18 @@ router.delete('/members/:id', async (req, res) => {
       return res.status(404).json({ error: 'العضو غير موجود.' });
     }
 
-    // Update member's tasks and comments before deletion
-    await Task.update({ assigneeId: null }, { where: { assigneeId: memberId } });
-    await Task.update({ creatorId: null }, { where: { creatorId: memberId } });
-    await Comment.destroy({ where: { senderId: memberId } });
-
-    await member.destroy();
+    const { sequelize } = require('../models');
+    const transaction = await sequelize.transaction();
+    try {
+      await Task.update({ assigneeId: null }, { where: { assigneeId: memberId }, transaction });
+      await Task.update({ creatorId: null }, { where: { creatorId: memberId }, transaction });
+      await Comment.destroy({ where: { senderId: memberId }, transaction });
+      await member.destroy({ transaction });
+      await transaction.commit();
+    } catch (txError) {
+      await transaction.rollback();
+      throw txError;
+    }
     logger.info(`Admin deleted member: ${member.name} (ID: ${memberId})`);
 
     res.json({ message: 'تم حذف العضو وتحديث المهام المرتبطة به بنجاح.' });

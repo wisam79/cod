@@ -13,8 +13,10 @@ describe('useAppStore Zustand Store', () => {
       messages: [],
       notifications: [],
       activeToasts: [],
-      isLoading: false,
-      error: null,
+      authLoading: false,
+      authError: null,
+      dataLoading: false,
+      dataError: null,
       wsStatus: 'disconnected'
     });
     vi.restoreAllMocks();

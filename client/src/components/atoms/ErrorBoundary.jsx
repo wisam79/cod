@@ -1,6 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+async function forceAppRefresh() {
+  try {
+    // 1. Unregister all service workers
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (const registration of registrations) {
+        await registration.unregister();
+      }
+    }
+    // 2. Clear all caches
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      for (const key of keys) {
+        await caches.delete(key);
+      }
+    }
+  } catch (err) {
+    console.error("Failed to clear caches/SW:", err);
+  } finally {
+    // 3. Reload the page from the server
+    window.location.reload(true);
+  }
+}
+
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -25,7 +49,7 @@ export default class ErrorBoundary extends React.Component {
       /error loading dynamically imported module/i.test(error.message);
       
     if (isChunkError) {
-      console.warn("Chunk load error detected, forcing app reload to retrieve latest assets...");
+      console.warn("Chunk load error detected, forcing app reload and cache purge to retrieve latest assets...");
       const reloadKey = 'chunk-error-reload-timestamp';
       const lastReload = sessionStorage.getItem(reloadKey);
       const now = Date.now();
@@ -33,7 +57,7 @@ export default class ErrorBoundary extends React.Component {
       // Limit automatic reload to once every 10 seconds to prevent infinite reload loops
       if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
         sessionStorage.setItem(reloadKey, now.toString());
-        window.location.reload();
+        forceAppRefresh();
       }
     }
   }
@@ -64,10 +88,7 @@ export default class ErrorBoundary extends React.Component {
             نعتذر عن ذلك! تعطل التطبيق بسبب خطأ داخلي.
           </p>
           <button 
-            onClick={() => {
-              window.location.hash = '#/dashboard';
-              window.location.reload();
-            }}
+            onClick={forceAppRefresh}
             style={{
               padding: '12px 24px',
               backgroundColor: '#ff5500',
@@ -85,7 +106,7 @@ export default class ErrorBoundary extends React.Component {
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
             إعادة تحميل التطبيق
           </button>
-          {this.state.error && (
+          {this.state.error && import.meta.env.DEV && (
             <pre style={{
               marginTop: '24px',
               padding: '12px',

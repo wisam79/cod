@@ -4,19 +4,17 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Login from '../Login';
 import { useAppStore } from '../../../store/useAppStore';
 
+let mockState = {
+  login: vi.fn(),
+  authLoading: false,
+  authError: null
+};
+
 vi.mock('../../../store/useAppStore', () => ({
   useAppStore: Object.assign(
-    vi.fn(() => ({
-      login: vi.fn(),
-      isLoading: false,
-      error: null
-    })),
+    vi.fn((selector) => selector ? selector(mockState) : mockState),
     {
-      getState: vi.fn(() => ({
-        login: vi.fn(),
-        isLoading: false,
-        error: null
-      }))
+      getState: vi.fn(() => mockState)
     }
   )
 }));
@@ -24,6 +22,11 @@ vi.mock('../../../store/useAppStore', () => ({
 describe('Login', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockState = {
+      login: vi.fn(),
+      authLoading: false,
+      authError: null
+    };
   });
 
   it('renders login form', () => {
@@ -51,27 +54,16 @@ describe('Login', () => {
     expect(screen.getByText('مُهِمَّة')).toBeInTheDocument();
   });
 
-  it('renders admin hint', () => {
-    render(<Login />);
-    expect(screen.getByText(/wisam@mohemmaty.com/)).toBeInTheDocument();
-  });
+
 
   it('shows error message when error is present', () => {
-    useAppStore.mockReturnValueOnce({
-      login: vi.fn(),
-      isLoading: false,
-      error: 'Invalid credentials'
-    });
+    mockState.authError = 'Invalid credentials';
     render(<Login />);
     expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
   });
 
   it('disables button and shows loading text when loading', () => {
-    useAppStore.mockReturnValueOnce({
-      login: vi.fn(),
-      isLoading: true,
-      error: null
-    });
+    mockState.authLoading = true;
     render(<Login />);
     const btn = screen.getByRole('button', { name: /جاري التحقق/i });
     expect(btn).toBeDisabled();
@@ -79,11 +71,7 @@ describe('Login', () => {
 
   it('calls login on form submit', async () => {
     const mockLogin = vi.fn().mockResolvedValue(undefined);
-    useAppStore.mockImplementation(() => ({
-      login: mockLogin,
-      isLoading: false,
-      error: null
-    }));
+    mockState.login = mockLogin;
 
     render(<Login />);
     fireEvent.change(screen.getByPlaceholderText('البريد الإلكتروني'), { target: { value: 'test@test.com' } });

@@ -1,58 +1,53 @@
 import React, { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 
-const Input = forwardRef(function Input({
-  type = 'text',
-  placeholder = '',
-  value,
-  onChange,
-  name,
-  required = false,
-  className = '',
-  label = '',
-  rows = 3
-}, ref) {
+const Input = forwardRef(function Input({ label, type = 'text', placeholder, value, onChange, required, min, style, className = '', ...rest }, ref) {
+  const isTextarea = type === 'textarea';
+
   return (
-    <div className={`custom-input-wrapper ${className}`}>
+    <div className={`custom-input-wrapper ${className}`.trim()} style={style}>
       {label && <label className="custom-input-label">{label}</label>}
-      {type === 'textarea' ? (
+      {isTextarea ? (
         <textarea
           ref={ref}
-          name={name}
+          className="custom-input-element"
           placeholder={placeholder}
           value={value}
           onChange={onChange}
           required={required}
-          rows={rows}
-          className="custom-input-element"
+          rows={3}
+          style={{ height: 'auto', minHeight: '80px', resize: 'vertical' }}
+          {...rest}
         />
       ) : (
         <input
           ref={ref}
           type={type}
-          name={name}
+          className="custom-input-element"
           placeholder={placeholder}
           value={value}
           onChange={onChange}
           required={required}
-          className="custom-input-element"
+          min={min}
+          {...rest}
         />
       )}
     </div>
   );
 });
 
-export default Input;
+Input.displayName = 'Input';
 
 Input.propTypes = {
+  label: PropTypes.string,
   type: PropTypes.string,
   placeholder: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func,
-  name: PropTypes.string,
   required: PropTypes.bool,
-  className: PropTypes.string,
-  label: PropTypes.string,
-  rows: PropTypes.number
+  min: PropTypes.string,
+  style: PropTypes.object,
+  className: PropTypes.string
 };
 
+export default Input;

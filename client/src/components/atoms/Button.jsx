@@ -1,67 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export default function Button({ 
-  children, 
-  onClick, 
-  type = 'button', 
-  variant = 'primary', 
-  disabled = false, 
-  className = '',
-  style = {}
-}) {
-  const getStyles = () => {
-    const base = {
-      padding: '10px 20px',
-      borderRadius: '16px',
-      fontSize: '0.9rem',
-      fontWeight: '600',
-      cursor: disabled ? 'not-allowed' : 'pointer',
-      transition: 'all 0.2s ease',
-      border: 'none',
-      display: 'inline-flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '8px',
-      opacity: disabled ? 0.6 : 1,
-    };
+export default function Button({ children, variant = 'primary', size = 'md', type = 'button', disabled, onClick, style, className = '', ...rest }) {
+  const sizeStyles = {
+    sm: { padding: '8px 16px', fontSize: '0.75rem', height: '38px', minHeight: '38px' },
+    md: {},
+    lg: { padding: '14px 28px', fontSize: '0.9375rem', height: '48px', minHeight: '48px' }
+  };
 
-    const variants = {
-      primary: {
-        backgroundColor: 'var(--primary)',
-        color: '#ffffff',
-        boxShadow: 'var(--shadow-sm)',
-      },
-      secondary: {
-        backgroundColor: 'var(--primary-light)',
-        color: 'var(--primary)',
-      },
-      outline: {
-        backgroundColor: 'transparent',
-        border: '1.5px solid var(--primary)',
-        color: 'var(--primary)',
-      },
-      danger: {
-        backgroundColor: 'var(--danger-light, #ffebe6)',
-        color: 'var(--danger, #ff3300)',
-      },
-      text: {
-        backgroundColor: 'transparent',
-        color: 'var(--text-muted)',
-        padding: '5px 10px',
-      }
-    };
-
-    return { ...base, ...variants[variant], ...style };
+  const variantClass = {
+    primary: 'btn-primary',
+    secondary: 'btn-secondary',
+    danger: 'btn-danger',
+    ghost: 'btn-ghost'
   };
 
   return (
     <button
       type={type}
-      onClick={onClick}
       disabled={disabled}
-      style={getStyles()}
-      className={`btn btn-${variant} ${className}`}
+      onClick={onClick}
+      className={`btn ${variantClass[variant] || 'btn-primary'} ${className}`}
+      style={{ ...sizeStyles[size], ...style }}
+      {...rest}
     >
       {children}
     </button>
@@ -70,11 +31,12 @@ export default function Button({
 
 Button.propTypes = {
   children: PropTypes.node,
-  onClick: PropTypes.func,
-  type: PropTypes.oneOf(['button', 'submit', 'reset']),
-  variant: PropTypes.oneOf(['primary', 'secondary', 'outline', 'danger', 'text']),
+  variant: PropTypes.oneOf(['primary', 'secondary', 'danger', 'ghost']),
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
+  type: PropTypes.string,
   disabled: PropTypes.bool,
-  className: PropTypes.string,
-  style: PropTypes.object
+  onClick: PropTypes.func,
+  style: PropTypes.object,
+  className: PropTypes.string
 };
 

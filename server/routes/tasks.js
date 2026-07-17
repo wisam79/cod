@@ -13,6 +13,10 @@ const router = express.Router();
 
 const MEMBER_ATTRS = ['id', 'name', 'role', 'avatar'];
 
+const sanitizeLikePattern = (str) => {
+  return str.replace(/%/g, '\\%').replace(/_/g, '\\_');
+};
+
 const taskIncludes = () => [
   {
     model: Member,
@@ -78,8 +82,8 @@ router.get('/', async (req, res) => {
       const isPostgres = sequelize.options.dialect === 'postgres';
       const likeOp = isPostgres ? Op.iLike : Op.like;
       whereClause[Op.or] = [
-        { title: { [likeOp]: `%${search}%` } },
-        { description: { [likeOp]: `%${search}%` } }
+        { title: { [likeOp]: `%${sanitizeLikePattern(search)}%` } },
+        { description: { [likeOp]: `%${sanitizeLikePattern(search)}%` } }
       ];
     }
 
@@ -391,7 +395,7 @@ router.post('/:id/comments', validateComment, async (req, res) => {
   }
 });
 
-// DELETE /api/tasks/:id/comments/:commentId - Delete comment (with ownership check)
+// DELETE /api/tasks/:id/comments/:commentId - Delete comment (with ownership or admin check)
 router.delete('/:id/comments/:commentId', async (req, res) => {
   try {
     const { commentId } = req.params;
@@ -399,8 +403,10 @@ router.delete('/:id/comments/:commentId', async (req, res) => {
     if (!comment) {
       return res.status(404).json({ error: messages.tasks.commentNotFound });
     }
-    // Check ownership: ensure senderId matches req.user.id
-    if (comment.senderId !== req.user.id) {
+    // Check ownership: ensure senderId matches req.user.id OR user is Super Admin
+    const role = req.user.role || '';
+    const isSuper = role.includes('الادمن المطور') || role.includes('Super Admin');
+    if (comment.senderId !== req.user.id && !isSuper) {
       return res.status(403).json({ error: messages.tasks.commentDeleteUnauthorized });
     }
     await comment.destroy();
