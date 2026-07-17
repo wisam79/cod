@@ -178,7 +178,7 @@ export default function TeamDirectory() {
           border: none;
           background: var(--primary-gradient);
           color: #fff;
-          box-shadow: 0 4px 16px rgba(30, 64, 175, 0.25);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
           position: relative;
           overflow: hidden;
         }
@@ -348,7 +348,7 @@ export default function TeamDirectory() {
 
         .profile-avatar-lg {
           border: 3px solid var(--primary-light);
-          box-shadow: 0 2px 12px rgba(30, 64, 175, 0.15);
+          box-shadow: var(--shadow-sm);
         }
 
         .profile-hero-info h3 {

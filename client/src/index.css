@@ -32,7 +32,7 @@
   --shadow-xs: 0 2px 4px rgba(0, 0, 0, 0.01);
   --shadow-sm: 0 8px 30px rgba(0, 0, 0, 0.015);
   --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 24px 60px rgba(168, 85, 247, 0.06);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.06);
 
   /* Priority system */
   --priority-high: #ef4444;
@@ -252,7 +252,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .sidebar-logo .logo-text h2 {
@@ -508,11 +508,11 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 .btn-primary {
   background: var(--primary-gradient);
   color: #ffffff;
-  box-shadow: var(--shadow-xs), 0 2px 8px rgba(30, 64, 175, 0.2);
+  box-shadow: var(--shadow-xs), 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .btn-primary:hover {
   background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
-  box-shadow: var(--shadow-sm), 0 4px 12px rgba(30, 64, 175, 0.25);
+  box-shadow: var(--shadow-sm), 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 .btn-primary:active {
   transform: scale(0.97);

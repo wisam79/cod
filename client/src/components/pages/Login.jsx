@@ -270,7 +270,6 @@ export default function Login() {
         .login-logo-icon {
           margin-bottom: var(--space-3);
           display: inline-flex;
-          filter: drop-shadow(0 4px 12px rgba(30, 64, 175, 0.25));
         }
 
         .login-logo-container h2 {
