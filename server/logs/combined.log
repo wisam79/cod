@@ -2190,3 +2190,11 @@
 {"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-17 14:40:07"}
 {"level":"info","message":"New member registered: أحمد (ahmed@example.com)","service":"mohemmaty-backend","timestamp":"2026-07-17 14:40:07"}
 {"level":"info","message":"PUT /api/auth/change-password - IP: ::ffff:127.0.0.1","service":"mohemmaty-backend","timestamp":"2026-07-17 14:40:07"}
+{"level":"info","message":"Starting database seeding...","service":"mohemmaty-backend","timestamp":"2026-07-17 17:40:56"}
+{"level":"info","message":"Database tables synced and dropped (development mode).","service":"mohemmaty-backend","timestamp":"2026-07-17 17:40:56"}
+{"level":"info","message":"Seeded default settings successfully.","service":"mohemmaty-backend","timestamp":"2026-07-17 17:40:56"}
+{"level":"info","message":"Seeded 5 members successfully.","service":"mohemmaty-backend","timestamp":"2026-07-17 17:40:56"}
+{"level":"info","message":"Seeded 5 tasks successfully.","service":"mohemmaty-backend","timestamp":"2026-07-17 17:40:56"}
+{"level":"info","message":"Seeded 1 comments successfully.","service":"mohemmaty-backend","timestamp":"2026-07-17 17:40:56"}
+{"level":"info","message":"Seeded 4 messages successfully.","service":"mohemmaty-backend","timestamp":"2026-07-17 17:40:56"}
+{"level":"info","message":"Seeded 3 notifications successfully.","service":"mohemmaty-backend","timestamp":"2026-07-17 17:40:56"}

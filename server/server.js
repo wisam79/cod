@@ -43,6 +43,15 @@ const isLocalhost = (url) => {
   }
 };
 
+const isVercelOrigin = (url) => {
+  try {
+    const hostname = new URL(url).hostname;
+    return hostname.endsWith('.vercel.app') || hostname === 'vercel.app';
+  } catch (e) {
+    return false;
+  }
+};
+
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, curl, server-to-server)
@@ -51,6 +60,7 @@ app.use(cors({
     if (
       process.env.NODE_ENV !== 'production' || 
       isLocalhost(origin) || 
+      isVercelOrigin(origin) ||
       allowedOrigins.includes(origin)
     ) {
       return callback(null, true);
