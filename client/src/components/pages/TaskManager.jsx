@@ -254,30 +254,30 @@ export default function TaskManager() {
         .task-manager-view .tasks-list {
           display: flex;
           flex-direction: column;
-          gap: var(--space-3);
+          background: var(--bg-card);
+          padding: var(--space-2) var(--space-4);
+          border-radius: var(--radius-lg);
           overflow-y: auto;
           flex: 1;
           padding-bottom: 80px;
           overscroll-behavior: contain;
           -webkit-overflow-scrolling: touch;
+          box-shadow: var(--shadow-sm);
         }
 
-        .task-manager-view .task-card {
-          text-align: right;
-          padding: var(--space-4);
-          display: flex;
-          flex-direction: column;
-          gap: var(--space-2);
-          transition: transform var(--dur-fast) var(--ease-in-out), box-shadow var(--dur-fast) var(--ease-in-out);
-          border: none;
+        .task-manager-view .tasks-list::-webkit-scrollbar {
+          display: none;
         }
 
-        .task-manager-view .task-card:active {
-          transform: scale(0.98);
+        .task-manager-view .task-list-item:last-child {
+          border-bottom: none;
         }
 
-        .task-manager-view .task-card:hover {
-          box-shadow: var(--shadow-md);
+        .task-manager-view .task-list-item:hover {
+          background-color: var(--bg-elevated);
+          padding-left: 8px !important;
+          padding-right: 8px !important;
+          border-radius: var(--radius-md);
         }
 
         .task-manager-view .task-card-header {
