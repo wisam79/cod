@@ -4,6 +4,7 @@ import Button from '../atoms/Button';
 import Input from '../atoms/Input';
 import Avatar from '../atoms/Avatar';
 import { triggerHaptic } from '../../utils/haptics';
+import { Settings, Users, Plus, Pencil, Trash2 } from 'lucide-react';
 
 export default function AdminDashboard() {
   const adminMembers = useAppStore(s => s.adminMembers);
@@ -136,23 +137,30 @@ export default function AdminDashboard() {
 
   return (
     <div className="admin-dashboard-container animate-fade-in text-right">
-      <div className="admin-header">
-        <h1>لوحة الإدارة الشاملة ⚙️</h1>
+      <div className="admin-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+        <h1 style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+          <Settings size={22} style={{ animation: 'spin 12s linear infinite' }} />
+          <span>لوحة الإدارة الشاملة</span>
+        </h1>
         <p>وحدة التحكم الإدارية الفائقة بالنظام.</p>
       </div>
 
-      <div className="admin-tabs">
+      <div className="admin-tabs" style={{ display: 'flex', gap: 'var(--space-2)' }}>
         <button
           className={`admin-tab-btn ${activeTab === 'members' ? 'active' : ''}`}
           onClick={() => { triggerHaptic('light'); setActiveTab('members'); }}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}
         >
-          👥 الحسابات
+          <Users size={16} />
+          <span>الحسابات</span>
         </button>
         <button
           className={`admin-tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
           onClick={() => { triggerHaptic('light'); setActiveTab('settings'); }}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}
         >
-          🔧 الإعدادات
+          <Settings size={16} />
+          <span>الإعدادات</span>
         </button>
       </div>
 
@@ -160,8 +168,9 @@ export default function AdminDashboard() {
         <div className="admin-tab-content">
           <div className="section-title-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
             <h2 style={{ margin: 0 }}>أعضاء النظام ({adminMembers.length})</h2>
-            <Button variant="primary" size="sm" onClick={() => { triggerHaptic('light'); setShowAddModal(true); }} style={{ height: '32px' }}>
-              إضافة عضو جديد ➕
+            <Button variant="primary" size="sm" onClick={() => { triggerHaptic('light'); setShowAddModal(true); }} style={{ height: '32px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Plus size={14} />
+              <span>إضافة عضو جديد</span>
             </Button>
           </div>
 
@@ -183,18 +192,20 @@ export default function AdminDashboard() {
                   <span className="join-date font-english">{new Date(member.createdAt).toLocaleDateString('ar-EG')}</span>
                 </div>
 
-                <div className="admin-member-actions">
-                  <Button variant="secondary" size="sm" onClick={() => { triggerHaptic('light'); handleEditClick(member); }} style={{ height: '32px' }}>
-                    تعديل 📝
+                <div className="admin-member-actions" style={{ display: 'flex', gap: '6px' }}>
+                  <Button variant="secondary" size="sm" onClick={() => { triggerHaptic('light'); handleEditClick(member); }} style={{ height: '32px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Pencil size={14} />
+                    <span>تعديل</span>
                   </Button>
                   <Button
                     variant="danger"
                     size="sm"
                     disabled={member.id === currentUser?.id}
                     onClick={() => { triggerHaptic('error'); handleDeleteClick(member.id); }}
-                    style={{ height: '32px' }}
+                    style={{ height: '32px', display: 'flex', alignItems: 'center', gap: '6px' }}
                   >
-                    حذف 🗑️
+                    <Trash2 size={14} />
+                    <span>حذف</span>
                   </Button>
                 </div>
               </div>
@@ -257,9 +268,10 @@ export default function AdminDashboard() {
               />
             </div>
 
-            <Button type="submit" variant="primary" disabled={isSubmitting} style={{ marginTop: '10px', width: '100%' }}>
-              {isSubmitting ? 'جاري حفظ الإعدادات...' : 'حفظ الإعدادات 💾'}
-            </Button>
+             <Button type="submit" variant="primary" disabled={isSubmitting} style={{ marginTop: '10px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+               <Settings size={16} style={{ animation: isSubmitting ? 'spin 2s linear infinite' : 'none' }} />
+               <span>{isSubmitting ? 'جاري حفظ الإعدادات...' : 'حفظ الإعدادات'}</span>
+             </Button>
           </form>
         </div>
       )}
@@ -326,8 +338,9 @@ export default function AdminDashboard() {
               </div>
 
               <div className="modal-actions" style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 'var(--space-3)' }}>
-                <Button type="submit" variant="primary" disabled={isSubmitting} style={{ flex: 1 }}>
-                  إضافة العضو ➕
+                <Button type="submit" variant="primary" disabled={isSubmitting} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                  <Plus size={14} />
+                  <span>إضافة العضو</span>
                 </Button>
                 <Button type="button" variant="secondary" onClick={() => setShowAddModal(false)} style={{ flex: 1 }}>
                   إلغاء
