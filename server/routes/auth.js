@@ -32,10 +32,17 @@ router.post('/login', validateLogin, async (req, res) => {
       return res.status(401).json({ error: messages.auth.invalidCredentials });
     }
 
+    if (member.isLocked()) {
+      return res.status(423).json({ error: messages.auth.accountLocked });
+    }
+
     const isMatch = await member.comparePassword(password);
     if (!isMatch) {
+      await member.incLoginAttempts();
       return res.status(401).json({ error: messages.auth.invalidCredentials });
     }
+
+    await member.resetLoginAttempts();
 
     const token = jwt.sign({ id: member.id, email: member.email }, JWT_SECRET, { expiresIn: '7d' });
 
@@ -73,7 +80,7 @@ router.post('/register', validateRegister, async (req, res) => {
       name,
       email,
       password,
-      role: 'عضو جديد',
+      role: messages.auth.defaultRole,
       avatar: defaultAvatar
     });
 
@@ -130,7 +137,7 @@ router.put('/profile', authenticate, validateProfileUpdate, async (req, res) => 
     });
   } catch (error) {
     logger.error('Profile update error: %o', error);
-    return res.status(500).json({ error: 'حدث خطأ أثناء تحديث الملف الشخصي.' });
+    return res.status(500).json({ error: messages.auth.profileUpdateError });
   }
 });
 
@@ -140,17 +147,17 @@ router.put('/change-password', authenticate, validateChangePassword, async (req,
     const { currentPassword, newPassword } = req.body;
     const isMatch = await req.user.comparePassword(currentPassword);
     if (!isMatch) {
-      return res.status(400).json({ error: 'كلمة المرور الحالية غير صحيحة.' });
+      return res.status(400).json({ error: messages.auth.currentPasswordIncorrect });
     }
 
     req.user.password = newPassword;
     await req.user.save();
 
     logger.info(`Password changed for user ${req.user.email}`);
-    return res.json({ message: 'تم تغيير كلمة المرور بنجاح.' });
+    return res.json({ message: messages.auth.passwordChangeSuccess });
   } catch (error) {
     logger.error('Change password error: %o', error);
-    return res.status(500).json({ error: 'حدث خطأ أثناء تغيير كلمة المرور.' });
+    return res.status(500).json({ error: messages.auth.passwordChangeError });
   }
 });
 
@@ -161,22 +168,23 @@ router.post('/forgot-password', validateForgotPassword, async (req, res) => {
     const member = await Member.findOne({ where: { email } });
     if (!member) {
       // For security, don't reveal if email exists or not
-      return res.json({ message: 'إذا كان البريد الإلكتروني مسجلاً لدينا، فقد تم إرسال رابط إعادة تعيين كلمة المرور.' });
+      return res.json({ message: messages.auth.forgotPasswordSent });
     }
 
-    const token = crypto.randomBytes(20).toString('hex');
-    member.resetPasswordToken = token;
-    member.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
+    const token = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    member.resetPasswordToken = hashedToken;
+    member.resetPasswordExpires = new Date(Date.now() + 3600000);
     await member.save();
 
     const resetUrl = `${req.headers.origin || 'http://localhost:5173'}/#/reset-password?token=${token}`;
     await sendPasswordResetEmail(member.email, member.name, resetUrl);
 
     logger.info(`Password reset link sent to ${email}`);
-    return res.json({ message: 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.' });
+    return res.json({ message: messages.auth.forgotPasswordSent });
   } catch (error) {
     logger.error('Forgot password error: %o', error);
-    return res.status(500).json({ error: 'حدث خطأ أثناء معالجة طلبك.' });
+    return res.status(500).json({ error: messages.auth.forgotPasswordError });
   }
 });
 
@@ -184,10 +192,11 @@ router.post('/forgot-password', validateForgotPassword, async (req, res) => {
 router.post('/reset-password', validateResetPassword, async (req, res) => {
   try {
     const { token, password } = req.body;
-    const member = await Member.findOne({ where: { resetPasswordToken: token } });
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const member = await Member.findOne({ where: { resetPasswordToken: hashedToken } });
     
     if (!member || !member.resetPasswordExpires || member.resetPasswordExpires < new Date()) {
-      return res.status(400).json({ error: 'رمز إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية.' });
+      return res.status(400).json({ error: messages.auth.resetPasswordInvalid });
     }
 
     member.password = password;
@@ -196,10 +205,21 @@ router.post('/reset-password', validateResetPassword, async (req, res) => {
     await member.save();
 
     logger.info(`Password successfully reset for user ${member.email}`);
-    return res.json({ message: 'تم إعادة تعيين كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول.' });
+    return res.json({ message: messages.auth.resetPasswordSuccess });
   } catch (error) {
     logger.error('Reset password error: %o', error);
-    return res.status(500).json({ error: 'حدث خطأ أثناء إعادة تعيين كلمة المرور.' });
+    return res.status(500).json({ error: messages.auth.resetPasswordError });
+  }
+});
+
+// POST /api/auth/logout
+router.post('/logout', authenticate, async (req, res) => {
+  try {
+    logger.info(`User logged out: ${req.user.name} (${req.user.email})`);
+    return res.json({ message: messages.auth.logoutSuccess });
+  } catch (error) {
+    logger.error('Logout error: %o', error);
+    return res.status(500).json({ error: messages.auth.logoutError });
   }
 });
 

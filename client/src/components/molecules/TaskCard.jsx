@@ -3,6 +3,18 @@ import PropTypes from 'prop-types';
 import Avatar from '../atoms/Avatar';
 import { translatePriority } from '../../utils/translations';
 
+const SR_ONLY_STYLE = {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  padding: 0,
+  margin: '-1px',
+  overflow: 'hidden',
+  clip: 'rect(0, 0, 0, 0)',
+  whiteSpace: 'nowrap',
+  borderWidth: 0
+};
+
 function TaskCardFn({ task, assignee, onSelect }) {
   const handleClick = React.useCallback(() => {
     if (onSelect) onSelect(task);
@@ -39,58 +51,58 @@ function TaskCardFn({ task, assignee, onSelect }) {
         gap: '12px'
       }}
     >
-      {/* Hidden elements for accessibility and testing support */}
-      <span className={`task-status-dot status-${task.status} sr-only`} />
-      <span className="badge sr-only">{translatePriority(task.priority)}</span>
+      {/* Hidden elements for accessibility and testing support — self-contained sr-only so they don't depend on an external <style> injection */}
+      <span className={`task-status-dot status-${task.status}`} aria-hidden="true" style={SR_ONLY_STYLE} />
+      <span className="badge" aria-hidden="true" style={SR_ONLY_STYLE}>{translatePriority(task.priority)}</span>
       {task.comments?.length > 0 && (
-        <span className="comment-count sr-only">{task.comments.length}</span>
+        <span className="comment-count" aria-hidden="true" style={SR_ONLY_STYLE}>{task.comments.length}</span>
       )}
-      {/* Right side: Avatar & Info */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
-        <Avatar src={assignee?.avatar} alt={assignee?.name} size="md" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', minWidth: 0, textAlign: 'right' }}>
-          <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
-            <span 
-              style={{ 
-                width: '6px', 
-                height: '6px', 
-                borderRadius: '50%', 
-                backgroundColor: priorityColor[task.priority] || '#6b7280', 
-                display: 'inline-block',
-                flexShrink: 0
-              }} 
-              title={`أولوية: ${task.priority}`}
-            />
-            <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-              {task.title}
-            </span>
-          </h4>
-          <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-            {task.description || 'لا يوجد وصف للمهمة.'}
-          </p>
+        {/* Right side: Avatar & Info */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
+          <Avatar src={assignee?.avatar} alt={assignee?.name} size="md" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', minWidth: 0, textAlign: 'right' }}>
+            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+              <span 
+                style={{ 
+                  width: '6px', 
+                  height: '6px', 
+                  borderRadius: '50%', 
+                  backgroundColor: priorityColor[task.priority] || '#6b7280', 
+                  display: 'inline-block',
+                  flexShrink: 0
+                }} 
+                title={`أولوية: ${task.priority}`}
+              />
+              <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                {task.title}
+              </span>
+            </h4>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+              {task.description || 'لا يوجد وصف للمهمة.'}
+            </p>
+          </div>
+        </div>
+
+        {/* Left side: Status & Date */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0 }}>
+          <span 
+            style={{ 
+              padding: '2px 8px', 
+              borderRadius: '12px', 
+              backgroundColor: currentStatus.bg, 
+              color: currentStatus.text, 
+              fontSize: '0.65rem', 
+              fontWeight: 700,
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {currentStatus.label}
+          </span>
+          <span className="font-english" style={{ fontSize: '0.65rem', color: 'var(--text-faint)' }}>
+            {task.dueDate}
+          </span>
         </div>
       </div>
-
-      {/* Left side: Status & Date */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0 }}>
-        <span 
-          style={{ 
-            padding: '2px 8px', 
-            borderRadius: '12px', 
-            backgroundColor: currentStatus.bg, 
-            color: currentStatus.text, 
-            fontSize: '0.65rem', 
-            fontWeight: 700,
-            whiteSpace: 'nowrap'
-          }}
-        >
-          {currentStatus.label}
-        </span>
-        <span className="font-english" style={{ fontSize: '0.65rem', color: 'var(--text-faint)' }}>
-          {task.dueDate}
-        </span>
-      </div>
-    </div>
   );
 }
 

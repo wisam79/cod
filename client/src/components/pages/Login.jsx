@@ -86,7 +86,7 @@ export default function Login() {
       setNewPassword('');
       setConfirmPassword('');
       setTimeout(() => {
-        window.location.hash = '#/';
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
         setView('login');
         setResetSuccess('');
       }, 3000);
@@ -175,7 +175,7 @@ export default function Login() {
           <div className="login-back-link">
             <a
               href="#/"
-              onClick={(e) => { e.preventDefault(); window.location.hash = '#/'; setView('login'); setResetError(''); setResetSuccess(''); }}
+              onClick={(e) => { e.preventDefault(); window.history.replaceState(null, '', window.location.pathname + window.location.search); setView('login'); setResetError(''); setResetSuccess(''); }}
             >
               العودة لتسجيل الدخول
             </a>

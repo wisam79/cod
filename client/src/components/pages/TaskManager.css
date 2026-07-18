@@ -1,0 +1,346 @@
+.task-manager-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.kanban-board-desktop {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .task-manager-view .tasks-list {
+    display: none !important;
+  }
+
+  .kanban-board-desktop {
+    display: flex !important;
+    gap: var(--space-4);
+    flex: 1;
+    overflow-x: auto;
+    align-items: flex-start;
+    padding-bottom: var(--space-6);
+    height: calc(100vh - 180px);
+  }
+
+  .kanban-column {
+    flex: 1;
+    min-width: 250px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+  }
+
+  .kanban-column:last-child {
+    border-left: none;
+  }
+
+  .kanban-column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-3);
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .kanban-column-header h3 {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+  }
+
+  .kanban-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .kanban-status-dot.status-todo { background-color: var(--status-todo); }
+  .kanban-status-dot.status-progress { background-color: var(--status-progress); }
+  .kanban-status-dot.status-review { background-color: var(--status-review); }
+  .kanban-status-dot.status-done { background-color: var(--status-done); }
+
+  .kanban-count-badge {
+    background-color: var(--bg-elevated);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--radius-xs);
+  }
+
+  .kanban-column-tasks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-2);
+    overflow-y: auto;
+    flex: 1;
+  }
+}
+
+.task-manager-view .tasks-list {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-lg);
+  overflow-y: auto;
+  flex: 1;
+  padding-bottom: 80px;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: var(--shadow-sm);
+}
+
+.task-manager-view .tasks-list::-webkit-scrollbar {
+  display: none;
+}
+
+.task-manager-view .task-list-item:last-child {
+  border-bottom: none;
+}
+
+.task-manager-view .task-list-item:hover {
+  background-color: var(--bg-elevated);
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+  border-radius: var(--radius-md);
+}
+
+.task-manager-view .task-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-manager-view .task-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.task-manager-view .task-status-dot.status-todo { background-color: var(--status-todo); }
+.task-manager-view .task-status-dot.status-progress { background-color: var(--status-progress); }
+.task-manager-view .task-status-dot.status-review { background-color: var(--status-review); }
+.task-manager-view .task-status-dot.status-done { background-color: var(--status-done); }
+
+.task-manager-view .task-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.task-manager-view .task-desc-preview {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.task-manager-view .task-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border-light);
+  padding-top: var(--space-3);
+  margin-top: var(--space-1);
+}
+
+.task-manager-view .task-meta {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.task-manager-view .due-date,
+.task-manager-view .comment-count {
+  font-size: 0.6875rem;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-english);
+  font-variant-numeric: tabular-nums;
+}
+
+.task-manager-view .assignee-avatar-wrapper {
+  display: flex;
+}
+
+.task-manager-view .assignee-avatar {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50%;
+  border: 2px solid var(--bg-card);
+  box-shadow: var(--shadow-xs);
+}
+
+.task-manager-view .task-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  overflow-y: auto;
+  flex: 1;
+  padding: var(--space-4);
+}
+
+.task-manager-view .detail-task-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.task-manager-view .detail-task-desc {
+  font-size: 0.875rem;
+  color: var(--text-main);
+  line-height: 1.6;
+  background-color: var(--bg-elevated);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+}
+
+.task-manager-view .detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  background-color: var(--bg-elevated);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+}
+
+.task-manager-view .detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.task-manager-view .detail-item .label {
+  font-size: 0.6875rem;
+  color: var(--text-faint);
+  font-weight: 600;
+}
+
+.task-manager-view .detail-item .val {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.task-manager-view .status-select {
+  border: none;
+  background: none;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  outline: none;
+  cursor: pointer;
+  width: fit-content;
+  color: var(--text-main);
+}
+
+.task-manager-view .status-select.status-todo { color: var(--status-todo); }
+.task-manager-view .status-select.status-progress { color: var(--status-progress); }
+.task-manager-view .status-select.status-review { color: var(--status-review); }
+.task-manager-view .status-select.status-done { color: var(--status-done); }
+
+.task-manager-view .detail-comments-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+  min-height: 180px;
+}
+
+.task-manager-view .detail-comments-section h4 {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: var(--space-2);
+}
+
+.task-manager-view .comments-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 2px;
+}
+
+.task-manager-view .no-comments {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  padding: var(--space-5) 0;
+}
+
+.task-manager-view .comment-form {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.task-manager-view .comment-form input {
+  flex: 1;
+  padding: 10px var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background-color: var(--bg-elevated);
+  font-size: 0.875rem;
+  outline: none;
+  text-align: right;
+  height: var(--tap-target);
+  color: var(--text-main);
+  transition: border-color var(--dur-fast) var(--ease-in-out);
+}
+
+.task-manager-view .comment-form input:focus {
+  border-color: var(--primary);
+}
+
+.task-manager-view .comment-form .btn {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--tap-target);
+}
+
+.task-manager-view .modal-footer-actions {
+  border-top: 1px solid var(--border-light);
+  padding-top: var(--space-3);
+  margin-top: auto;
+}
+
+.task-manager-view .btn-delete-task {
+  background-color: var(--danger-light);
+  color: var(--danger);
+  width: 100%;
+  padding: var(--space-3);
+  font-size: 0.875rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(185, 28, 28, 0.12);
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity var(--dur-fast) var(--ease-in-out);
+  min-height: var(--tap-target);
+}
+
+.task-manager-view .btn-delete-task:hover {
+  opacity: 0.9;
+}
+
+.badge-priority-high { background-color: var(--priority-high-bg); color: var(--priority-high); padding: 3px 8px; border-radius: var(--radius-xs); font-size: 0.6875rem; font-weight: 700; }
+.badge-priority-medium { background-color: var(--priority-medium-bg); color: var(--priority-medium); padding: 3px 8px; border-radius: var(--radius-xs); font-size: 0.6875rem; font-weight: 700; }
+.badge-priority-low { background-color: var(--priority-low-bg); color: var(--priority-low); padding: 3px 8px; border-radius: var(--radius-xs); font-size: 0.6875rem; font-weight: 700; }

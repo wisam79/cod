@@ -111,7 +111,7 @@ app.use(async (req, res, next) => {
       dbSynced = true;
     } catch (err) {
       logger.error('Failed to sync DB in middleware: %o', err);
-      return res.status(500).json({ error: 'حدث خطأ أثناء الاتصال بقاعدة البيانات.' });
+      return res.status(500).json({ error: messages.server.dbConnectionError });
     }
   }
   next();
@@ -134,7 +134,7 @@ app.use(async (req, res, next) => {
     try {
       const regSetting = await Settings.findByPk('allowUserRegistration');
       if (regSetting && regSetting.value === 'false') {
-        return res.status(403).json({ error: 'التسجيل مغلق حالياً من قِبل إدارة النظام.' });
+        return res.status(403).json({ error: messages.auth.registrationBlocked });
       }
     } catch (e) {
       logger.error('Failed to check registration setting: %o', e);
@@ -164,7 +164,7 @@ app.use(async (req, res, next) => {
       }
       return res.status(503).json({ 
         error: 'System Maintenance', 
-        message: 'التطبيق تحت الصيانة حالياً لترقية النظام. يرجى المحاولة لاحقاً.' 
+        message: messages.server.maintenanceMode 
       });
     }
   } catch (err) {

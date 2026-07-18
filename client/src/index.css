@@ -1036,6 +1036,18 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 .text-muted { color: var(--text-muted); }
 .font-english { font-family: var(--font-english); }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 .logout-btn:hover {
   background-color: var(--danger-light);
   color: var(--danger);
@@ -1464,6 +1476,33 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 
   .phone-mockup-wrapper:not(.dark-theme) .phone-home-indicator {
     background: rgba(0, 0, 0, 0.2);
+  }
+
+  .flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .flex-center-full {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  .flex-center-viewport {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #0f172a;
+  }
+
+  .loading-text {
+    margin-top: 16px;
+    font-weight: 700;
+    color: var(--primary);
   }
 }
 

@@ -148,6 +148,7 @@ export async function deleteTask(taskId) {
     const error = await res.json().catch(() => ({ error: 'فشل حذف المهمة' }));
     throw new Error(error.error || 'فشل حذف المهمة');
   }
+  return res.json().catch(() => ({ message: 'تم حذف المهمة بنجاح.' }));
 }
 
 export async function addComment(taskId, text) {

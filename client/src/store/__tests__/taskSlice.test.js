@@ -36,7 +36,9 @@ describe('taskSlice', () => {
     api.fetchTasks.mockResolvedValueOnce([{ id: 1, title: 'Task 1' }]);
     api.fetchMembers.mockResolvedValueOnce([{ id: 1, name: 'Member 1' }]);
 
-    await useAppStore.getState().fetchInitialData();
+    const promise = useAppStore.getState().fetchInitialData();
+    vi.advanceTimersByTime(350);
+    await promise;
     const state = useAppStore.getState();
 
     expect(state.tasks.length).toBe(1);
@@ -50,7 +52,9 @@ describe('taskSlice', () => {
     api.fetchTasks.mockResolvedValueOnce([{ id: 1, title: 'Task 1' }]);
     api.fetchMembers.mockResolvedValueOnce([]);
 
-    await useAppStore.getState().fetchInitialData();
+    const promise = useAppStore.getState().fetchInitialData();
+    vi.advanceTimersByTime(350);
+    await promise;
 
     expect(localStorage.getItem('cached_tasks')).toContain('Task 1');
     expect(localStorage.getItem('cached_members')).toBeDefined();
@@ -64,7 +68,9 @@ describe('taskSlice', () => {
     api.fetchTasks.mockRejectedValueOnce(new Error('Network error'));
     api.fetchMembers.mockRejectedValueOnce(new Error('Network error'));
 
-    await useAppStore.getState().fetchInitialData();
+    const promise = useAppStore.getState().fetchInitialData();
+    vi.advanceTimersByTime(350);
+    await promise;
     const state = useAppStore.getState();
 
     expect(state.tasks).toEqual([{ id: 99, title: 'Cached' }]);
@@ -77,7 +83,9 @@ describe('taskSlice', () => {
     api.fetchTasks.mockRejectedValueOnce(new Error('Network error'));
     api.fetchMembers.mockRejectedValueOnce(new Error('Network error'));
 
-    await useAppStore.getState().fetchInitialData();
+    const promise = useAppStore.getState().fetchInitialData();
+    vi.advanceTimersByTime(350);
+    await promise;
     const state = useAppStore.getState();
 
     expect(state.tasks).toEqual([]);

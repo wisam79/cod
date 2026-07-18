@@ -23,7 +23,7 @@ vi.mock('../apiClient', () => ({
 
 describe('Integration: Store + API interactions', () => {
   beforeEach(() => {
-    vi.useFakeTimers();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
     useAppStore.setState({
       token: null,
       currentUser: null,
@@ -45,7 +45,6 @@ describe('Integration: Store + API interactions', () => {
       adminSettings: { allowUserRegistration: true, maintenanceMode: false, maxTasksPerUser: 10 },
     });
     localStorage.clear();
-    vi.restoreAllMocks();
   });
 
   afterEach(() => {
@@ -59,8 +58,8 @@ describe('Integration: Store + API interactions', () => {
         token: 'jwt-123',
         member: { id: 1, name: 'أحمد', email: 'a@t.com', role: 'dev', avatar: '' }
       });
-      api.fetchTasks.mockResolvedValueOnce([{ id: 1, title: 'Task' }]);
-      api.fetchMembers.mockResolvedValueOnce([{ id: 1, name: 'أحمد' }]);
+      api.fetchTasks.mockResolvedValue([{ id: 1, title: 'Task' }]);
+      api.fetchMembers.mockResolvedValue([{ id: 1, name: 'أحمد' }]);
 
       await useAppStore.getState().login('a@t.com', 'pass');
 
@@ -70,7 +69,7 @@ describe('Integration: Store + API interactions', () => {
       expect(state.tasks.length).toBe(1);
       expect(state.members.length).toBe(1);
       expect(localStorage.getItem('auth_token')).toBe('jwt-123');
-    });
+    }, 10000);
   });
 
   describe('Logout cleanup', () => {

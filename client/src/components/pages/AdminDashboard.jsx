@@ -93,12 +93,14 @@ export default function AdminDashboard() {
 
   const handleSettingsSubmit = async (e) => {
     e.preventDefault();
+    const parsedMax = parseInt(settingsForm.maxTasksPerUser, 10);
+    if (Number.isNaN(parsedMax) || parsedMax < 1) return;
     setIsSubmitting(true);
     try {
       await saveAdminSettings({
         allowUserRegistration: settingsForm.allowUserRegistration,
         maintenanceMode: settingsForm.maintenanceMode,
-        maxTasksPerUser: parseInt(settingsForm.maxTasksPerUser, 10)
+        maxTasksPerUser: parsedMax
       });
     } catch (_) {
     } finally {

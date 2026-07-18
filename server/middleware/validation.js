@@ -66,11 +66,13 @@ const validateTask = (req, res, next) => {
     if (!isString(dueDate) || !dateRegex.test(dueDate) || isNaN(Date.parse(dueDate))) {
       return res.status(400).json({ error: messages.validation.taskDueDateInvalid });
     }
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const selectedDate = new Date(dueDate);
-    if (selectedDate < today) {
-      return res.status(400).json({ error: messages.validation.taskDueDateFuture });
+    if (req.method === 'POST') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const selectedDate = new Date(dueDate);
+      if (selectedDate < today) {
+        return res.status(400).json({ error: messages.validation.taskDueDateFuture });
+      }
     }
   }
   next();
@@ -156,7 +158,7 @@ const validateProfileUpdate = (req, res, next) => {
 const validateChangePassword = (req, res, next) => {
   const { currentPassword, newPassword } = req.body;
   if (!isString(currentPassword) || currentPassword.trim().length === 0) {
-    return res.status(400).json({ error: 'رمز الدخول PIN الحالي مطلوب.' });
+    return res.status(400).json({ error: messages.validation.currentPasswordRequired });
   }
   if (!isString(newPassword) || newPassword.length !== 6) {
     return res.status(400).json({ error: messages.validation.passwordLength });

@@ -39,16 +39,22 @@ export default function NotificationDrawer({ isOpen, onClose, notifications, onC
     const dx = touchStartX.current - e.touches[0].clientX;
     const dy = e.touches[0].clientY - touchStartY.current;
     if (Math.abs(dy) > Math.abs(dx)) return;
-    if (dx <= 0) return;
-    const clamped = Math.min(dx, 280);
-    drawerRef.current.style.transform = `translateX(-${clamped}px)`;
+    const isRTL = document.documentElement.dir === 'rtl';
+    // In LTR the drawer is on the left and dismisses leftward (dx > 0).
+    // In RTL the drawer is on the right and must dismiss rightward (dx < 0).
+    const dismissing = isRTL ? dx < 0 : dx > 0;
+    if (!dismissing) return;
+    const clamped = Math.min(Math.abs(dx), 280);
+    const sign = isRTL ? 1 : -1;
+    drawerRef.current.style.transform = `translateX(${sign * clamped}px)`;
     drawerRef.current.style.opacity = String(Math.max(1 - clamped / 320, 0));
   };
 
   const handleTouchEnd = (e) => {
     if (touchStartX.current === null || !drawerRef.current) return;
     const dx = touchStartX.current - e.changedTouches[0].clientX;
-    const shouldDismiss = dx > 100;
+    const isRTL = document.documentElement.dir === 'rtl';
+    const shouldDismiss = isRTL ? dx < -100 : dx > 100;
     drawerRef.current.style.transform = '';
     drawerRef.current.style.opacity = '';
     touchStartX.current = null;

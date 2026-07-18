@@ -4,30 +4,19 @@ import { useAppStore } from './store/useAppStore';
 import Navbar from './components/organisms/Navbar';
 import NotificationDrawer from './components/organisms/NotificationDrawer';
 import ToastContainer from './components/organisms/ToastContainer';
-import Avatar from './components/atoms/Avatar';
 import ProfileModal from './components/organisms/ProfileModal';
+import ConnectionStatusBar from './components/organisms/ConnectionStatusBar';
+import HeaderBar from './components/organisms/HeaderBar';
+import DesktopSidebar from './components/organisms/DesktopSidebar';
+import InstallBanner from './components/organisms/InstallBanner';
 import { SkeletonPage, SkeletonChat } from './components/atoms/Skeleton';
 import { triggerHaptic } from './utils/haptics';
 
 import { 
-  WifiOff, 
-  Loader2, 
-  Activity, 
   Sun, 
   Moon, 
   Maximize2, 
-  Minimize2, 
-  Bell, 
-  LogOut,
-  Download,
-  X,
-  RefreshCw,
-  Home,
-  MessageSquare,
-  Users,
-  ShieldAlert,
-  Settings,
-  CheckSquare
+  Minimize2
 } from 'lucide-react';
 
 const Dashboard = React.lazy(() => import('./components/pages/Dashboard'));
@@ -152,24 +141,6 @@ function App() {
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
   }, []);
 
-  const handleInstall = async () => {
-    if (!deferredInstallPrompt) return;
-    triggerHaptic('medium');
-    deferredInstallPrompt.prompt();
-    const { outcome } = await deferredInstallPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setShowInstallBanner(false);
-      triggerHaptic('success');
-    }
-    setDeferredInstallPrompt(null);
-  };
-
-  const dismissInstallBanner = () => {
-    setShowInstallBanner(false);
-    localStorage.setItem('install-banner-dismissed', 'true');
-    triggerHaptic('light');
-  };
-
   useEffect(() => {
     const handleOnline = () => {
       setOffline(false);
@@ -274,7 +245,7 @@ function App() {
   if (isMaintenance) {
     return (
       <div className={`app-container ${isDarkMode ? 'dark-theme' : ''}`}>
-        <React.Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0f172a' }}><div className="loader"></div></div>}>
+        <React.Suspense fallback={<div className="flex-center-viewport"><div className="loader"></div></div>}>
           <Maintenance />
         </React.Suspense>
       </div>
@@ -288,7 +259,7 @@ function App() {
         {!fullscreen && <div className="phone-notch"></div>}
         <div className={`app-container loader-container ${isDarkMode ? 'dark-theme' : ''}`}>
           <div className="loader"></div>
-          <p className="loading-text" style={{ marginTop: '16px', fontWeight: '700', color: 'var(--primary)' }}>جاري تحميل مُهِمَّة...</p>
+          <p className="loading-text">جاري تحميل مُهِمَّة...</p>
         </div>
       </div>
     );
@@ -298,7 +269,7 @@ function App() {
     const renderLogin = (
       <div className={`app-container ${isDarkMode ? 'dark-theme' : ''}`} style={{ overflowY: 'auto' }}>
         <React.Suspense fallback={
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+          <div className="flex-center-full">
             <div className="loader"></div>
           </div>
         }>
@@ -327,125 +298,24 @@ function App() {
 
       <div className="app-layout-wrapper">
         {/* Desktop Sidebar */}
-        <aside className="desktop-sidebar">
-          <div className="sidebar-logo">
-            <div className="sidebar-logo-icon">
-              <CheckSquare size={22} style={{ color: '#fff' }} />
-            </div>
-            <div className="logo-text">
-              <h2>مُهِمَّة</h2>
-              <span className="logo-sub font-english">Mohemmaty</span>
-            </div>
-          </div>
-          
-          <nav className="sidebar-nav">
-            <button className={`sidebar-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => handleSetActiveTab('dashboard')}>
-              <Home size={18} />
-              <span>لوحة التحكم</span>
-            </button>
-            <button className={`sidebar-item ${activeTab === 'tasks' ? 'active' : ''}`} onClick={() => handleSetActiveTab('tasks')}>
-              <CheckSquare size={18} />
-              <span>إدارة المهام</span>
-            </button>
-            <button className={`sidebar-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => handleSetActiveTab('chat')}>
-              <MessageSquare size={18} />
-              <span>غرفة المحادثة</span>
-            </button>
-            <button className={`sidebar-item ${activeTab === 'team' ? 'active' : ''}`} onClick={() => handleSetActiveTab('team')}>
-              <Users size={18} />
-              <span>دليل الفريق</span>
-            </button>
-            {isSuperAdmin && (
-              <button className={`sidebar-item ${activeTab === 'admin' ? 'active' : ''}`} onClick={() => handleSetActiveTab('admin')}>
-                <ShieldAlert size={18} />
-                <span>لوحة الإدارة</span>
-              </button>
-            )}
-            <button className="sidebar-item settings-btn" onClick={() => { setProfileOpen(true); triggerHaptic('light'); }}>
-              <Settings size={18} />
-              <span>الإعدادات</span>
-            </button>
-          </nav>
-          
-          <div className="sidebar-footer">
-            <div className="sidebar-user-info" onClick={() => { setProfileOpen(true); triggerHaptic('light'); }} style={{ cursor: 'pointer' }}>
-              <Avatar src={user.avatar} alt={user.name} size="sm" />
-              <div className="sidebar-user-details">
-                <span className="sidebar-user-name">{user.name}</span>
-                <span className="sidebar-user-role">{user.role}</span>
-              </div>
-            </div>
-            <div className="sidebar-status">
-              <span className={`ws-indicator-dot ${wsStatus}`}></span>
-              <span>جودة الاتصال: {wsStatus === 'connected' ? 'ممتاز' : 'مفصول'}</span>
-            </div>
-            <span className="version font-english">الإصدار 1.0.0</span>
-          </div>
-        </aside>
+        <DesktopSidebar 
+          activeTab={activeTab} 
+          handleSetActiveTab={handleSetActiveTab}
+          user={user}
+          wsStatus={wsStatus}
+          onOpenProfile={() => setProfileOpen(true)}
+        />
 
         {/* Main Viewport */}
         <main className="main-viewport">
-          <div className="connection-status-bars">
-            {isOffline && (
-              <div className="status-bar offline" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                <WifiOff size={14} />
-                أنت تعمل في وضع عدم الاتصال (Offline)
-              </div>
-            )}
-            {!isOffline && wsStatus === 'connecting' && !window.location.hostname.endsWith('.vercel.app') && (
-              <div className="status-bar connecting" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                <Loader2 size={14} className="animate-spin" style={{ animation: 'spin 1.5s linear infinite' }} />
-                جاري إعادة اتصال البث المباشر...
-              </div>
-            )}
-            {!isOffline && wsStatus === 'disconnected' && !window.location.hostname.endsWith('.vercel.app') && (
-              <div className="status-bar disconnected" onClick={() => { initWebSocket(); triggerHaptic('medium'); }} role="button" tabIndex={0} aria-label="إعادة الاتصال بالبث المباشر" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                <Activity size={14} />
-                انقطع البث المباشر. اضغط لإعادة الاتصال
-              </div>
-            )}
-          </div>
+          <ConnectionStatusBar />
 
-          <div className="header-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-            {activeTab === 'dashboard' ? (
-              <div className="header-welcome-container" onClick={() => { setProfileOpen(true); triggerHaptic('light'); }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-                <Avatar src={user.avatar} alt={user.name} size="md" className="avatar" />
-                <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'right' }}>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    أهلاً، {user.name.split(' ')[0]} 👋
-                  </span>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                    {user.email || user.role || 'عضو متصل'}
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="header-user" onClick={() => { setProfileOpen(true); triggerHaptic('light'); }} style={{ cursor: 'pointer' }} role="button" tabIndex={0} aria-label="تعديل الملف الشخصي">
-                <Avatar src={user.avatar} alt={user.name} size="md" className="avatar" />
-              </div>
-            )}
-
-            {activeTab !== 'dashboard' && (
-              <h2 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
-                {TAB_TITLES[activeTab] || 'مُهِمَّة'}
-              </h2>
-            )}
-
-            <div className="header-actions">
-              <button 
-                className="icon-btn" 
-                onClick={() => { setDrawerOpen(true); triggerHaptic('light'); }}
-                aria-label="مركز التنبيهات"
-                aria-expanded={drawerOpen}
-                style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--bg-card)', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)' }}
-              >
-                <Bell size={18} />
-                {notifications.length > 0 && (
-                  <span className="badge-count" aria-label={`${notifications.length} إشعار جديد`}>{notifications.length}</span>
-                )}
-              </button>
-            </div>
-          </div>
+          <HeaderBar 
+            activeTab={activeTab} 
+            user={user} 
+            onOpenNotifications={() => setDrawerOpen(true)}
+            onOpenProfile={() => setProfileOpen(true)}
+          />
 
           <div className="scrollable-content">
             {renderTabContent}
@@ -471,38 +341,12 @@ function App() {
 
           <Navbar activeTab={activeTab} setActiveTab={handleSetActiveTab} currentUser={currentUser} />
 
-          {showInstallBanner && deferredInstallPrompt && (
-            <div className="install-banner">
-              <div className="install-banner-icon">
-                <Download size={20} color="#fff" />
-              </div>
-              <div className="install-banner-text">
-                <h4>تثبيت مُهِمَّة</h4>
-                <p>أضف التطبيق إلى الشاشة الرئيسية</p>
-              </div>
-              <div className="install-banner-actions">
-                <button className="install-btn-accept" onClick={handleInstall}>تثبيت</button>
-                <button className="install-btn-dismiss" onClick={dismissInstallBanner}>
-                  <X size={14} />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {showUpdateBanner && (
-            <div className="install-banner" style={{ background: 'linear-gradient(135deg, #059669, #10b981)' }}>
-              <div className="install-banner-icon">
-                <RefreshCw size={20} color="#fff" />
-              </div>
-              <div className="install-banner-text">
-                <h4>تحديث جديد متاح</h4>
-                <p>قم بتحديث التطبيق للحصول على أحدث الإصدار</p>
-              </div>
-              <div className="install-banner-actions">
-                <button className="install-btn-accept" onClick={() => window.location.reload()}>تحديث</button>
-              </div>
-            </div>
-          )}
+          <InstallBanner 
+            deferredInstallPrompt={deferredInstallPrompt}
+            showInstallBanner={showInstallBanner}
+            setShowInstallBanner={setShowInstallBanner}
+            showUpdateBanner={showUpdateBanner}
+          />
         </main>
       </div>
     </div>

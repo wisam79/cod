@@ -52,6 +52,15 @@ const Member = sequelize.define('Member', {
   emailVerificationToken: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  loginAttempts: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0
+  },
+  lockUntil: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
 }, {
   hooks: {
@@ -72,6 +81,26 @@ const Member = sequelize.define('Member', {
 
 Member.prototype.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
+};
+
+Member.prototype.isLocked = function () {
+  return !!(this.lockUntil && this.lockUntil > Date.now());
+};
+
+Member.prototype.incLoginAttempts = async function () {
+  if (this.lockUntil && this.lockUntil < Date.now()) {
+    return this.update({ loginAttempts: 1, lockUntil: null });
+  }
+  const newAttempts = this.loginAttempts + 1;
+  const lockUpdates = { loginAttempts: newAttempts };
+  if (newAttempts >= 5 && !this.isLocked()) {
+    lockUpdates.lockUntil = Date.now() + 15 * 60 * 1000;
+  }
+  return this.update(lockUpdates);
+};
+
+Member.prototype.resetLoginAttempts = async function () {
+  return this.update({ loginAttempts: 0, lockUntil: null });
 };
 
 module.exports = Member;

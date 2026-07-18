@@ -1,0 +1,10 @@
+{
+  "provider": {
+    "freemodel": {
+      "options": {
+        "apiKey": "fe_oa_478b3a3e752bffab710702e65c4e85fb1310248b14aff4cf",
+        "baseURL": "https://cc.freemodel.dev/v1"
+      }
+    }
+  }
+}

@@ -6,7 +6,22 @@ const messages = {
     registerError: 'حدث خطأ في الخادم أثناء تسجيل الحساب.',
     tokenMissing: 'غير مصرح بالدخول، يرجى تسجيل الدخول أولاً.',
     tokenInvalid: 'جلسة العمل غير صالحة أو منتهية الصلاحية.',
-    tokenExpired: 'انتهت صلاحية جلسة العمل الخاصة بك.'
+    tokenExpired: 'انتهت صلاحية جلسة العمل الخاصة بك.',
+    accountLocked: 'الحساب مقفل مؤقتاً بسبب محاولات فاشلة متكررة. حاول مرة أخرى بعد 15 دقيقة.',
+    userNotFound: 'المستخدم غير موجود.',
+    logoutSuccess: 'تم تسجيل الخروج بنجاح.',
+    logoutError: 'حدث خطأ أثناء تسجيل الخروج.',
+    profileUpdateError: 'حدث خطأ أثناء تحديث الملف الشخصي.',
+    currentPasswordIncorrect: 'كلمة المرور الحالية غير صحيحة.',
+    passwordChangeSuccess: 'تم تغيير كلمة المرور بنجاح.',
+    passwordChangeError: 'حدث خطأ أثناء تغيير كلمة المرور.',
+    forgotPasswordSent: 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.',
+    forgotPasswordError: 'حدث خطأ أثناء معالجة طلبك.',
+    resetPasswordSuccess: 'تم إعادة تعيين كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول.',
+    resetPasswordInvalid: 'رمز إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية.',
+    resetPasswordError: 'حدث خطأ أثناء إعادة تعيين كلمة المرور.',
+    registrationBlocked: 'التسجيل مغلق حالياً من قِبل إدارة النظام.',
+    defaultRole: 'عضو جديد'
   },
   validation: {
     nameLength: 'الاسم يجب أن يكون حرفين على الأقل.',
@@ -28,7 +43,8 @@ const messages = {
     commentTextString: 'محتوى التعليق يجب أن يكون نصاً.',
     commentTooLong: 'محتوى التعليق طويل جداً (الحد الأقصى 1000 حرف).',
     tokenRequired: 'رمز إعادة التعيين مطلوب.',
-    tokenInvalid: 'رمز إعادة التعيين غير صالح.'
+    tokenInvalid: 'رمز إعادة التعيين غير صالح.',
+    currentPasswordRequired: 'رمز الدخول PIN الحالي مطلوب.'
   },
   tasks: {
     fetchError: 'حدث خطأ في الخادم أثناء جلب المهام.',
@@ -46,7 +62,11 @@ const messages = {
     commentAddError: 'حدث خطأ في الخادم أثناء إضافة التعليق.'
   },
   members: {
-    fetchError: 'حدث خطأ في الخادم أثناء جلب قائمة الأعضاء.'
+    fetchError: 'حدث خطأ في الخادم أثناء جلب قائمة الأعضاء.',
+    roleInvalid: 'الدور المحدد غير صالح.',
+    memberNotFound: 'العضو غير موجود.',
+    roleUpdateSuccess: 'تم تحديث الدور بنجاح.',
+    updateRoleError: 'حدث خطأ في الخادم أثناء تحديث الدور.'
   },
   messages: {
     fetchError: 'حدث خطأ في الخادم أثناء جلب الرسائل.',
@@ -58,10 +78,34 @@ const messages = {
     clearSuccessRes: 'تم مسح الإشعارات بنجاح.',
     clearError: 'حدث خطأ في الخادم أثناء مسح الإشعارات.'
   },
+  admin: {
+    fetchMembersError: 'حدث خطأ أثناء جلب الأعضاء.',
+    nameInvalid: 'الاسم يجب أن يكون نصاً بطول حرفين على الأقل.',
+    emailInvalid: 'اسم المستخدم غير صالح. يجب أن يتكون من 5 حروف بالضبط.',
+    pinInvalid: 'رمز الدخول PIN غير صالح. يجب أن يتكون من 6 أرقام بالضبط.',
+    roleInvalid: (roles) => 'الدور المحدد غير صالح. الأدوار المسموح بها: ' + roles.join('، '),
+    avatarTypeInvalid: 'رابط الصورة الرمزية غير صالح.',
+    avatarInvalid: 'رابط الصورة الرمزية غير صالح.',
+    emailInUse: 'البريد الإلكتروني مستخدم بالفعل.',
+    defaultRole: 'عضو عادي',
+    createSuccess: 'تم إضافة العضو بنجاح.',
+    createError: 'حدث خطأ أثناء إضافة العضو الجديد.',
+    updateSuccess: 'تم تحديث بيانات العضو بنجاح.',
+    updateError: 'حدث خطأ أثناء تحديث بيانات العضو.',
+    cannotDeleteSelf: 'لا يمكنك حذف حسابك الشخصي الذي تستخدمه حالياً.',
+    memberNotFound: 'العضو غير موجود.',
+    deleteSuccess: 'تم حذف العضو وتحديث المهام المرتبطة به بنجاح.',
+    deleteError: 'حدث خطأ أثناء حذف العضو.',
+    settingsFetchError: 'حدث خطأ أثناء جلب الإعدادات.',
+    settingsSaveSuccess: 'تم حفظ الإعدادات بنجاح.',
+    settingsSaveError: 'حدث خطأ أثناء حفظ الإعدادات.'
+  },
   server: {
     routeNotFound: 'المسار المطلوب غير موجود.',
     unexpectedError: 'حدث خطأ غير متوقع في الخادم.',
-    requestTimeout: 'انتهت مهلة الطلب (Request Timeout).'
+    requestTimeout: 'انتهت مهلة الطلب (Request Timeout).',
+    dbConnectionError: 'حدث خطأ أثناء الاتصال بقاعدة البيانات.',
+    maintenanceMode: 'التطبيق تحت الصيانة حالياً لترقية النظام. يرجى المحاولة لاحقاً.'
   },
   ws: {
     unauthorized: 'مطلوب مصادقة للاتصال بالبث المباشر.',

@@ -1,4 +1,5 @@
 const request = require('supertest');
+const crypto = require('crypto');
 const app = require('../server');
 const { sequelize, Member } = require('../models');
 
@@ -140,20 +141,21 @@ describe('Auth Endpoints', () => {
         .send({ email: 'nonex' });
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body.message).toContain('إذا كان البريد الإلكتروني مسجلاً');
+      expect(res.body.message).toContain('تم إرسال رابط إعادة تعيين كلمة المرور');
     });
   });
 
   describe('POST /api/auth/reset-password', () => {
     it('should successfully reset password with valid token', async () => {
       const token = 'valid-token-12345';
+      const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
       const expiry = new Date(Date.now() + 3600000);
       await Member.create({
         name: 'أحمد',
         email: 'ahmed',
         password: '123456',
         role: 'مطوّر',
-        resetPasswordToken: token,
+        resetPasswordToken: hashedToken,
         resetPasswordExpires: expiry
       });
 

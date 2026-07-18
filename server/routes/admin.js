@@ -5,7 +5,7 @@ const { authenticate } = require('../middleware/auth');
 const { isSuperAdmin } = require('../middleware/superAdmin');
 const logger = require('../utils/logger');
 const messages = require('../utils/messages');
-const VALID_ROLES = ['مصمم واجهات UI/UX', 'مطور فرونت-إند', 'مطور باك-إند', 'مديرة المنتج', 'الادمن المطور'];
+const { VALID_ROLES } = require('../utils/roles');
 
 // All routes here require being logged in and being a Super Admin (الادمن المطور)
 router.use(authenticate, isSuperAdmin);
@@ -22,7 +22,7 @@ router.get('/members', async (req, res) => {
     res.json(members);
   } catch (error) {
     logger.error('Admin API error fetching members: %o', error);
-    res.status(500).json({ error: 'حدث خطأ أثناء جلب الأعضاء.' });
+    res.status(500).json({ error: messages.admin.fetchMembersError });
   }
 });
 
@@ -36,46 +36,46 @@ router.post('/members', async (req, res) => {
 
     // Validate inputs
     if (!name || typeof name !== 'string' || name.trim().length < 2) {
-      return res.status(400).json({ error: 'الاسم يجب أن يكون نصاً بطول حرفين على الأقل.' });
+      return res.status(400).json({ error: messages.admin.nameInvalid });
     }
     if (!email || typeof email !== 'string' || !/^[\u0600-\u06FFa-zA-Z]{5}$/.test(email)) {
-      return res.status(400).json({ error: 'اسم المستخدم غير صالح. يجب أن يتكون من 5 حروف بالضبط.' });
+      return res.status(400).json({ error: messages.admin.emailInvalid });
     }
     if (!password || typeof password !== 'string' || !/^[0-9]{6}$/.test(password)) {
-      return res.status(400).json({ error: 'رمز الدخول PIN غير صالح. يجب أن يتكون من 6 أرقام بالضبط.' });
+      return res.status(400).json({ error: messages.admin.pinInvalid });
     }
 
     if (role && !VALID_ROLES.includes(role)) {
-      return res.status(400).json({ error: 'الدور المحدد غير صالح. الأدوار المسموح بها: ' + VALID_ROLES.join('، ') });
+      return res.status(400).json({ error: messages.admin.roleInvalid(VALID_ROLES) });
     }
 
     if (avatar && typeof avatar !== 'string') {
-      return res.status(400).json({ error: 'رابط الصورة الرمزية غير صالح.' });
+      return res.status(400).json({ error: messages.admin.avatarTypeInvalid });
     }
     if (avatar) {
       try { new URL(avatar); } catch {
-        return res.status(400).json({ error: 'رابط الصورة الرمزية غير صالح.' });
+        return res.status(400).json({ error: messages.admin.avatarInvalid });
       }
     }
 
     // Check if email already exists
     const exists = await Member.findOne({ where: { email } });
     if (exists) {
-      return res.status(400).json({ error: 'البريد الإلكتروني مستخدم بالفعل.' });
+      return res.status(400).json({ error: messages.admin.emailInUse });
     }
 
     const newMember = await Member.create({
       name,
       email,
       password,
-      role: role || 'عضو عادي',
+      role: role || messages.admin.defaultRole,
       avatar: avatar || ''
     });
 
     logger.info(`Admin created new member: ${newMember.name} (ID: ${newMember.id})`);
 
     res.status(201).json({
-      message: 'تم إضافة العضو بنجاح.',
+      message: messages.admin.createSuccess,
       member: {
         id: newMember.id,
         name: newMember.name,
@@ -87,7 +87,7 @@ router.post('/members', async (req, res) => {
     });
   } catch (error) {
     logger.error('Admin API error creating member: %o', error);
-    res.status(500).json({ error: 'حدث خطأ أثناء إضافة العضو الجديد.' });
+    res.status(500).json({ error: messages.admin.createError });
   }
 });
 
@@ -103,33 +103,33 @@ router.put('/members/:id', async (req, res) => {
     // Validate inputs
     if (name !== undefined) {
       if (typeof name !== 'string' || name.trim().length < 2) {
-        return res.status(400).json({ error: 'الاسم يجب أن يكون نصاً بطول حرفين على الأقل.' });
+        return res.status(400).json({ error: messages.admin.nameInvalid });
       }
     }
     if (email !== undefined) {
       if (typeof email !== 'string' || !/^[\u0600-\u06FFa-zA-Z]{5}$/.test(email)) {
-        return res.status(400).json({ error: 'اسم المستخدم غير صالح. يجب أن يتكون من 5 حروف بالضبط.' });
+        return res.status(400).json({ error: messages.admin.emailInvalid });
       }
     }
     if (avatar !== undefined && avatar !== null && avatar !== '') {
       if (typeof avatar !== 'string') {
-        return res.status(400).json({ error: 'رابط الصورة الرمزية غير صالح.' });
+        return res.status(400).json({ error: messages.admin.avatarTypeInvalid });
       }
       try { new URL(avatar); } catch {
-        return res.status(400).json({ error: 'رابط الصورة الرمزية غير صالح.' });
+        return res.status(400).json({ error: messages.admin.avatarInvalid });
       }
     }
 
     const member = await Member.findByPk(memberId);
     if (!member) {
-      return res.status(404).json({ error: 'العضو غير موجود.' });
+      return res.status(404).json({ error: messages.admin.memberNotFound });
     }
 
     if (name) member.name = name;
     if (email) member.email = email;
     if (role) {
       if (!VALID_ROLES.includes(role)) {
-        return res.status(400).json({ error: 'الدور المحدد غير صالح. الأدوار المسموح بها: ' + VALID_ROLES.join('، ') });
+        return res.status(400).json({ error: messages.admin.roleInvalid(VALID_ROLES) });
       }
       member.role = role;
     }
@@ -138,7 +138,7 @@ router.put('/members/:id', async (req, res) => {
     if (password && password.trim() !== '') {
       if (!/^[0-9]{6}$/.test(password)) {
         return res.status(400).json({ 
-          error: 'رمز الدخول PIN غير صالح. يجب أن يتكون من 6 أرقام بالضبط.' 
+          error: messages.admin.pinInvalid 
         });
       }
       member.password = password; // beforeUpdate hook will handle hashing
@@ -148,7 +148,7 @@ router.put('/members/:id', async (req, res) => {
     logger.info(`Admin updated details for member: ${member.name} (ID: ${member.id})`);
 
     res.json({
-      message: 'تم تحديث بيانات العضو بنجاح.',
+      message: messages.admin.updateSuccess,
       member: {
         id: member.id,
         name: member.name,
@@ -160,9 +160,9 @@ router.put('/members/:id', async (req, res) => {
   } catch (error) {
     logger.error('Admin API error updating member: %o', error);
     if (error.name === 'SequelizeUniqueConstraintError') {
-      return res.status(400).json({ error: 'البريد الإلكتروني مستخدم بالفعل.' });
+      return res.status(400).json({ error: messages.admin.emailInUse });
     }
-    res.status(500).json({ error: 'حدث خطأ أثناء تحديث بيانات العضو.' });
+    res.status(500).json({ error: messages.admin.updateError });
   }
 });
 
@@ -176,12 +176,12 @@ router.delete('/members/:id', async (req, res) => {
     
     // Prevent admin from deleting themselves
     if (Number(memberId) === req.user.id) {
-      return res.status(400).json({ error: 'لا يمكنك حذف حسابك الشخصي الذي تستخدمه حالياً.' });
+      return res.status(400).json({ error: messages.admin.cannotDeleteSelf });
     }
 
     const member = await Member.findByPk(memberId);
     if (!member) {
-      return res.status(404).json({ error: 'العضو غير موجود.' });
+      return res.status(404).json({ error: messages.admin.memberNotFound });
     }
 
     const { sequelize } = require('../models');
@@ -198,10 +198,10 @@ router.delete('/members/:id', async (req, res) => {
     }
     logger.info(`Admin deleted member: ${member.name} (ID: ${memberId})`);
 
-    res.json({ message: 'تم حذف العضو وتحديث المهام المرتبطة به بنجاح.' });
+    res.json({ message: messages.admin.deleteSuccess });
   } catch (error) {
     logger.error('Admin API error deleting member: %o', error);
-    res.status(500).json({ error: 'حدث خطأ أثناء حذف العضو.' });
+    res.status(500).json({ error: messages.admin.deleteError });
   }
 });
 
@@ -223,7 +223,7 @@ router.get('/settings', async (req, res) => {
     });
   } catch (error) {
     logger.error('Admin API error fetching settings: %o', error);
-    res.status(500).json({ error: 'حدث خطأ أثناء جلب الإعدادات.' });
+    res.status(500).json({ error: messages.admin.settingsFetchError });
   }
 });
 
@@ -246,10 +246,10 @@ router.put('/settings', async (req, res) => {
     }
 
     logger.info('System settings updated by Admin');
-    res.json({ message: 'تم حفظ الإعدادات بنجاح.', settings: updates });
+    res.json({ message: messages.admin.settingsSaveSuccess, settings: updates });
   } catch (error) {
     logger.error('Admin API error updating settings: %o', error);
-    res.status(500).json({ error: 'حدث خطأ أثناء حفظ الإعدادات.' });
+    res.status(500).json({ error: messages.admin.settingsSaveError });
   }
 });
 

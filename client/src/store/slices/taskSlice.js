@@ -1,5 +1,8 @@
 import { fetchTasks, addTask as fbAddTask, updateTask as fbUpdateTask, deleteTask as fbDeleteTask, addComment as fbAddComment, fetchMembers } from '../apiClient';
 
+let fetchDebounceTimer = null;
+let fetchPendingResolvers = [];
+
 export const createTaskSlice = (set, get) => ({
   tasks: [],
   members: [],
@@ -7,35 +10,48 @@ export const createTaskSlice = (set, get) => ({
   dataError: null,
 
   fetchInitialData: async () => {
-    set({ dataLoading: true, dataError: null });
-    try {
-      const [tasks, members] = await Promise.all([
-        fetchTasks(),
-        fetchMembers(),
-      ]);
-
-      set({ tasks, members: members || [], dataLoading: false });
-      localStorage.setItem('cached_tasks', JSON.stringify(tasks));
-      localStorage.setItem('cached_members', JSON.stringify(members || []));
-    } catch (err) {
-      const cachedTasks = localStorage.getItem('cached_tasks');
-      const cachedMembers = localStorage.getItem('cached_members');
-      if (cachedTasks || cachedMembers) {
-        let parsedTasks = [];
-        let parsedMembers = [];
-        try { parsedTasks = cachedTasks ? JSON.parse(cachedTasks) : []; } catch (_) {}
-        try { parsedMembers = cachedMembers ? JSON.parse(cachedMembers) : []; } catch (_) {}
-
-        set({
-          tasks: parsedTasks,
-          members: parsedMembers,
-          dataLoading: false,
-          dataError: 'تعذر الاتصال بالخادم. تم تحميل البيانات المخزنة مؤقتاً.'
-        });
-      } else {
-        set({ dataLoading: false, dataError: err.message || 'حدث خطأ في تحميل البيانات.' });
-      }
+    if (fetchDebounceTimer) {
+      clearTimeout(fetchDebounceTimer);
     }
+    return new Promise((resolve) => {
+      fetchPendingResolvers.push(resolve);
+      fetchDebounceTimer = setTimeout(async () => {
+        fetchDebounceTimer = null;
+        const resolvers = fetchPendingResolvers;
+        fetchPendingResolvers = [];
+
+        set({ dataLoading: true, dataError: null });
+        try {
+          const [tasks, members] = await Promise.all([
+            fetchTasks(),
+            fetchMembers(),
+          ]);
+
+          set({ tasks, members: members || [], dataLoading: false });
+          localStorage.setItem('cached_tasks', JSON.stringify(tasks));
+          localStorage.setItem('cached_members', JSON.stringify(members || []));
+        } catch (err) {
+          const cachedTasks = localStorage.getItem('cached_tasks');
+          const cachedMembers = localStorage.getItem('cached_members');
+          if (cachedTasks || cachedMembers) {
+            let parsedTasks = [];
+            let parsedMembers = [];
+            try { parsedTasks = cachedTasks ? JSON.parse(cachedTasks) : []; } catch (_) {}
+            try { parsedMembers = cachedMembers ? JSON.parse(cachedMembers) : []; } catch (_) {}
+
+            set({
+              tasks: parsedTasks,
+              members: parsedMembers,
+              dataLoading: false,
+              dataError: 'تعذر الاتصال بالخادم. تم تحميل البيانات المخزنة مؤقتاً.'
+            });
+          } else {
+            set({ dataLoading: false, dataError: err.message || 'حدث خطأ في تحميل البيانات.' });
+          }
+        }
+        resolvers.forEach(r => r());
+      }, 300);
+    });
   },
 
   addTask: async (taskData) => {

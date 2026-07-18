@@ -8,11 +8,18 @@ const { Member } = require('../models');
 const logger = require('../utils/logger');
 const messages = require('../utils/messages');
 
-const crypto = require('crypto');
-const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'test' ? 'test_jwt_secret_key_123!' : crypto.randomBytes(64).toString('hex'));
-if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
+let JWT_SECRET;
+if (process.env.JWT_SECRET) {
+  JWT_SECRET = process.env.JWT_SECRET;
+} else if (process.env.NODE_ENV === 'test') {
+  JWT_SECRET = 'test_jwt_secret_key_123!';
+} else if (process.env.NODE_ENV === 'production') {
   logger.error('FATAL: JWT_SECRET environment variable is not set. Refusing to start.');
   process.exit(1);
+} else {
+  const crypto = require('crypto');
+  JWT_SECRET = crypto.randomBytes(64).toString('hex');
+  logger.warn('WARNING: JWT_SECRET is not set. Using a randomly generated secret. All sessions will be invalidated on server restart. Set JWT_SECRET in environment for production.');
 }
 
 
@@ -28,7 +35,7 @@ const authenticate = async (req, res, next) => {
 
     const member = await Member.findByPk(decoded.id);
     if (!member) {
-      return res.status(401).json({ error: 'المستخدم غير موجود.' });
+      return res.status(401).json({ error: messages.auth.userNotFound });
     }
 
     req.user = member;
