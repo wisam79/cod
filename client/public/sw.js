@@ -21,6 +21,9 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    return;
+  }
 
   if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/ws')) {
     event.respondWith(
