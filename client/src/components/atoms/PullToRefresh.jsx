@@ -10,7 +10,10 @@ export default function PullToRefresh({ onRefresh, children, isRefreshing: exter
   const [status, setStatus] = useState(STATUS.IDLE);
   const [pullDistance, setPullDistance] = useState(0);
   const startY = useRef(0);
+  const startX = useRef(0);
   const pulling = useRef(false);
+  const pullDirectionChecked = useRef(false);
+  const isPullingDown = useRef(false);
   const firedThresholdHaptic = useRef(false);
   const containerRef = useRef(null);
   const isRefreshing = externalRefreshing !== undefined ? externalRefreshing : status === STATUS.REFRESHING;
@@ -25,15 +28,30 @@ export default function PullToRefresh({ onRefresh, children, isRefreshing: exter
 
   const handleTouchMove = useCallback((e) => {
     if (!pulling.current) return;
-    const diff = e.touches[0].clientY - startY.current;
-    // Only intercept if user is clearly pulling down (> 5px threshold)
-    if (diff <= 5) {
-      setPullDistance(0);
-      firedThresholdHaptic.current = false;
+    const t = e.touches[0];
+    const diffY = t.clientY - startY.current;
+    const diffX = Math.abs(t.clientX - startX.current);
+
+    // Check direction on first significant movement
+    if (!pullDirectionChecked.current) {
+      const distance = Math.sqrt(diffY * diffY + diffX * diffX);
+      if (distance > 8) {
+        pullDirectionChecked.current = true;
+        // Dominant vertical pull-down check
+        if (diffY > 5 && diffY > diffX * 1.5) {
+          isPullingDown.current = true;
+        } else {
+          isPullingDown.current = false;
+          pulling.current = false;
+        }
+      }
       return;
     }
+
+    if (!isPullingDown.current) return;
+
     e.preventDefault();
-    const distance = applyRubber(diff);
+    const distance = applyRubber(diffY);
     setPullDistance(distance);
     const reached = distance >= THRESHOLD;
     setStatus(reached ? STATUS.READY : STATUS.PULLING);
@@ -56,14 +74,27 @@ export default function PullToRefresh({ onRefresh, children, isRefreshing: exter
     const scroller = el || containerRef.current;
     if (scroller && scroller.scrollTop <= 0) {
       startY.current = t.clientY;
+      startX.current = t.clientX;
       pulling.current = true;
+      pullDirectionChecked.current = false;
+      isPullingDown.current = false;
       firedThresholdHaptic.current = false;
     }
   }, []);
 
   const handleTouchEnd = useCallback(() => {
-    if (!pulling.current) return;
+    if (!pulling.current && !isPullingDown.current) return;
     pulling.current = false;
+    const wasPulling = isPullingDown.current;
+    isPullingDown.current = false;
+    pullDirectionChecked.current = false;
+
+    if (!wasPulling) {
+      setPullDistance(0);
+      setStatus(STATUS.IDLE);
+      return;
+    }
+
     const overThreshold = pullDistance >= THRESHOLD;
     if (overThreshold) {
       if (externalRefreshing === undefined) setStatus(STATUS.REFRESHING);
