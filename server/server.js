@@ -47,7 +47,7 @@ const isLocalhost = (url) => {
 const isVercelOrigin = (url) => {
   try {
     const hostname = new URL(url).hostname;
-    return hostname.endsWith('.vercel.app') || hostname === 'vercel.app';
+    return (hostname.startsWith('mohemmaty') && hostname.endsWith('.vercel.app')) || hostname === 'mohemmaty.vercel.app';
   } catch (e) {
     return false;
   }

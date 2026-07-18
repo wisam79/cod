@@ -1,4 +1,4 @@
-import { fetchTasks, addTask as fbAddTask, updateTask as fbUpdateTask, deleteTask as fbDeleteTask, addComment as fbAddComment, fetchMembers } from '../apiClient';
+import { fetchTasks, addTask as fbAddTask, updateTask as fbUpdateTask, deleteTask as fbDeleteTask, addComment as fbAddComment, deleteComment as fbDeleteComment, fetchMembers } from '../apiClient';
 
 let fetchDebounceTimer = null;
 let fetchPendingResolvers = [];
@@ -106,6 +106,19 @@ export const createTaskSlice = (set, get) => ({
       await fbAddComment(taskId, text);
     } catch (err) {
       get().addToast(`تعذر إضافة التعليق: ${err.message}`, 'error');
+    }
+  },
+
+  deleteCommentFromTask: async (taskId, commentId) => {
+    const { isOffline } = get();
+    if (isOffline) {
+      get().addToast('لا يمكنك حذف التعليقات أثناء انقطاع الاتصال.', 'error');
+      return;
+    }
+    try {
+      await fbDeleteComment(taskId, commentId);
+    } catch (err) {
+      get().addToast(`تعذر حذف التعليق: ${err.message}`, 'error');
     }
   },
 

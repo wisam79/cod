@@ -192,13 +192,15 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
           display: flex;
           justify-content: space-around;
           align-items: center;
-          background-color: #212328;
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          background-color: rgba(255, 255, 255, 0.8);
+          border: 1px solid rgba(255, 95, 56, 0.15);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
           padding: 6px;
           border-radius: 40px;
           width: 90%;
           max-width: 380px;
-          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 12px 32px rgba(255, 95, 56, 0.08);
           position: relative;
           isolation: isolate;
         }
@@ -212,13 +214,13 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
           border-radius: 50%;
           transition: transform var(--nav-pill-shift) var(--ease-out), width var(--nav-pill-shift) var(--ease-out);
           z-index: 0;
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+          box-shadow: 0 4px 14px rgba(255, 95, 56, 0.35);
         }
 
         .nav-item {
           background: transparent;
           border: none;
-          color: #8a8d94;
+          color: var(--text-muted);
           width: 48px;
           height: 48px;
           display: flex;
@@ -255,14 +257,16 @@ export default function Navbar({ activeTab, setActiveTab, currentUser }) {
         }
 
         .app-container.dark-theme .bottom-navbar {
-          background-color: #16171c;
-          border-color: rgba(255, 255, 255, 0.03);
-          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+          background-color: rgba(34, 28, 26, 0.8);
+          border-color: rgba(255, 95, 56, 0.1);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
         }
 
         .app-container.dark-theme .nav-indicator {
           background: var(--primary);
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+          box-shadow: 0 4px 14px rgba(255, 95, 56, 0.5);
         }
 
         .app-container.dark-theme .nav-item.active {

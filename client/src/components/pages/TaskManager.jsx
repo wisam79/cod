@@ -10,13 +10,14 @@ import TaskDetailsModal from '../organisms/TaskDetailsModal';
 import './TaskManager.css';
 
 export default function TaskManager() {
-  const { tasks, members, currentUser, addTask, updateTaskStatus, addCommentToTask, deleteTask, fetchInitialData } = useAppStore(useShallow(s => ({
+  const { tasks, members, currentUser, addTask, updateTaskStatus, addCommentToTask, deleteCommentFromTask, deleteTask, fetchInitialData } = useAppStore(useShallow(s => ({
     tasks: s.tasks,
     members: s.members,
     currentUser: s.currentUser,
     addTask: s.addTask,
     updateTaskStatus: s.updateTaskStatus,
     addCommentToTask: s.addCommentToTask,
+    deleteCommentFromTask: s.deleteCommentFromTask,
     deleteTask: s.deleteTask,
     fetchInitialData: s.fetchInitialData,
   })));
@@ -163,6 +164,7 @@ export default function TaskManager() {
         currentUser={currentUser}
         updateTaskStatus={updateTaskStatus}
         addCommentToTask={addCommentToTask}
+        deleteCommentFromTask={deleteCommentFromTask}
         deleteTask={deleteTask}
         onClose={() => setSelectedTask(null)}
       />

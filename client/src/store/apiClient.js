@@ -160,6 +160,19 @@ export async function addComment(taskId, text) {
   return handleResponse(res);
 }
 
+export async function deleteComment(taskId, commentId) {
+  const res = await fetch(`${API_URL}/tasks/${taskId}/comments/${commentId}`, {
+    method: 'DELETE',
+    headers: getHeaders()
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ error: 'فشل حذف التعليق' }));
+    throw new Error(error.error || 'فشل حذف التعليق');
+  }
+  return res.json().catch(() => ({ message: 'تم حذف التعليق بنجاح.' }));
+}
+
+
 export async function fetchMessages(page = 1, limit = 50) {
   const res = await fetch(`${API_URL}/messages?page=${page}&limit=${limit}`, { headers: getHeaders() });
   return handleResponse(res);
@@ -345,10 +358,10 @@ function connectWS() {
     const data = JSON.parse(event.data);
     if (data.type === 'message_created') {
       messageSubscribers.forEach(cb => cb(data.payload));
-    } else if (['task_created', 'task_updated', 'task_deleted', 'comment_added'].includes(data.type)) {
+    } else if (['task_created', 'task_updated', 'task_deleted', 'comment_created', 'comment_deleted'].includes(data.type)) {
       taskSubscribers.forEach(cb => cb(data));
-    } else if (data.type === 'notification_created') {
-      notificationSubscribers.forEach(cb => cb(data.payload));
+    } else if (data.type === 'notification_created' || data.type === 'notifications_cleared') {
+      notificationSubscribers.forEach(cb => cb(data));
     }
   };
 

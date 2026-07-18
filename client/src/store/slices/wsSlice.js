@@ -14,9 +14,52 @@ export const createWSSlice = (set, get) => ({
     const session = Math.random().toString(36).slice(2);
     set({ wsStatus: 'connecting', sessionToken: session });
 
-    const unsub1 = onTasksChange(async () => {
+    const unsub1 = onTasksChange(async (data) => {
       if (get().sessionToken !== session) return;
-      await get().fetchInitialData();
+      if (!data || !data.type) {
+        await get().fetchInitialData();
+        return;
+      }
+      const { type, payload } = data;
+      if (type === 'task_created') {
+        set((state) => {
+          if (state.tasks.some(t => t.id === payload.id)) return state;
+          return { tasks: [payload, ...state.tasks] };
+        });
+      } else if (type === 'task_updated') {
+        set((state) => ({
+          tasks: state.tasks.map(t => t.id === payload.id ? payload : t)
+        }));
+      } else if (type === 'task_deleted') {
+        set((state) => ({
+          tasks: state.tasks.filter(t => t.id !== payload.id)
+        }));
+      } else if (type === 'comment_created') {
+        const { taskId, comment } = payload;
+        set((state) => ({
+          tasks: state.tasks.map(t => {
+            if (t.id === taskId) {
+              const comments = t.comments || [];
+              if (comments.some(c => c.id === comment.id)) return t;
+              return { ...t, comments: [...comments, comment] };
+            }
+            return t;
+          })
+        }));
+      } else if (type === 'comment_deleted') {
+        const { taskId, commentId } = payload;
+        set((state) => ({
+          tasks: state.tasks.map(t => {
+            if (t.id === taskId) {
+              const comments = t.comments || [];
+              return { ...t, comments: comments.filter(c => c.id !== commentId) };
+            }
+            return t;
+          })
+        }));
+      } else {
+        await get().fetchInitialData();
+      }
     });
 
     const unsub2 = onMessagesChange((payload) => {
@@ -28,8 +71,14 @@ export const createWSSlice = (set, get) => ({
       });
     });
 
-    const unsub3 = onNotificationsChange((newNotification) => {
+    const unsub3 = onNotificationsChange((data) => {
       if (get().sessionToken !== session) return;
+      if (data && data.type === 'notifications_cleared') {
+        set({ notifications: [] });
+        return;
+      }
+      const newNotification = (data && data.payload) ? data.payload : data;
+      if (!newNotification || !newNotification.id) return;
       const prevNotifs = get().notifications;
       if (prevNotifs.some(p => p.id === newNotification.id)) return;
       

@@ -12,6 +12,7 @@ export default function TaskDetailsModal({
   currentUser, 
   updateTaskStatus, 
   addCommentToTask, 
+  deleteCommentFromTask,
   deleteTask, 
   onClose 
 }) {
@@ -260,6 +261,8 @@ export default function TaskDetailsModal({
                   key={comment.id} 
                   comment={comment} 
                   members={members} 
+                  currentUser={currentUser}
+                  onDelete={() => deleteCommentFromTask && deleteCommentFromTask(task.id, comment.id)}
                 />
               ))}
               {(!taskInStore.comments || taskInStore.comments.length === 0) && (
