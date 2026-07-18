@@ -25,6 +25,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+    return;
+  }
+
   if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/ws')) {
     event.respondWith(
       fetch(req).then((response) => {

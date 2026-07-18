@@ -12,10 +12,19 @@ window.addEventListener('unhandledrejection', (event) => {
   }
 });
 
-// Register Service Worker for PWA
+// Register Service Worker for PWA (only in production)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
+    if (import.meta.env.DEV) {
+      // Unregister any existing service worker in development to avoid caching/HMR issues
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    } else {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
   });
 }
 
