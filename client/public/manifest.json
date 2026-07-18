@@ -8,13 +8,25 @@
   "id": "/",
   "start_url": "/",
   "scope": "/",
-  "background_color": "#f1f5f9",
-  "theme_color": "#1e40af",
+  "background_color": "#faf9f7",
+  "theme_color": "#ff5f38",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
+  "display_override": ["standalone", "window-controls-overlay", "minimal-ui"],
   "orientation": "portrait",
   "prefer_related_applications": false,
   "icons": [
+    {
+      "src": "app-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "app-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "app-icon.png",
       "sizes": "512x512",

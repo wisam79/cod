@@ -128,6 +128,14 @@ body {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
   font-feature-settings: "kern" 1, "liga" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
