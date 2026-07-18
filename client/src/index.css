@@ -130,18 +130,17 @@ body {
   text-size-adjust: 100%;
   user-select: none;
   -webkit-user-select: none;
-}
-
-img {
-  -webkit-user-drag: none;
-  user-drag: none;
-}
   font-feature-settings: "kern" 1, "liga" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   transition: background-color var(--dur-base) var(--ease-in-out);
   background: linear-gradient(135deg, #f0f2f5 0%, #e8ecf1 100%);
+}
+
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
 }
 
 body:has(.dark-theme) {
