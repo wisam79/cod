@@ -38,7 +38,7 @@ router.post('/login', validateLogin, async (req, res) => {
 
     const isMatch = await member.comparePassword(password);
     if (!isMatch) {
-      await member.incLoginAttempts();
+      try { await member.incLoginAttempts(); } catch (_) { /* ignore update failure */ }
       return res.status(401).json({ error: messages.auth.invalidCredentials });
     }
 
