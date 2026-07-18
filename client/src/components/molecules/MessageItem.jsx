@@ -25,9 +25,8 @@ export default function MessageItem({ message, members, isCurrentUser }) {
         padding: 'var(--space-3) var(--space-4)',
         borderRadius: isCurrentUser ? '12px 12px 4px 12px' : '12px 12px 12px 4px',
         backgroundColor: isCurrentUser ? 'var(--primary-light)' : 'var(--bg-card)',
-        border: isCurrentUser ? '1px solid rgba(30, 64, 175, 0.12)' : '1px solid var(--border-light)',
+        border: isCurrentUser ? '1px solid rgba(255, 95, 56, 0.25)' : '1px solid var(--border)',
         color: 'var(--text-main)',
-        boxShadow: 'var(--shadow-xs)',
       }}>
         {!isCurrentUser && (
           <div style={{ fontWeight: '700', fontSize: '0.75rem', color: 'var(--primary)', marginBottom: '3px' }}>

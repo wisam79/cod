@@ -78,7 +78,7 @@ export default function Dashboard() {
     <PullToRefresh onRefresh={handleRefresh} isRefreshing={refreshing}>
     <div className="dashboard-view">
       {/* Card 1: Total Tasks */}
-      <div className="card stat-card-full" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: 'var(--space-5)', border: 'none', background: 'var(--bg-card)' }}>
+      <div className="card stat-card-full" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: 'var(--space-5)', background: 'var(--bg-card)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'right' }}>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
             <BarChart3 size={14} />
@@ -98,7 +98,7 @@ export default function Dashboard() {
       </div>
 
       {/* Card 2: Today's Schedule */}
-      <div className="card stat-card-full" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-5)', border: 'none', background: 'var(--bg-card)' }}>
+      <div className="card stat-card-full" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-5)', background: 'var(--bg-card)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'right' }}>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>جدول اليوم</span>
           <span className="font-english" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '8px', lineHeight: 1 }}>
@@ -107,32 +107,27 @@ export default function Dashboard() {
           <span style={{ fontSize: '0.72rem', color: 'var(--text-faint)', marginTop: '4px' }}>الإنتاجية اليومية للفريق</span>
         </div>
         
-        {/* Vertical Progress Bar */}
+        {/* Progress Ring */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span className="font-english" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary)' }}>
             {progressPercent}%
           </span>
-          <div style={{ width: '6px', height: '56px', background: 'var(--border-light)', borderRadius: '3px', position: 'relative', overflow: 'hidden' }}>
-            <div 
-              style={{ 
-                position: 'absolute', 
-                bottom: 0, 
-                left: 0, 
-                width: '100%', 
-                height: `${progressPercent}%`, 
-                background: 'var(--primary)', 
-                borderRadius: '3px',
-                transition: 'height 0.4s var(--ease-out)'
-              }} 
+          <svg width="40" height="40" viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+            <circle cx="18" cy="18" r="16" fill="none" stroke="var(--border)" strokeWidth="2.5" />
+            <circle cx="18" cy="18" r="16" fill="none" stroke="var(--primary)" strokeWidth="2.5"
+              strokeDasharray="100.53"
+              strokeDashoffset={100.53 - (100.53 * progressPercent) / 100}
+              strokeLinecap="round"
+              style={{ transition: 'stroke-dashoffset 0.4s var(--ease-out)' }}
             />
-          </div>
+          </svg>
         </div>
       </div>
 
       {/* Row 3: Two columns (Completed & In Progress) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
         {/* Completed Card */}
-        <div className="card" style={{ padding: 'var(--space-4)', border: 'none', display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'right' }}>
+        <div className="card" style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'right' }}>
           <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>المهام المكتملة</span>
           <span style={{ fontSize: '0.68rem', color: 'var(--text-faint)' }}>آخر 30 يوم</span>
           <span className="font-english" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px', lineHeight: 1 }}>
@@ -152,7 +147,7 @@ export default function Dashboard() {
         </div>
 
         {/* In Progress Card */}
-        <div className="card" style={{ padding: 'var(--space-4)', border: 'none', display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'right' }}>
+        <div className="card" style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'right' }}>
           <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>قيد العمل</span>
           <span style={{ fontSize: '0.68rem', color: 'var(--text-faint)' }}>آخر 30 يوم</span>
           <span className="font-english" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px', lineHeight: 1 }}>
@@ -173,7 +168,7 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Add */}
-      <div className="quick-add-section card" style={{ border: 'none' }}>
+      <div className="quick-add-section card">
         <h3 className="section-title">إسناد مهمة سريعة</h3>
         <form onSubmit={handleQuickAddSubmit} className="quick-add-form">
           <input
@@ -204,7 +199,7 @@ export default function Dashboard() {
       </div>
 
       {/* Activity Feed */}
-      <div className="activity-section card" style={{ border: 'none' }}>
+      <div className="activity-section card">
         <div className="activity-header">
           <h3 className="section-title">الأنشطة الأخيرة</h3>
           <span className="live-badge">

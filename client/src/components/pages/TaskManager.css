@@ -28,7 +28,7 @@
     min-width: 250px;
     background: var(--bg-elevated);
     border-radius: var(--radius-lg);
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     max-height: 100%;
@@ -43,7 +43,7 @@
     justify-content: space-between;
     align-items: center;
     padding: var(--space-3) var(--space-3);
-    border-bottom: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border);
   }
 
   .kanban-column-header h3 {
@@ -93,7 +93,7 @@
   padding-bottom: 80px;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
 }
 
 .task-manager-view .tasks-list::-webkit-scrollbar {
@@ -148,7 +148,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid var(--border);
   padding-top: var(--space-3);
   margin-top: var(--space-1);
 }
@@ -178,8 +178,7 @@
   width: 28px !important;
   height: 28px !important;
   border-radius: 50%;
-  border: 2px solid var(--bg-card);
-  box-shadow: var(--shadow-xs);
+  border: 1.5px solid var(--border);
 }
 
 .task-manager-view .task-detail-body {
@@ -204,7 +203,7 @@
   background-color: var(--bg-elevated);
   padding: var(--space-3);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border);
 }
 
 .task-manager-view .detail-grid {
@@ -214,7 +213,7 @@
   background-color: var(--bg-elevated);
   padding: var(--space-3);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border);
 }
 
 .task-manager-view .detail-item {
@@ -263,7 +262,7 @@
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--text-main);
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border);
   padding-bottom: var(--space-2);
 }
 
@@ -318,7 +317,7 @@
 }
 
 .task-manager-view .modal-footer-actions {
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid var(--border);
   padding-top: var(--space-3);
   margin-top: auto;
 }

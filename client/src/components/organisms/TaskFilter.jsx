@@ -90,7 +90,33 @@ export default function TaskFilter({
             placeholder="البحث عن مهمة..." 
             value={localSearch}
             onChange={handleSearchChange}
+            style={{ paddingLeft: localSearch ? '32px' : '12px' }}
           />
+          {localSearch && (
+            <button
+              onClick={() => {
+                triggerHaptic('light');
+                setLocalSearch('');
+                setSearchQuery('');
+              }}
+              style={{
+                position: 'absolute',
+                left: '12px',
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-faint)',
+                cursor: 'pointer',
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4px',
+                zIndex: 5
+              }}
+            >
+              ✕
+            </button>
+          )}
         </div>
         <button className="btn btn-primary" onClick={onAddClick} style={{ display: 'flex', alignItems: 'center', gap: '4px', height: '44px', flexShrink: 0 }}>
           <Plus size={14} />
@@ -357,6 +383,7 @@ export default function TaskFilter({
           background: var(--bg-elevated);
           border-radius: var(--radius-md);
           padding: 3px;
+          border: 1px solid var(--border);
         }
 
         .status-tab {

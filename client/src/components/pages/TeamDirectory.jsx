@@ -175,10 +175,9 @@ export default function TeamDirectory() {
         }
 
         .current-user-card {
-          border: none;
+          border: 1px solid var(--primary-hover);
           background: var(--primary-gradient);
           color: #fff;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
           position: relative;
           overflow: hidden;
         }
@@ -247,13 +246,13 @@ export default function TeamDirectory() {
         }
 
         .member-card {
-          transition: transform var(--dur-fast) var(--ease-in-out), box-shadow var(--dur-fast) var(--ease-in-out);
-          border: none;
+          transition: all var(--dur-fast) var(--ease-in-out);
+          border: 1px solid var(--border);
         }
 
         .member-card:hover {
-          transform: translateY(-2px);
-          box-shadow: var(--shadow-md) !important;
+          transform: translateY(-1px);
+          border-color: var(--primary);
         }
 
         .member-card:active {
@@ -310,7 +309,7 @@ export default function TeamDirectory() {
           justify-content: space-between;
           font-size: 0.6875rem;
           color: var(--text-muted);
-          border-top: 1px solid var(--border-light);
+          border-top: 1px solid var(--border);
           padding-top: var(--space-2);
         }
 
@@ -336,7 +335,7 @@ export default function TeamDirectory() {
         .profile-hero {
           padding: var(--space-6);
           text-align: center;
-          box-shadow: var(--shadow-md);
+          border: 1px solid var(--border);
         }
 
         .profile-hero-content {
@@ -348,7 +347,6 @@ export default function TeamDirectory() {
 
         .profile-avatar-lg {
           border: 3px solid var(--primary-light);
-          box-shadow: var(--shadow-sm);
         }
 
         .profile-hero-info h3 {
@@ -379,7 +377,7 @@ export default function TeamDirectory() {
 
         .ring-bg {
           fill: none;
-          stroke: var(--border-light);
+          stroke: var(--border);
           stroke-width: 2.8;
         }
 
@@ -423,7 +421,7 @@ export default function TeamDirectory() {
           justify-content: space-between;
           align-items: center;
           padding: var(--space-4) 0;
-          border-bottom: 1px solid var(--border-light);
+          border-bottom: 1px solid var(--border);
         }
 
         .settings-item:last-child {

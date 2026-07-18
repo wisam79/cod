@@ -453,6 +453,7 @@ export default function AdminDashboard() {
           background: var(--bg-elevated);
           padding: 3px;
           border-radius: var(--radius-md);
+          border: 1px solid var(--border);
         }
         .admin-tab-btn {
           flex: 1;
@@ -471,7 +472,7 @@ export default function AdminDashboard() {
           background: var(--bg-card);
           color: var(--text-main);
           font-weight: 700;
-          box-shadow: var(--shadow-xs);
+          border: 1px solid var(--border);
         }
         .admin-tab-content {
           display: flex;
@@ -513,8 +514,8 @@ export default function AdminDashboard() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          border-top: 1px solid var(--border-light);
-          border-bottom: 1px solid var(--border-light);
+          border-top: 1px solid var(--border);
+          border-bottom: 1px solid var(--border);
           padding: var(--space-2) 0;
         }
         .join-date {
@@ -553,7 +554,7 @@ export default function AdminDashboard() {
         }
         .settings-group {
           padding-bottom: var(--space-4);
-          border-bottom: 1px solid var(--border-light);
+          border-bottom: 1px solid var(--border);
         }
         .toggle-row {
           display: flex;

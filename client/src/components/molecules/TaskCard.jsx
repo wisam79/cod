@@ -44,7 +44,7 @@ function TaskCardFn({ task, assignee, onSelect }) {
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: '14px 4px',
-        borderBottom: '1px solid var(--border-light)',
+        borderBottom: '1px solid var(--border)',
         cursor: 'pointer',
         transition: 'background-color var(--dur-fast) var(--ease-in-out)',
         direction: 'rtl',

@@ -29,10 +29,10 @@
   --border-light: #faf9f7;
 
   /* Controlled shadows — extremely soft, premium depth */
-  --shadow-xs: 0 2px 4px rgba(0, 0, 0, 0.01);
-  --shadow-sm: 0 8px 30px rgba(0, 0, 0, 0.015);
-  --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.06);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.05);
 
   /* Priority system */
   --priority-high: #ef4444;
@@ -222,7 +222,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
 .desktop-sidebar {
   width: 260px;
   background-color: var(--bg-card);
-  border-right: 1px solid var(--border-light);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   padding: 0;
@@ -923,11 +923,9 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   position: absolute;
   inset: 0;
   z-index: 2000;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: iosOverlayFade 0.2s var(--ease-in-out) forwards;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   padding: var(--space-4);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -937,7 +935,9 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   position: absolute;
   inset: 0;
   z-index: 2000;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -953,7 +953,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   max-width: 420px;
   background: var(--bg-card);
   border-radius: var(--radius-xl);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border);
   animation: modalScaleIn 0.25s var(--ease-out) forwards;
   max-height: 85vh;
   overflow-y: auto;
@@ -962,7 +962,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   padding-bottom: var(--space-4);
   transition: transform 0.25s var(--ease-out), opacity 0.2s var(--ease-in-out);
   will-change: transform, opacity;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
   margin: auto;
 }
 
@@ -986,7 +986,7 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   justify-content: space-between;
   align-items: center;
   padding: var(--space-4);
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border);
 }
 
 .modal-header h2 {
@@ -1005,12 +1005,12 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   justify-content: center;
   color: var(--text-muted);
   background: var(--bg-elevated);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border);
   transition: background var(--dur-fast) var(--ease-in-out);
 }
 
 .close-btn:hover {
-  background: var(--border-light);
+  background: var(--border);
 }
 
 .modal-form {
@@ -1094,10 +1094,10 @@ input, textarea, select, .message-item p, .detail-task-desc, .comment-form input
   --text-faint: #736862;
   --border: #332a26;
   --border-light: #221c1a;
-  --shadow-xs: 0 2px 4px rgba(0, 0, 0, 0.4);
-  --shadow-sm: 0 8px 30px rgba(0, 0, 0, 0.45);
-  --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.55);
-  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.75);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.15);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
   --primary-light: rgba(255, 95, 56, 0.15);
   --primary-gradient: linear-gradient(135deg, #ff5f38 0%, #ff8c70 100%);
   --accent-light: rgba(255, 95, 56, 0.1);

@@ -252,7 +252,7 @@ export default function Login() {
           padding: var(--space-5);
           gap: var(--space-6);
           position: relative;
-          background: radial-gradient(ellipse at top, rgba(30, 64, 175, 0.06) 0%, transparent 60%);
+          background: radial-gradient(ellipse at top, rgba(255, 95, 56, 0.04) 0%, transparent 60%);
         }
 
         .login-logo-container {
@@ -280,7 +280,8 @@ export default function Login() {
           width: 92%;
           max-width: 380px;
           padding: var(--space-7) var(--space-6);
-          box-shadow: var(--shadow-lg);
+          border: 1px solid var(--border);
+          box-shadow: var(--shadow-md);
           border-radius: var(--radius-xl);
         }
 
