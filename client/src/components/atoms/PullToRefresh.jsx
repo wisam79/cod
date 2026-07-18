@@ -66,12 +66,14 @@ export default function PullToRefresh({ onRefresh, children, isRefreshing: exter
   const handleTouchStart = useCallback((e) => {
     const t = e.touches[0];
     let el = e.target instanceof Element ? e.target : null;
-    while (el && el !== containerRef.current) {
+    while (el && el !== document.body) {
       const style = getComputedStyle(el);
-      if (style.overflowY === 'auto' || style.overflowY === 'scroll') break;
+      if (style.overflowY === 'auto' || style.overflowY === 'scroll') {
+        break;
+      }
       el = el.parentElement;
     }
-    const scroller = el || containerRef.current;
+    const scroller = el && el !== document.body ? el : document.querySelector('.scrollable-content') || containerRef.current;
     if (scroller && scroller.scrollTop <= 0) {
       startY.current = t.clientY;
       startX.current = t.clientX;
