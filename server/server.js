@@ -109,7 +109,7 @@ app.use(async (req, res, next) => {
   if (!dbSynced) {
     try {
       await sequelize.authenticate();
-      await sequelize.sync();
+      await sequelize.sync({ alter: true });
       dbSynced = true;
     } catch (err) {
       logger.error('Failed to sync DB in middleware: %o', err);
@@ -233,7 +233,7 @@ const startServer = async () => {
     logger.info('Database connection established successfully.');
 
     // Sync database (without force to preserve seeded data)
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
     logger.info('Database models synced.');
 
     // Start listening
