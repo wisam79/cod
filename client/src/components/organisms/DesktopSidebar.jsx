@@ -14,7 +14,9 @@ export default function DesktopSidebar({ activeTab, handleSetActiveTab, user, ws
     <aside className="desktop-sidebar">
       <div className="sidebar-logo">
         <div className="sidebar-logo-icon">
-          <CheckSquare size={22} style={{ color: '#fff' }} />
+          <svg width="22" height="22" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M26 38.5L17.5 30L20.3 27.2L26 32.9L39.7 19.2L42.5 22L26 38.5Z" fill="white" />
+          </svg>
         </div>
         <div className="logo-text">
           <h2>مُهِمَّة</h2>

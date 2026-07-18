@@ -233,7 +233,7 @@ export default function Login() {
         <div className="login-logo-icon">
           <svg width="56" height="56" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="60" height="60" rx="14" fill="var(--primary)" />
-            <path d="M42 20L25.5 36.5L18 29" stroke="white" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M26 38.5L17.5 30L20.3 27.2L26 32.9L39.7 19.2L42.5 22L26 38.5Z" fill="white" />
           </svg>
         </div>
         <h2>مُهِمَّة</h2>
